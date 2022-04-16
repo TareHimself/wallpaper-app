@@ -1,0 +1,200 @@
+/*
+ * @NOTE: Prepend a `~` to css file paths that are in your node_modules
+ *        See https://github.com/webpack-contrib/sass-loader#imports
+ */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+body {
+  --background: #2c2f33;
+  --primaryText: white;
+  margin: 0;
+  position: relative;
+  background-color: var(--background);
+  font-family: sans-serif;
+
+  height: 100vh;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+#sub-root {
+  height: 100%;
+  width: inherit;
+  overflow-y: overlay;
+}
+
+h1 {
+  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+  font-size: 50px;
+  display: block;
+  color: var(--primaryText);
+}
+
+h2 {
+  font-family: 'Roboto', sans-serif;
+  font-weight: normal;
+  font-size: 30px;
+  display: block;
+  color: var(--primaryText);
+}
+
+h3 {
+  font-family: 'Roboto', sans-serif;
+  font-weight: lighter;
+  font-size: 20px;
+  display: block;
+  color: var(--primaryText);
+}
+
+p {
+  font-family: 'Roboto', sans-serif;
+  font-weight: lighter;
+  font-size: 10px;
+  display: block;
+  color: var(--primaryText);
+}
+
+#dashboard {
+  height: 100px;
+  width: 80%;
+  display: flex;
+  background-color: var(--background);
+  border-bottom: solid 2px white;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 50px;
+}
+
+.page {
+  display: flex;
+  width: 100%;
+  height: max-content;
+}
+
+.item-grid {
+  --rowWidth: 500px;
+  margin: 0 auto;
+  height: fit-content;
+  width: fit-content;
+  display: grid;
+  grid-row-gap: 20px;
+  grid-column-gap: 20px;
+  grid-template-columns: repeat(3, var(--rowWidth));
+  grid-template-rows: inherit;
+  justify-items: center;
+  margin-bottom: 50px;
+}
+
+.grid-item {
+  position: relative;
+  display: flex;
+  width: var(--rowWidth);
+  height: calc(var(--rowWidth) * (9 / 16));
+  overflow: hidden;
+  border-radius: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid-item img {
+  position: absolute;
+  max-width: 100%;
+  max-height: 100%;
+  min-width: var(--rowWidth);
+  min-height: calc(var(--rowWidth) * (9 / 16));
+  object-fit: cover;
+}
+
+.wallpaper-preview-info-panel {
+  position: absolute;
+  top: calc(100% + 5px);
+  transform: translateY(-100%);
+  width: 100%;
+  background-color: rgb(32, 32, 32);
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.grid-item .wallpaper-preview-info-panel {
+  height: 5px;
+}
+
+.grid-item:hover .wallpaper-preview-info-panel {
+  height: 50px;
+}
+
+.wallpaper-preview-info-panel div {
+  display: flex;
+  height: 50px;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.wallpaper-preview-size-panel {
+  position: absolute;
+  display: flex;
+  top: 0%;
+  left: 0%;
+  height: 40px;
+  width: 30%;
+  border-radius: 0px 0px 20px 0px;
+  background-color: rgb(32, 32, 32);
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.wallpaper-preview-size-panel h2 {
+  font-size: 20px;
+}
+
+.wallpaper-preview-info-panel div h2 {
+  font-size: 20px;
+}
+
+.wallpaper-view-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  background-color: rgba(32, 32, 32, 0.9);
+  transition: all 0.3s ease-in-out;
+  align-items: center;
+  justify-content: center;
+}
+
+.wallpaper-view-modal-content {
+  position: relative;
+  display: block;
+  max-width: 1422.22222222px;
+  max-height: 800px;
+}
+
+.wallpaper-view-modal-content img {
+  max-width: 1422.22222222px;
+  max-height: 800px;
+}
+
+@media only screen and (max-width: 1580px) {
+  .item-grid {
+    grid-template-columns: repeat(2, var(--rowWidth));
+  }
+
+  @media only screen and (max-width: 1080px) {
+    .item-grid {
+      grid-template-columns: repeat(1, var(--rowWidth));
+    }
+  }
+}

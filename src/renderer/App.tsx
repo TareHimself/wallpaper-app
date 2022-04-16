@@ -1,50 +1,34 @@
+import { useState } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import icon from '../../assets/icon.svg';
-import './App.css';
-
-const Hello = () => {
-  return (
-    <div>
-      <div className="Hello">
-        <img width="200px" alt="icon" src={icon} />
-      </div>
-      <h1>electron-react-boilerplate</h1>
-      <div className="Hello">
-        <a
-          href="https://electron-react-boilerplate.js.org/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              📚
-            </span>
-            Read our docs
-          </button>
-        </a>
-        <a
-          href="https://github.com/sponsors/electron-react-boilerplate"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              🙏
-            </span>
-            Donate
-          </button>
-        </a>
-      </div>
-    </div>
-  );
-};
+import Home from './routes/Home';
+import './css/Main.css';
+import Dashboard from './components/Dashboard';
+import GlobalAppContext from './GlobalAppContext';
+import WallpaperViewModal from './components/WallpaperViewModal';
+import { IApiResult } from './types';
 
 export default function App() {
+  const [wallpaperBeingViewed, setWallpaperBeingViewed] = useState<
+    IApiResult | undefined
+  >(undefined);
+
+  function setCurrentWallpaper(data: IApiResult | undefined) {
+    setWallpaperBeingViewed(data);
+  }
+
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Hello />} />
-      </Routes>
+      <GlobalAppContext.Provider value={{ setCurrentWallpaper }}>
+        <div id="sub-root">
+          <Dashboard />
+          <Routes>
+            <Route path="/" element={<Home />} />
+          </Routes>
+        </div>
+        {wallpaperBeingViewed !== undefined && (
+          <WallpaperViewModal data={wallpaperBeingViewed} />
+        )}
+      </GlobalAppContext.Provider>
     </Router>
   );
 }
