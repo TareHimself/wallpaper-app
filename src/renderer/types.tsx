@@ -1,19 +1,37 @@
-interface IApiResult {
+interface IWallpaperData {
   id: string;
-
-  uri: string;
 
   name: string;
 
-  tags: Array<string>;
+  uri: string;
+
+  downloads: number;
+
+  uploaded_at: string;
+
+  tags: string[];
+}
+
+interface IApiResult {
+  id: string;
+
+  name: string;
+
+  uri: string;
+
+  downloads: number;
+
+  uploaded_at: string;
+
+  tags: string;
 }
 
 interface SetWallpaperFunction {
-  (data: IApiResult | undefined): void;
+  (data: IWallpaperData | undefined): void;
 }
 
 interface IGlobalContext {
   setCurrentWallpaper: SetWallpaperFunction;
 }
 
-export { IApiResult, IGlobalContext };
+export { IWallpaperData, IGlobalContext, IApiResult };

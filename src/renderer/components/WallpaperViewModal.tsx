@@ -1,6 +1,6 @@
-import { IApiResult } from 'renderer/types';
+import { IWallpaperData } from 'renderer/types';
 
-export default function WallpaperViewModal({ data }: { data: IApiResult }) {
+export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
   return (
     <div className="wallpaper-view-modal">
       <div className="wallpaper-view-modal-content">

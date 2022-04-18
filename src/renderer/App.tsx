@@ -5,14 +5,14 @@ import './css/Main.css';
 import Dashboard from './components/Dashboard';
 import GlobalAppContext from './GlobalAppContext';
 import WallpaperViewModal from './components/WallpaperViewModal';
-import { IApiResult } from './types';
+import { IWallpaperData } from './types';
 
 export default function App() {
   const [wallpaperBeingViewed, setWallpaperBeingViewed] = useState<
-    IApiResult | undefined
+    IWallpaperData | undefined
   >(undefined);
 
-  function setCurrentWallpaper(data: IApiResult | undefined) {
+  function setCurrentWallpaper(data: IWallpaperData | undefined) {
     setWallpaperBeingViewed(data);
   }
 

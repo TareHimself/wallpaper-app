@@ -1,9 +1,9 @@
 import { SyntheticEvent, useContext } from 'react';
 import '../css/Main.css';
 import GlobalAppContext from 'renderer/GlobalAppContext';
-import { IApiResult } from 'renderer/types';
+import { IWallpaperData } from 'renderer/types';
 
-export default function WallpaperPreview({ data }: { data: IApiResult }) {
+export default function WallpaperPreview({ data }: { data: IWallpaperData }) {
   const { setCurrentWallpaper } = useContext(GlobalAppContext);
 
   function detectImageSize(
