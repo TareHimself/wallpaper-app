@@ -1,8 +1,6 @@
 interface IWallpaperData {
   id: string;
 
-  name: string;
-
   uri: string;
 
   downloads: number;
@@ -14,8 +12,6 @@ interface IWallpaperData {
 
 interface IApiResult {
   id: string;
-
-  name: string;
 
   uri: string;
 

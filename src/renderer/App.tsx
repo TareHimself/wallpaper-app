@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './routes/Home';
 import './css/Main.css';
@@ -15,6 +15,10 @@ export default function App() {
   function setCurrentWallpaper(data: IWallpaperData | undefined) {
     setWallpaperBeingViewed(data);
   }
+
+  useEffect(() => {
+    document.body.classList.add('theme-dark');
+  });
 
   return (
     <Router>

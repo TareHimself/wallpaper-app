@@ -2,6 +2,7 @@ import { SyntheticEvent, useContext } from 'react';
 import '../css/Main.css';
 import GlobalAppContext from 'renderer/GlobalAppContext';
 import { IWallpaperData } from 'renderer/types';
+import { BiSearchAlt } from 'react-icons/bi';
 
 export default function WallpaperPreview({ data }: { data: IWallpaperData }) {
   const { setCurrentWallpaper } = useContext(GlobalAppContext);
@@ -32,11 +33,7 @@ export default function WallpaperPreview({ data }: { data: IWallpaperData }) {
       }}
     >
       <img src={data.uri} alt="someImage" onLoad={detectImageSize} />
-      <div className="wallpaper-preview-info-panel">
-        <div>
-          <h2>{data.name}</h2>
-        </div>
-      </div>
+      <BiSearchAlt className="wallpaper-preview-icon" />
       <div className="wallpaper-preview-size-panel">
         <h2 id={`${data.id}-size`}>Size</h2>
       </div>

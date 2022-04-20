@@ -1,11 +1,52 @@
 import { useEffect, useState } from 'react';
 import { IApiResult, IWallpaperData } from 'renderer/types';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import { items } from './sampleWallpapers.json';
 
 export default function useWallpaperApi(): IWallpaperData[] {
   const [data, setData] = useState(Array<IWallpaperData>());
 
   useEffect(() => {
+    async function onRequestCompleted(response: AxiosResponse<any, any>) {
+      const result: IWallpaperData[] = [];
+      response.data.forEach((responseData: IApiResult) => {
+        result.push({
+          id: responseData.id,
+
+          uri: responseData.uri,
+
+          downloads: responseData.downloads,
+
+          uploaded_at: responseData.uploaded_at,
+
+          tags: responseData.tags.split('.'),
+        });
+      });
+
+      setData(result);
+    }
+
+    async function onRequestFailed() {
+      console.error('YOUR API IS FUCKED, USING SAMPLE DATA');
+
+      const result: IWallpaperData[] = [];
+      items.forEach((responseData: IApiResult) => {
+        result.push({
+          id: responseData.id,
+
+          uri: responseData.uri,
+
+          downloads: responseData.downloads,
+
+          uploaded_at: responseData.uploaded_at,
+
+          tags: responseData.tags.split('.'),
+        });
+      });
+
+      setData(result);
+    }
+
     axios
       .get('http://localhost:49153/wallpapers', {
         headers: {
@@ -14,29 +55,8 @@ export default function useWallpaperApi(): IWallpaperData[] {
         },
       })
       // eslint-disable-next-line promise/always-return
-      .then((response) => {
-        const result: IWallpaperData[] = [];
-
-        response.data.forEach((responseData: IApiResult) => {
-          result.push({
-            id: responseData.id,
-
-            name: responseData.name,
-
-            uri: responseData.uri,
-
-            downloads: responseData.downloads,
-
-            uploaded_at: responseData.uploaded_at,
-
-            tags: responseData.tags.split('.'),
-          });
-        });
-      })
-      .catch(() => {
-        // eslint-disable-next-line no-console
-        console.error('YOUR API IS FUCKED');
-      });
+      .then(onRequestCompleted)
+      .catch(onRequestFailed);
   }, []);
 
   return data;
