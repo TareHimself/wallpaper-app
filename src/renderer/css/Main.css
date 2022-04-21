@@ -6,16 +6,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 body {
-
   margin: 0;
   position: relative;
   background-color: var(--level0);
   font-family: sans-serif;
   height: 100vh;
   overflow: hidden;
+
+  user-select: none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
 }
 
-.theme-dark{
+.theme-dark {
   --level0: #2c2f33;
   --level1: #44494f;
   --primaryText: white;
@@ -119,11 +124,9 @@ p {
   width: calc(var(--rowWidth) * 1.2);
 }
 
-
-
 .wallpaper-preview-icon {
   position: absolute;
-  top:  50%;
+  top: 50%;
   transform: translateY(-50%);
   height: 100px;
   width: 100px;
@@ -133,17 +136,16 @@ p {
 }
 
 .grid-item .wallpaper-preview-icon {
-  top:  100%;
+  top: 100%;
   transform: translateY(50%);
 }
 
 .grid-item:hover .wallpaper-preview-icon {
-  top:  50%;
+  top: 50%;
   transform: translateY(-50%);
 }
 
-
-.wallpaper-preview-size-panel {
+.wallpaper-preview-size {
   position: absolute;
   display: flex;
   top: 0%;
@@ -159,15 +161,38 @@ p {
   justify-content: space-around;
 }
 
-.wallpaper-preview-size-panel h2 {
+.wallpaper-preview-size h2,
+.wallpaper-preview-downloads h2 {
   font-size: 20px;
+}
+
+.wallpaper-preview-downloads {
+  position: absolute;
+  display: flex;
+  top: 100%;
+  left: 100%;
+  transform: translate(-100%, -100%);
+  height: 40px;
+  width: 30%;
+  border-radius: 20px 0px 0px 0px;
+  background-color: rgb(32, 32, 32);
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.wallpaper-preview-downloads svg {
+  font-size: 20px;
+  color: var(--icon-color);
 }
 
 .wallpaper-preview-info-panel div h2 {
   font-size: 20px;
 }
 
-.wallpaper-view{
+.wallpaper-view {
   position: absolute;
   top: 0;
   left: 0;
@@ -181,31 +206,31 @@ p {
   justify-content: space-evenly;
 }
 
-.wallpaper-view svg{
+.wallpaper-view svg {
   height: 60%;
   font-size: 100px;
   color: var(--icon-color);
   transition: all 0.3s ease-in-out;
 }
 
-.wallpaper-view svg:hover{
-  color: var(--icon-color-hover)
+.wallpaper-view svg:hover {
+  color: var(--icon-color-hover);
 }
 
-.next-item-left:hover{
+.next-item-left:hover {
   transform: translateX(10%);
 }
 
-.next-item-right:hover{
+.next-item-right:hover {
   transform: translateX(-10%);
 }
 
-.wallpaper-view-container{
+.wallpaper-view-container {
   position: relative;
   top: 0;
   left: 0;
   height: 100%;
-  width: 100%;
+  width: 80%;
   display: flex;
   transition: all 0.3s ease-in-out;
   align-items: center;
@@ -219,13 +244,14 @@ p {
   display: flex;
   width: 100%;
   height: 80px;
+  min-height: 80px;
   background-color: var(--level1);
   border-radius: 20px;
   align-items: center;
   justify-content: space-evenly;
 }
 
-.wallpaper-view-panel svg{
+.wallpaper-view-panel svg {
   margin: 5px;
   width: 40px;
   height: 40px;
@@ -233,7 +259,7 @@ p {
   transition: all 0.2s ease-in-out;
 }
 
-.wallpaper-view-panel svg:hover{
+.wallpaper-view-panel svg:hover {
   margin: 0px;
   width: 50px;
   height: 50px;
@@ -241,8 +267,9 @@ p {
 }
 
 #wallpaperInView {
-  width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 70%;
+  max-height: 70%;
+  width: fit-content;
   object-fit: contain;
   border-radius: 20px;
 }

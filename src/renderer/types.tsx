@@ -19,6 +19,8 @@ interface IApiResult {
 
   uploaded_at: string;
 
+  uploader: string;
+
   tags: string;
 }
 

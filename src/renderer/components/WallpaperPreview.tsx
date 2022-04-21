@@ -3,6 +3,7 @@ import '../css/Main.css';
 import GlobalAppContext from 'renderer/GlobalAppContext';
 import { IWallpaperData } from 'renderer/types';
 import { BiSearchAlt } from 'react-icons/bi';
+import { IoMdDownload } from 'react-icons/io';
 
 export default function WallpaperPreview({ data }: { data: IWallpaperData }) {
   const { setCurrentWallpaper } = useContext(GlobalAppContext);
@@ -34,8 +35,11 @@ export default function WallpaperPreview({ data }: { data: IWallpaperData }) {
     >
       <img src={data.uri} alt="someImage" onLoad={detectImageSize} />
       <BiSearchAlt className="wallpaper-preview-icon" />
-      <div className="wallpaper-preview-size-panel">
+      <div className="wallpaper-preview-size">
         <h2 id={`${data.id}-size`}>Size</h2>
+      </div>
+      <div className="wallpaper-preview-downloads">
+        <h2>{data.downloads}</h2> <IoMdDownload />
       </div>
     </div>
   );
