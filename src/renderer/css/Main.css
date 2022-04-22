@@ -206,22 +206,31 @@ p {
   justify-content: space-evenly;
 }
 
-.wallpaper-view svg {
+.wallpaper-view .next-item-right,
+.wallpaper-view .next-item-left {
   height: 60%;
   font-size: 100px;
   color: var(--icon-color);
   transition: all 0.3s ease-in-out;
 }
 
-.wallpaper-view svg:hover {
+.wallpaper-view .next-item-right:hover,
+.wallpaper-view .next-item-left:hover {
   color: var(--icon-color-hover);
 }
 
-.next-item-left:hover {
-  transform: translateX(10%);
+.next-item-disabled {
+  height: 60%;
+  font-size: 100px;
+  color: gray;
+  transition: all 0.3s ease-in-out;
 }
 
 .next-item-right:hover {
+  transform: translateX(10%);
+}
+
+.next-item-left:hover {
   transform: translateX(-10%);
 }
 

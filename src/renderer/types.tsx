@@ -5,7 +5,9 @@ interface IWallpaperData {
 
   downloads: number;
 
-  uploaded_at: string;
+  uploaded_at: number;
+
+  uploader: string;
 
   tags: string[];
 }
@@ -17,7 +19,7 @@ interface IApiResult {
 
   downloads: number;
 
-  uploaded_at: string;
+  uploaded_at: number;
 
   uploader: string;
 
@@ -30,6 +32,7 @@ interface SetWallpaperFunction {
 
 interface IGlobalContext {
   setCurrentWallpaper: SetWallpaperFunction;
+  wallpapers: IWallpaperData[];
 }
 
 export { IWallpaperData, IGlobalContext, IApiResult };

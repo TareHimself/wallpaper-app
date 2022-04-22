@@ -19,6 +19,8 @@ export default function useWallpaperApi(): IWallpaperData[] {
 
           uploaded_at: responseData.uploaded_at,
 
+          uploader: responseData.uploader,
+
           tags: responseData.tags.split('.'),
         });
       });
@@ -39,6 +41,8 @@ export default function useWallpaperApi(): IWallpaperData[] {
           downloads: responseData.downloads,
 
           uploaded_at: responseData.uploaded_at,
+
+          uploader: responseData.uploader,
 
           tags: responseData.tags.split('.'),
         });

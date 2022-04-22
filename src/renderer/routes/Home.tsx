@@ -1,15 +1,15 @@
 import '../css/Main.css';
-import type { ReactElement } from 'react';
+import { ReactElement, useContext } from 'react';
 import WallpaperPreview from 'renderer/components/WallpaperPreview';
-import useWallpaperApi from 'renderer/hooks/useWallpaperApi';
+import GlobalAppContext from 'renderer/GlobalAppContext';
 
 export default function Home() {
   let wallpaperElements: Array<ReactElement> = [];
 
-  const wallpapersFromApi = useWallpaperApi();
+  const { wallpapers } = useContext(GlobalAppContext);
 
-  if (wallpapersFromApi.length) {
-    wallpaperElements = wallpapersFromApi.map((apiData) => (
+  if (wallpapers?.length) {
+    wallpaperElements = wallpapers.map((apiData) => (
       <WallpaperPreview key={apiData.id} data={apiData} />
     ));
   }

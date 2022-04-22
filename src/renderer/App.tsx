@@ -6,6 +6,7 @@ import Dashboard from './components/Dashboard';
 import GlobalAppContext from './GlobalAppContext';
 import WallpaperViewModal from './components/WallpaperViewModal';
 import { IWallpaperData } from './types';
+import useWallpaperApi from './hooks/useWallpaperApi';
 
 export default function App() {
   const [wallpaperBeingViewed, setWallpaperBeingViewed] = useState<
@@ -16,13 +17,15 @@ export default function App() {
     setWallpaperBeingViewed(data);
   }
 
+  const wallpapers = useWallpaperApi();
+
   useEffect(() => {
     document.body.classList.add('theme-dark');
   });
 
   return (
     <Router>
-      <GlobalAppContext.Provider value={{ setCurrentWallpaper }}>
+      <GlobalAppContext.Provider value={{ setCurrentWallpaper, wallpapers }}>
         <div id="sub-root">
           <Dashboard />
           <Routes>
