@@ -28,7 +28,12 @@ export default function WallpaperUploadItem({
 
   return (
     <div className="upload-item">
-      <img src={data.uri} alt="upload" onLoad={onImageLoaded} />{' '}
+      <img
+        src={data.uri}
+        alt="upload"
+        onLoad={onImageLoaded}
+        draggable="false"
+      />
       <div className="tags-input">
         <input
           type="text"

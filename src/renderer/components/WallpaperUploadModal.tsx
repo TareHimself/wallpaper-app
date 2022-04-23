@@ -30,7 +30,7 @@ export default function WallpaperUploadModal({
     (upload: IConvertedSystemFiles, uploadIndex: number) => {
       const element = (
         <WallpaperUploadItem
-          key={uploads.indexOf(upload)}
+          key={upload.uri}
           data={upload}
           index={uploadIndex}
           updateFunc={updateIndexCallback}
