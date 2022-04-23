@@ -3,19 +3,9 @@ interface IWallpaperData {
 
   uri: string;
 
-  downloads: number;
+  width: number;
 
-  uploaded_at: number;
-
-  uploader: string;
-
-  tags: string[];
-}
-
-interface IApiResult {
-  id: string;
-
-  uri: string;
+  height: number;
 
   downloads: number;
 
@@ -30,9 +20,14 @@ interface SetWallpaperFunction {
   (data: IWallpaperData | undefined): void;
 }
 
+interface SetSearchQueryFunction {
+  (queryString: string): void;
+}
+
 interface IGlobalContext {
   setCurrentWallpaper: SetWallpaperFunction;
   wallpapers: IWallpaperData[];
+  setSearchQuery: SetSearchQueryFunction;
 }
 
-export { IWallpaperData, IGlobalContext, IApiResult };
+export { IWallpaperData, IGlobalContext };

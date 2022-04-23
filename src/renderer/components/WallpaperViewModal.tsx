@@ -7,8 +7,11 @@ import {
 } from 'react-icons/bs';
 import { CgClose } from 'react-icons/cg';
 import { IoMdDownload } from 'react-icons/io';
+import { IoResizeOutline } from 'react-icons/io5';
 import GlobalAppContext from 'renderer/GlobalAppContext';
-import { useContext } from 'react';
+import { SyntheticEvent, useContext } from 'react';
+
+const clickOutClassnames = ['wallpaper-view', 'wallpaper-view-container'];
 
 export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
   const { setCurrentWallpaper } = useContext(GlobalAppContext);
@@ -35,8 +38,15 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
     }
   }
 
+  function onAttemptClickOut(event: SyntheticEvent<HTMLElement, Event>) {
+    const element = event.target as HTMLElement;
+    if (clickOutClassnames.includes(element.className) && setCurrentWallpaper) {
+      setCurrentWallpaper(undefined);
+    }
+  }
+
   return (
-    <div className="wallpaper-view">
+    <div role="none" className="wallpaper-view" onClick={onAttemptClickOut}>
       <BsChevronCompactLeft
         className={
           currentItemIndex !== undefined && currentItemIndex > 0
@@ -48,11 +58,21 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
         }}
       />
       <div className="wallpaper-view-container">
-        <div className="wallpaper-view-panel">
-          <h2>{data.downloads}</h2> <IoMdDownload />
+        <div className="wallpaper-view-panel-top">
+          <span>
+            <h2>{data.downloads}</h2> <IoMdDownload />
+          </span>
+          <span>
+            <h2>{`${data.width}x${data.height}`}</h2> <IoResizeOutline />
+          </span>
         </div>
-        <img src={data.uri} alt="wallpaper" id="wallpaperInView" />
-        <div className="wallpaper-view-panel">
+        <img
+          src={data.uri}
+          alt="wallpaper"
+          id="wallpaperInView"
+          draggable="false"
+        />
+        <div className="wallpaper-view-panel-bottom">
           <CgClose
             onClick={() => {
               if (setCurrentWallpaper) {

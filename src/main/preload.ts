@@ -1,11 +1,20 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
-const validChannels = ['ipc-example'];
+const validChannels = ['ipc-example', 'upload-files'];
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
     myPing() {
       ipcRenderer.send('ipc-example', 'ping');
+    },
+    uploadFiles(lastUploadPath: string) {
+      ipcRenderer.send('upload-files', lastUploadPath);
+
+      return new Promise((resolve, _reject) => {
+        ipcRenderer.once('upload-files', (_event, response) => {
+          resolve(response);
+        });
+      });
     },
     on(channel: string, func: (...args: unknown[]) => void) {
       if (validChannels.includes(channel)) {

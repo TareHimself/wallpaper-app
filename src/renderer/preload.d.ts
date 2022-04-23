@@ -3,6 +3,7 @@ declare global {
     electron: {
       ipcRenderer: {
         myPing(): void;
+        uploadFiles(lastUploadPath: string): Promise<any>;
         on(
           channel: string,
           func: (...args: unknown[]) => void

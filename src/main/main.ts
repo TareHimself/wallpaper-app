@@ -9,11 +9,13 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+
+const fs = require('fs').promises;
 
 export default class AppUpdater {
   constructor() {
@@ -25,10 +27,44 @@ export default class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null;
 
-ipcMain.on('ipc-example', async (event, arg) => {
+ipcMain.on('ipc-example', async (event, args) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
+  console.log(msgTemplate(args));
   event.reply('ipc-example', msgTemplate('pong'));
+});
+
+ipcMain.on('upload-files', async (event, args) => {
+  dialog
+    .showOpenDialog({
+      title: 'Select the wallpapers to upload',
+      properties: ['openFile', 'multiSelections'],
+      defaultPath: args,
+      buttonLabel: 'Upload',
+      filters: [
+        {
+          name: 'wallpapers',
+          extensions: ['jpeg', 'png'],
+        },
+      ],
+    })
+    .then(async (result) => {
+      if (result.canceled) {
+        event.reply('upload-files', { result: false, files: [] });
+      } else if (result.filePaths.length === 0) {
+        event.reply('upload-files', { result: false, files: [] });
+      } else {
+        const readers: Promise<any>[] = [];
+
+        result.filePaths.forEach((filePath) => {
+          readers.push(fs.readFile(filePath));
+        });
+
+        const filesLoaded = await Promise.all(readers);
+
+        event.reply('upload-files', { result: true, files: filesLoaded });
+      }
+    })
+    .catch(console.log);
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -98,8 +134,10 @@ const createWindow = async () => {
     mainWindow = null;
   });
 
-  const menuBuilder = new MenuBuilder(mainWindow);
-  menuBuilder.buildMenu();
+  if (process.env.NODE_ENV === 'development') {
+    const menuBuilder = new MenuBuilder(mainWindow);
+    menuBuilder.buildMenu();
+  }
 
   // Open urls in the user's browser
   mainWindow.webContents.setWindowOpenHandler((edata) => {

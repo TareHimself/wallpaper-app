@@ -8,20 +8,10 @@ import { IoMdDownload } from 'react-icons/io';
 export default function WallpaperPreview({ data }: { data: IWallpaperData }) {
   const { setCurrentWallpaper } = useContext(GlobalAppContext);
 
-  function detectImageSize(
-    imageLoadEvent: SyntheticEvent<HTMLImageElement, Event>
-  ) {
-    const textElement: HTMLElement | null = document.getElementById(
-      `${data.id}-size`
-    );
-
-    const imageElement: HTMLImageElement =
-      imageLoadEvent.target as HTMLImageElement;
-
-    if (textElement) {
-      textElement.innerHTML = `${imageElement.naturalWidth}x${imageElement.naturalHeight}`;
-    }
-  }
+  function onImageLoaded(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _imageLoadEvent: SyntheticEvent<HTMLImageElement, Event>
+  ) {}
 
   return (
     <div
@@ -33,10 +23,15 @@ export default function WallpaperPreview({ data }: { data: IWallpaperData }) {
         }
       }}
     >
-      <img src={data.uri} alt="someImage" onLoad={detectImageSize} />
+      <img
+        src={data.uri}
+        alt="someImage"
+        onLoad={onImageLoaded}
+        draggable="false"
+      />
       <BiSearchAlt className="wallpaper-preview-icon" />
       <div className="wallpaper-preview-size">
-        <h2 id={`${data.id}-size`}>Size</h2>
+        <h2>{`${data.width}x${data.height}`}</h2>
       </div>
       <div className="wallpaper-preview-downloads">
         <h2>{data.downloads}</h2> <IoMdDownload />
