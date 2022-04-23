@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { IWallpaperData } from 'renderer/types';
 import axios, { AxiosResponse } from 'axios';
 import { items } from './sampleWallpapers.json';
 

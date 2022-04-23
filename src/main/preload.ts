@@ -10,6 +10,7 @@ contextBridge.exposeInMainWorld('electron', {
     uploadFiles(lastUploadPath: string) {
       ipcRenderer.send('upload-files', lastUploadPath);
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       return new Promise((resolve, _reject) => {
         ipcRenderer.once('upload-files', (_event, response) => {
           resolve(response);

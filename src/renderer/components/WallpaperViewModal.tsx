@@ -1,4 +1,3 @@
-import { IWallpaperData } from 'renderer/types';
 import {
   BsArrowsFullscreen,
   BsDownload,
@@ -9,7 +8,7 @@ import { CgClose } from 'react-icons/cg';
 import { IoMdDownload } from 'react-icons/io';
 import { IoResizeOutline } from 'react-icons/io5';
 import GlobalAppContext from 'renderer/GlobalAppContext';
-import { SyntheticEvent, useContext } from 'react';
+import { SyntheticEvent, useCallback, useContext } from 'react';
 
 const clickOutClassnames = ['wallpaper-view', 'wallpaper-view-container'];
 
@@ -20,23 +19,23 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
 
   const currentItemIndex: number | undefined = wallpapers?.indexOf(data);
 
-  function gotoNextWallpaper() {
+  const gotoNextWallpaper = useCallback(() => {
     if (!wallpapers || !setCurrentWallpaper || currentItemIndex === undefined)
       return;
 
     if (currentItemIndex !== -1 && currentItemIndex < wallpapers.length - 1) {
       setCurrentWallpaper(wallpapers[currentItemIndex + 1]);
     }
-  }
+  }, [currentItemIndex, setCurrentWallpaper, wallpapers]);
 
-  function gotoPreviousWallpaper() {
+  const gotoPreviousWallpaper = useCallback(() => {
     if (!wallpapers || !setCurrentWallpaper || currentItemIndex === undefined)
       return;
 
     if (currentItemIndex !== -1 && currentItemIndex > 0) {
       setCurrentWallpaper(wallpapers[currentItemIndex - 1]);
     }
-  }
+  }, [currentItemIndex, setCurrentWallpaper, wallpapers]);
 
   function onAttemptClickOut(event: SyntheticEvent<HTMLElement, Event>) {
     const element = event.target as HTMLElement;
@@ -53,9 +52,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
             ? 'next-item-left'
             : 'next-item-disabled'
         }
-        onClick={() => {
-          gotoPreviousWallpaper();
-        }}
+        onClick={gotoPreviousWallpaper}
       />
       <div className="wallpaper-view-container">
         <div className="wallpaper-view-panel-top">
@@ -92,9 +89,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
             ? 'next-item-right'
             : 'next-item-disabled'
         }
-        onClick={() => {
-          gotoNextWallpaper();
-        }}
+        onClick={gotoNextWallpaper}
       />
     </div>
   );

@@ -1,11 +1,11 @@
-import { SyntheticEvent, useContext } from 'react';
+import { SyntheticEvent, useCallback, useContext, useRef } from 'react';
 import { AiOutlineCloudUpload } from 'react-icons/ai';
 import { BiSearchAlt } from 'react-icons/bi';
 import { FiSettings } from 'react-icons/fi';
 import GlobalAppContext from 'renderer/GlobalAppContext';
 
 export default function Dashboard() {
-  const { setSearchQuery } = useContext(GlobalAppContext);
+  const { setSearchQuery, setUploadedFiles } = useContext(GlobalAppContext);
 
   function onSearchChange(event: SyntheticEvent<HTMLInputElement, Event>) {
     if (setSearchQuery) {
@@ -13,43 +13,46 @@ export default function Dashboard() {
     }
   }
 
-  let isUploading = false;
+  const isUploading = useRef(false);
 
-  async function uploadFiles() {
-    if (isUploading) return;
+  const uploadFiles = useCallback(async () => {
+    if (isUploading.current) return;
 
-    isUploading = true;
+    isUploading.current = true;
     const response = await window.electron.ipcRenderer
       .uploadFiles('')
       .catch(console.log);
 
-    const images: string[] = [];
+    const images: IConvertedSystemFiles[] = [];
 
     if (!response?.result) {
-      isUploading = false;
+      isUploading.current = false;
       return;
     }
 
     if (response?.files.length) {
-      response?.files.forEach((file: Uint8Array) => {
-        images.push(
-          URL.createObjectURL(new Blob([file], { type: 'image/png' } /* (1) */))
-        );
+      response?.files.forEach((buffer: Uint8Array) => {
+        images.push({
+          uri: URL.createObjectURL(
+            new Blob([buffer], { type: 'image/png' } /* (1) */)
+          ),
+          file: buffer,
+          width: 0,
+          height: 0,
+          tags: '',
+        });
       });
     }
 
-    console.log(images);
-    isUploading = false;
-  }
+    isUploading.current = false;
+    if (setUploadedFiles) {
+      setUploadedFiles(images);
+    }
+  }, [setUploadedFiles]);
 
   return (
     <div id="dashboard">
-      <AiOutlineCloudUpload
-        className="dashboard-icon"
-        onClick={() => {
-          uploadFiles();
-        }}
-      />
+      <AiOutlineCloudUpload className="dashboard-icon" onClick={uploadFiles} />
       <div id="search">
         <BiSearchAlt />
         <input type="text" onChange={onSearchChange} />

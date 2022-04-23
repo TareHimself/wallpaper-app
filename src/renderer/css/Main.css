@@ -26,7 +26,8 @@ body {
   --primaryText: white;
   --icon-color: white;
   --icon-color-hover: rgb(46, 227, 0);
-  --scroll-color: white;
+  --scroll0: white;
+  --scroll1: white;
 }
 
 .theme-light {
@@ -35,7 +36,8 @@ body {
   --primaryText: rgb(255, 255, 255);
   --icon-color: rgb(255, 255, 255);
   --icon-color-hover: rgb(46, 227, 0);
-  --scroll-color: rgb(41, 41, 41);
+  --scroll0: rgb(41, 41, 41);
+  --scroll1: white;
 }
 
 #root {
@@ -50,18 +52,18 @@ body {
 }
 
 /* width */
-#sub-root::-webkit-scrollbar {
+::-webkit-scrollbar {
   width: 10px;
 }
 
 /* Track */
-#sub-root::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: transparent;
 }
 
 /* Handle */
-#sub-root::-webkit-scrollbar-thumb {
-  background-color: var(--scroll-color);
+::-webkit-scrollbar-thumb {
+  background-color: var(--scroll0);
   border-radius: 10px;
 }
 
@@ -235,7 +237,7 @@ p {
   transition: all 0.3s ease-in-out;
   flex-direction: row;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-evenly;
 }
 
 .wallpaper-preview-size h2,
@@ -257,10 +259,11 @@ p {
   transition: all 0.3s ease-in-out;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
 }
 
-.wallpaper-preview-downloads svg {
+.wallpaper-preview-downloads,
+.wallpaper-preview-size svg {
   font-size: 20px;
   color: var(--icon-color);
 }
@@ -372,6 +375,106 @@ p {
   object-fit: contain;
   max-width: 100%;
   border-radius: 20px;
+}
+
+.wallpaper-upload {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  background-color: rgba(32, 32, 32, 0.9);
+  transition: all 0.3s ease-in-out;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.wallpaper-uploads-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: fit-content;
+  max-width: 95%;
+  height: fit-content;
+  padding-bottom: 27px;
+  overflow-x: overlay;
+  column-gap: 30px;
+}
+
+.wallpaper-uploads-container::-webkit-scrollbar-thumb {
+  background-color: var(--scroll1);
+  border-radius: 10px;
+}
+
+.wallpaper-upload-size {
+  position: absolute;
+  display: flex;
+  top: 0%;
+  left: 0%;
+  height: 40px;
+  width: 40%;
+  border-radius: 20px 0px 20px 0px;
+  background-color: var(--level1);
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.wallpaper-upload-size h2 {
+  font-size: 20px;
+}
+
+.wallpaper-upload-size svg {
+  font-size: 20px;
+  color: var(--icon-color);
+}
+
+.upload-item {
+  display: flex;
+  position: relative;
+  height: 454px;
+  width: 400px;
+  flex-direction: column;
+}
+
+.upload-item img {
+  height: 100%;
+  aspect-ratio: 1;
+  border-radius: 20px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.tags-input {
+  height: 40px;
+  width: calc(100% - 24px);
+  padding: 0 10px;
+  display: flex;
+  border: solid 2px var(--icon-color);
+  border-radius: 25px;
+  align-items: center;
+  transition: all 0.3s ease-in-out;
+}
+
+.tags-input input {
+  font-family: 'Roboto', sans-serif;
+  font-weight: normal;
+  font-size: 20px;
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 25px;
+  border: rgba(0, 0, 0, 0);
+  color: var(--icon-color);
+  width: 100%;
+  text-align: center;
+}
+
+.tags-input input:focus {
+  outline: none;
 }
 
 @media only screen and (max-width: 1580px) {

@@ -33,6 +33,7 @@ ipcMain.on('ipc-example', async (event, args) => {
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
+// read selected images from disk
 ipcMain.on('upload-files', async (event, args) => {
   dialog
     .showOpenDialog({
@@ -43,7 +44,7 @@ ipcMain.on('upload-files', async (event, args) => {
       filters: [
         {
           name: 'wallpapers',
-          extensions: ['jpeg', 'png'],
+          extensions: ['jpeg', 'png', 'jpg'],
         },
       ],
     })
@@ -53,7 +54,7 @@ ipcMain.on('upload-files', async (event, args) => {
       } else if (result.filePaths.length === 0) {
         event.reply('upload-files', { result: false, files: [] });
       } else {
-        const readers: Promise<any>[] = [];
+        const readers: Promise<Buffer>[] = [];
 
         result.filePaths.forEach((filePath) => {
           readers.push(fs.readFile(filePath));

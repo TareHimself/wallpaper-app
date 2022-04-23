@@ -1,9 +1,9 @@
 import { SyntheticEvent, useContext } from 'react';
 import '../css/Main.css';
 import GlobalAppContext from 'renderer/GlobalAppContext';
-import { IWallpaperData } from 'renderer/types';
 import { BiSearchAlt } from 'react-icons/bi';
 import { IoMdDownload } from 'react-icons/io';
+import { IoResizeOutline } from 'react-icons/io5';
 
 export default function WallpaperPreview({ data }: { data: IWallpaperData }) {
   const { setCurrentWallpaper } = useContext(GlobalAppContext);
@@ -31,7 +31,7 @@ export default function WallpaperPreview({ data }: { data: IWallpaperData }) {
       />
       <BiSearchAlt className="wallpaper-preview-icon" />
       <div className="wallpaper-preview-size">
-        <h2>{`${data.width}x${data.height}`}</h2>
+        <h2>{`${data.width}x${data.height}`}</h2> <IoResizeOutline />
       </div>
       <div className="wallpaper-preview-downloads">
         <h2>{data.downloads}</h2> <IoMdDownload />

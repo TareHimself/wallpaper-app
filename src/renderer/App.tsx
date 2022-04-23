@@ -5,8 +5,8 @@ import './css/Main.css';
 import Dashboard from './components/Dashboard';
 import GlobalAppContext from './GlobalAppContext';
 import WallpaperViewModal from './components/WallpaperViewModal';
-import { IWallpaperData } from './types';
 import useWallpaperApi from './hooks/useWallpaperApi';
+import WallpaperUploadModal from './components/WallpaperUploadModal';
 
 export default function App() {
   const [wallpaperBeingViewed, setWallpaperBeingViewed] = useState<
@@ -15,12 +15,20 @@ export default function App() {
 
   const [query, setQuery] = useState('');
 
+  const [uploadedFiles, setUploadedFiles] = useState(
+    Array<IConvertedSystemFiles>()
+  );
+
   function setCurrentWallpaper(data: IWallpaperData | undefined) {
     setWallpaperBeingViewed(data);
   }
 
   function setSearchQuery(queryString: string) {
     setQuery(queryString);
+  }
+
+  function setUploadedFilesFunction(files: IConvertedSystemFiles[]) {
+    setUploadedFiles(files);
   }
 
   const wallpapers = useWallpaperApi();
@@ -41,6 +49,7 @@ export default function App() {
           setCurrentWallpaper,
           wallpapers: queriedWallpapers,
           setSearchQuery,
+          setUploadedFiles: setUploadedFilesFunction,
         }}
       >
         <div id="sub-root">
@@ -51,6 +60,9 @@ export default function App() {
         </div>
         {wallpaperBeingViewed !== undefined && (
           <WallpaperViewModal data={wallpaperBeingViewed} />
+        )}
+        {uploadedFiles.length > 0 && (
+          <WallpaperUploadModal uploads={uploadedFiles} />
         )}
       </GlobalAppContext.Provider>
     </Router>
