@@ -5,11 +5,11 @@ import { FiSettings } from 'react-icons/fi';
 import GlobalAppContext from 'renderer/GlobalAppContext';
 
 export default function Dashboard() {
-  const { setSearchQuery, setUploadedFiles } = useContext(GlobalAppContext);
+  const { setQuery, setUploadedFiles } = useContext(GlobalAppContext);
 
   function onSearchChange(event: SyntheticEvent<HTMLInputElement, Event>) {
-    if (setSearchQuery) {
-      setSearchQuery(event.currentTarget.value);
+    if (setQuery) {
+      setQuery(event.currentTarget.value);
     }
   }
 

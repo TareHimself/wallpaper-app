@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useState } from 'react';
+import { SyntheticEvent } from 'react';
 import { IoResizeOutline } from 'react-icons/io5';
 
 export default function WallpaperUploadItem({
@@ -42,7 +42,7 @@ export default function WallpaperUploadItem({
         />
       </div>
       <div className="wallpaper-upload-size">
-        <h2>{`${data.width}x${data.height}`}</h2>
+        <h3>{`${data.width}x${data.height}`}</h3>
         <IoResizeOutline />
       </div>
     </div>

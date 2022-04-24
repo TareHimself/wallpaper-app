@@ -7,9 +7,10 @@ import GlobalAppContext from './GlobalAppContext';
 import WallpaperViewModal from './components/WallpaperViewModal';
 import useWallpaperApi from './hooks/useWallpaperApi';
 import WallpaperUploadModal from './components/WallpaperUploadModal';
+import useSettings from './hooks/useSettings';
 
 export default function App() {
-  const [wallpaperBeingViewed, setWallpaperBeingViewed] = useState<
+  const [currentWallpaper, setCurrentWallpaper] = useState<
     IWallpaperData | undefined
   >(undefined);
 
@@ -18,25 +19,18 @@ export default function App() {
   const [uploadedFiles, setUploadedFiles] = useState(
     Array<IConvertedSystemFiles>()
   );
+  const [wallpapers, setWallpapers] = useWallpaperApi();
+  const [settings, setSettings] = useSettings();
 
-  function setCurrentWallpaper(data: IWallpaperData | undefined) {
-    setWallpaperBeingViewed(data);
-  }
-
-  function setSearchQuery(queryString: string) {
-    setQuery(queryString);
-  }
-
-  function setUploadedFilesFunction(files: IConvertedSystemFiles[]) {
-    setUploadedFiles(files);
-  }
-
-  const wallpapers = useWallpaperApi();
   const queryToLow = query.toLowerCase();
 
   const queriedWallpapers = query.length
     ? wallpapers.filter((wallpaper) => wallpaper.tags.includes(queryToLow))
     : wallpapers;
+
+  // eslint-disable-next-line no-empty
+  if (settings) {
+  }
 
   useEffect(() => {
     document.body.classList.add('theme-light');
@@ -48,8 +42,10 @@ export default function App() {
         value={{
           setCurrentWallpaper,
           wallpapers: queriedWallpapers,
-          setSearchQuery,
-          setUploadedFiles: setUploadedFilesFunction,
+          setQuery,
+          setUploadedFiles,
+          setWallpapers,
+          setSettings,
         }}
       >
         <div id="sub-root">
@@ -58,8 +54,8 @@ export default function App() {
             <Route path="/" element={<Home />} />
           </Routes>
         </div>
-        {wallpaperBeingViewed !== undefined && (
-          <WallpaperViewModal data={wallpaperBeingViewed} />
+        {currentWallpaper !== undefined && (
+          <WallpaperViewModal data={currentWallpaper} />
         )}
         {uploadedFiles.length > 0 && (
           <WallpaperUploadModal uploads={uploadedFiles} />

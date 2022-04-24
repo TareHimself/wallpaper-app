@@ -85,7 +85,7 @@ h2 {
 
 h3 {
   font-family: 'Roboto', sans-serif;
-  font-weight: lighter;
+  font-weight: normal;
   font-size: 20px;
   display: block;
   color: var(--primaryText);
@@ -240,10 +240,6 @@ p {
   justify-content: space-evenly;
 }
 
-.wallpaper-preview-size h2,
-.wallpaper-preview-downloads h2 {
-  font-size: 20px;
-}
 
 .wallpaper-preview-downloads {
   position: absolute;
@@ -268,9 +264,6 @@ p {
   color: var(--icon-color);
 }
 
-.wallpaper-preview-info-panel div h2 {
-  font-size: 20px;
-}
 
 .wallpaper-view {
   position: absolute;
@@ -368,9 +361,9 @@ p {
   color: var(--icon-color-hover);
 }
 
-#wallpaperInView {
+#wallpaper-in-view {
   max-height: 70%;
-  height: inherit;
+  height: min-content;
   width: fit-content;
   object-fit: contain;
   max-width: 100%;
@@ -425,13 +418,45 @@ p {
   justify-content: space-around;
 }
 
-.wallpaper-upload-size h2 {
-  font-size: 20px;
-}
 
 .wallpaper-upload-size svg {
   font-size: 20px;
   color: var(--icon-color);
+}
+
+.wallpaper-upload-buttons {
+  position: absolute;
+  display: flex;
+  top: 85%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 90px;
+  width: 70%;
+  background-color: var(--level1);
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  flex-direction: row;
+  align-items: center;
+  border-radius: 20px;
+  justify-content: space-around;
+}
+
+.wallpaper-upload-buttons button {
+  position: relative;
+  display: flex;
+  background: transparent;
+  border: 2px solid var(--icon-color);
+  padding: 0;
+  border-radius: 20px;
+  height: 55%;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+}
+
+.wallpaper-upload-buttons button h2 {
+  position: relative;
+  margin: 0;
 }
 
 .upload-item {

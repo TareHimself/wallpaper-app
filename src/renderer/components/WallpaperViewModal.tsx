@@ -66,7 +66,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
         <img
           src={data.uri}
           alt="wallpaper"
-          id="wallpaperInView"
+          id="wallpaper-in-view"
           draggable="false"
         />
         <div className="wallpaper-view-panel-bottom">

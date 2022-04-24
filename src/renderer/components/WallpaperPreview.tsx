@@ -31,10 +31,10 @@ export default function WallpaperPreview({ data }: { data: IWallpaperData }) {
       />
       <BiSearchAlt className="wallpaper-preview-icon" />
       <div className="wallpaper-preview-size">
-        <h2>{`${data.width}x${data.height}`}</h2> <IoResizeOutline />
+        <h3>{`${data.width}x${data.height}`}</h3> <IoResizeOutline />
       </div>
       <div className="wallpaper-preview-downloads">
-        <h2>{data.downloads}</h2> <IoMdDownload />
+        <h3>{data.downloads}</h3> <IoMdDownload />
       </div>
     </div>
   );

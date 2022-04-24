@@ -17,23 +17,23 @@ declare global {
     tags: string;
   }
 
-  interface SetWallpaperFunction {
-    (data: IWallpaperData | undefined): void;
-  }
-
-  interface SetSearchQueryFunction {
-    (queryString: string): void;
-  }
-
-  interface SetUploadedFilesFunction {
-    (files: IConvertedSystemFiles[]): void;
+  interface IApplicationSettings {
+    defaultDownloadPath: string;
+    maxItemsPerPage: number;
+    bShouldUseFullscreen: boolean;
   }
 
   interface IGlobalContext {
-    setCurrentWallpaper: SetWallpaperFunction;
+    setCurrentWallpaper: React.Dispatch<
+      React.SetStateAction<IWallpaperData | undefined>
+    >;
     wallpapers: IWallpaperData[];
-    setSearchQuery: SetSearchQueryFunction;
-    setUploadedFiles: SetUploadedFilesFunction;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    setUploadedFiles: React.Dispatch<
+      React.SetStateAction<IConvertedSystemFiles[]>
+    >;
+    setWallpapers: React.Dispatch<React.SetStateAction<IWallpaperData[]>>;
+    setSettings: (settings: IApplicationSettings) => void;
   }
 
   interface Window {
@@ -41,6 +41,8 @@ declare global {
       ipcRenderer: {
         myPing(): void;
         uploadFiles(lastUploadPath: string): Promise<ISystemFilesResult>;
+        loadSettings(): Promise<IApplicationSettings>;
+        saveSettings(settings: IApplicationSettings): Promise<boolean>;
         on(
           channel: string,
           func: (...args: unknown[]) => void

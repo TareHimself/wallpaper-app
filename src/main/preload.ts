@@ -11,8 +11,28 @@ contextBridge.exposeInMainWorld('electron', {
       ipcRenderer.send('upload-files', lastUploadPath);
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      return new Promise((resolve, _reject) => {
+      return new Promise<ISystemFilesResult>((resolve, _reject) => {
         ipcRenderer.once('upload-files', (_event, response) => {
+          resolve(response);
+        });
+      });
+    },
+    loadSettings() {
+      ipcRenderer.send('load-settings', '');
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      return new Promise<IApplicationSettings>((resolve, _reject) => {
+        ipcRenderer.once('load-settings', (_event, response) => {
+          resolve(response);
+        });
+      });
+    },
+    saveSettings(settings: IApplicationSettings) {
+      ipcRenderer.send('save-settings', settings);
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      return new Promise<boolean>((resolve, _reject) => {
+        ipcRenderer.once('save-settings', (_event, response) => {
           resolve(response);
         });
       });

@@ -16,6 +16,7 @@ import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
 const fs = require('fs').promises;
+const fsSync = require('fs');
 
 export default class AppUpdater {
   constructor() {
@@ -31,41 +32,6 @@ ipcMain.on('ipc-example', async (event, args) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(args));
   event.reply('ipc-example', msgTemplate('pong'));
-});
-
-// read selected images from disk
-ipcMain.on('upload-files', async (event, args) => {
-  dialog
-    .showOpenDialog({
-      title: 'Select the wallpapers to upload',
-      properties: ['openFile', 'multiSelections'],
-      defaultPath: args,
-      buttonLabel: 'Upload',
-      filters: [
-        {
-          name: 'wallpapers',
-          extensions: ['jpeg', 'png', 'jpg'],
-        },
-      ],
-    })
-    .then(async (result) => {
-      if (result.canceled) {
-        event.reply('upload-files', { result: false, files: [] });
-      } else if (result.filePaths.length === 0) {
-        event.reply('upload-files', { result: false, files: [] });
-      } else {
-        const readers: Promise<Buffer>[] = [];
-
-        result.filePaths.forEach((filePath) => {
-          readers.push(fs.readFile(filePath));
-        });
-
-        const filesLoaded = await Promise.all(readers);
-
-        event.reply('upload-files', { result: true, files: filesLoaded });
-      }
-    })
-    .catch(console.log);
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -118,6 +84,7 @@ const createWindow = async () => {
     },
   });
 
+  console.log(app.getAppPath());
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
@@ -174,3 +141,78 @@ app
     });
   })
   .catch(console.log);
+
+// read selected images from disk
+ipcMain.on('upload-files', async (event, args) => {
+  dialog
+    .showOpenDialog({
+      title: 'Select the wallpapers to upload',
+      properties: ['openFile', 'multiSelections'],
+      defaultPath: args,
+      buttonLabel: 'Upload',
+      filters: [
+        {
+          name: 'wallpapers',
+          extensions: ['jpeg', 'png', 'jpg'],
+        },
+      ],
+    })
+    .then(async (result) => {
+      if (result.canceled) {
+        event.reply('upload-files', { result: false, files: [] });
+      } else if (result.filePaths.length === 0) {
+        event.reply('upload-files', { result: false, files: [] });
+      } else {
+        const readers: Promise<Buffer>[] = [];
+
+        result.filePaths.forEach((filePath) => {
+          readers.push(fs.readFile(filePath));
+        });
+
+        const filesLoaded = await Promise.all(readers);
+
+        event.reply('upload-files', { result: true, files: filesLoaded });
+      }
+    })
+    .catch(console.log);
+});
+
+// read selected images from disk
+ipcMain.on('save-settings', async (event, args) => {
+  fs.writeFile(
+    path.join(app.getAppPath(), 'settings.json'),
+    JSON.stringify(args, null, 3)
+  )
+    .then(() => {
+      event.reply('save-settings', true);
+    })
+    .catch(console.log);
+});
+
+// read selected images from disk
+ipcMain.on('load-settings', async (event, args) => {
+  if (fsSync.existsSync(path.join(app.getAppPath(), 'settings.json'))) {
+    fs.readFile(path.join(app.getAppPath(), 'settings.json'))
+      .then((file: string) => {
+        const settingsAsJson = JSON.parse(file);
+
+        event.reply('load-settings', settingsAsJson);
+      })
+      .catch(console.log);
+  } else {
+    const defaultSettings: IApplicationSettings = {
+      defaultDownloadPath: '',
+      maxItemsPerPage: 12,
+      bShouldUseFullscreen: true,
+    };
+
+    fs.writeFile(
+      path.join(app.getAppPath(), 'settings.json'),
+      JSON.stringify(defaultSettings, null, 3)
+    )
+      .then(() => {
+        event.reply('load-settings', defaultSettings);
+      })
+      .catch(console.log);
+  }
+});
