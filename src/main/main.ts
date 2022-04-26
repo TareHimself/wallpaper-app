@@ -9,14 +9,25 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  shell,
+  ipcMain,
+  dialog,
+  safeStorage,
+} from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import axios from 'axios';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
 const fs = require('fs').promises;
 const fsSync = require('fs');
+const express = require('express');
+
+const authServer = express();
 
 export default class AppUpdater {
   constructor() {
@@ -82,9 +93,9 @@ const createWindow = async () => {
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
+    autoHideMenuBar: true,
   });
 
-  console.log(app.getAppPath());
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
@@ -105,6 +116,8 @@ const createWindow = async () => {
   if (process.env.NODE_ENV === 'development') {
     const menuBuilder = new MenuBuilder(mainWindow);
     menuBuilder.buildMenu();
+  } else {
+    mainWindow.removeMenu();
   }
 
   // Open urls in the user's browser
@@ -189,8 +202,7 @@ ipcMain.on('save-settings', async (event, args) => {
     .catch(console.log);
 });
 
-// read selected images from disk
-ipcMain.on('load-settings', async (event, args) => {
+ipcMain.on('load-settings', async (event, _args) => {
   if (fsSync.existsSync(path.join(app.getAppPath(), 'settings.json'))) {
     fs.readFile(path.join(app.getAppPath(), 'settings.json'))
       .then((file: string) => {
@@ -204,6 +216,7 @@ ipcMain.on('load-settings', async (event, args) => {
       defaultDownloadPath: '',
       maxItemsPerPage: 12,
       bShouldUseFullscreen: true,
+      bIsLoggedIn: false,
     };
 
     fs.writeFile(
@@ -215,4 +228,57 @@ ipcMain.on('load-settings', async (event, args) => {
       })
       .catch(console.log);
   }
+});
+
+ipcMain.on('open-login', async (event, _args) => {
+  const url =
+    'https://discord.com/api/oauth2/authorize?client_id=967602114350174348&redirect_uri=http%3A%2F%2Flocalhost%3A49153%2Fauth&response_type=code&scope=identify';
+
+  let authServerHandle: any;
+  const codeRecieved = '';
+  authServer.get('/auth', async (request: any, response: any) => {
+    response.send('You may now close this window');
+    if (authServerHandle) {
+      await authServerHandle.close();
+      authServerHandle = undefined;
+
+      const data = new URLSearchParams({
+        client_id: '',
+        client_secret: '',
+        grant_type: 'authorization_code',
+        code: request.query.code,
+        redirect_uri: 'http://localhost:49153/auth',
+      });
+
+      const discordResponse = await axios.post(
+        'https://discordapp.com/api/oauth2/token',
+        data
+      );
+
+      const discordAuthData = discordResponse.data;
+      const refreshDate = new Date();
+      refreshDate.setSeconds(
+        new Date().getUTCSeconds() + discordAuthData.expires_in
+      );
+
+      discordAuthData.refresh_at = refreshDate.toUTCString();
+
+      const encryptedData = safeStorage.encryptString(
+        JSON.stringify(discordAuthData)
+      );
+
+      fs.writeFile(
+        path.join(app.getAppPath(), 'DoNotShare.wallpaper'),
+        encryptedData
+      )
+        .then(() => {
+          event.reply('open-login', discordAuthData);
+        })
+        .catch(console.log);
+    }
+  });
+
+  authServerHandle = authServer.listen(49153);
+
+  require('electron').shell.openExternal(url);
 });
