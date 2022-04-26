@@ -235,7 +235,6 @@ ipcMain.on('open-login', async (event, _args) => {
     'https://discord.com/api/oauth2/authorize?client_id=967602114350174348&redirect_uri=http%3A%2F%2Flocalhost%3A49153%2Fauth&response_type=code&scope=identify';
 
   let authServerHandle: any;
-  const codeRecieved = '';
   authServer.get('/auth', async (request: any, response: any) => {
     response.send('You may now close this window');
     if (authServerHandle) {

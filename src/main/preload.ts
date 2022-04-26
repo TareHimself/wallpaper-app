@@ -37,6 +37,14 @@ contextBridge.exposeInMainWorld('electron', {
         });
       });
     },
+    openLogin() {
+      ipcRenderer.send('open-login', '');
+      return new Promise<IDiscordLoginInfo>((resolve, _reject) => {
+        ipcRenderer.once('open-login', (_event, response) => {
+          resolve(response);
+        });
+      });
+    },
     on(channel: string, func: (...args: unknown[]) => void) {
       if (validChannels.includes(channel)) {
         const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>

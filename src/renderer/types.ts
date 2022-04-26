@@ -1,4 +1,27 @@
 declare global {
+  interface IUserAccountData {
+    id: string;
+
+    avatar: string;
+
+    nickname: string;
+
+    security_level: string;
+
+    downloads: string;
+
+    options: string;
+  }
+
+  interface IDiscordLoginInfo {
+    access_token: string;
+    expires_in: number;
+    refresh_token: string;
+    scope: string;
+    token_type: string;
+    refresh_at: string;
+  }
+
   interface IWallpaperData {
     id: string;
 
@@ -21,6 +44,7 @@ declare global {
     defaultDownloadPath: string;
     maxItemsPerPage: number;
     bShouldUseFullscreen: boolean;
+    bIsLoggedIn: boolean;
   }
 
   interface IGlobalContext {
@@ -33,6 +57,7 @@ declare global {
       React.SetStateAction<IConvertedSystemFiles[]>
     >;
     setWallpapers: React.Dispatch<React.SetStateAction<IWallpaperData[]>>;
+    settings: IApplicationSettings | undefined;
     setSettings: (settings: IApplicationSettings) => void;
   }
 
@@ -43,6 +68,7 @@ declare global {
         uploadFiles(lastUploadPath: string): Promise<ISystemFilesResult>;
         loadSettings(): Promise<IApplicationSettings>;
         saveSettings(settings: IApplicationSettings): Promise<boolean>;
+        openLogin(): Promise<IDiscordLoginInfo>;
         on(
           channel: string,
           func: (...args: unknown[]) => void

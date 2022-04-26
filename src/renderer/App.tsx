@@ -8,6 +8,7 @@ import WallpaperViewModal from './components/WallpaperViewModal';
 import useWallpaperApi from './hooks/useWallpaperApi';
 import WallpaperUploadModal from './components/WallpaperUploadModal';
 import useSettings from './hooks/useSettings';
+import Settings from './components/Settings';
 
 export default function App() {
   const [currentWallpaper, setCurrentWallpaper] = useState<
@@ -20,7 +21,14 @@ export default function App() {
     Array<IConvertedSystemFiles>()
   );
   const [wallpapers, setWallpapers] = useWallpaperApi();
+
   const [settings, setSettings] = useSettings();
+
+  const [shouldShowSettings, setShowSettings] = useState(true);
+
+  const [userData, setUserData] = useState<IUserAccountData | undefined>(
+    undefined
+  );
 
   const queryToLow = query.toLowerCase();
 
@@ -33,7 +41,7 @@ export default function App() {
   }
 
   useEffect(() => {
-    document.body.classList.add('theme-light');
+    document.body.classList.add('theme-dark');
   });
 
   return (
@@ -45,15 +53,24 @@ export default function App() {
           setQuery,
           setUploadedFiles,
           setWallpapers,
+          settings,
           setSettings,
         }}
       >
         <div id="sub-root">
-          <Dashboard />
           <Routes>
             <Route path="/" element={<Home />} />
           </Routes>
         </div>
+        <Dashboard setShowSettings={setShowSettings} />
+        <Settings
+          activeClass={
+            shouldShowSettings
+              ? 'wallpaper-settings-open'
+              : 'wallpaper-settings-closed'
+          }
+          setShowSettings={setShowSettings}
+        />
         {currentWallpaper !== undefined && (
           <WallpaperViewModal data={currentWallpaper} />
         )}

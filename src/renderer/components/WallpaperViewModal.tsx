@@ -8,7 +8,7 @@ import { CgClose } from 'react-icons/cg';
 import { IoMdDownload } from 'react-icons/io';
 import { IoResizeOutline } from 'react-icons/io5';
 import GlobalAppContext from 'renderer/GlobalAppContext';
-import { SyntheticEvent, useCallback, useContext } from 'react';
+import { SyntheticEvent, useCallback, useContext, useState } from 'react';
 
 const clickOutClassnames = ['wallpaper-view', 'wallpaper-view-container'];
 
@@ -16,6 +16,8 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
   const { setCurrentWallpaper } = useContext(GlobalAppContext);
 
   const { wallpapers } = useContext(GlobalAppContext);
+
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   const currentItemIndex: number | undefined = wallpapers?.indexOf(data);
 
@@ -78,7 +80,11 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
             }}
           />
           <BsDownload />
-          <BsArrowsFullscreen />
+          <BsArrowsFullscreen
+            onClick={() => {
+              setIsFullscreen(true);
+            }}
+          />
         </div>
       </div>
 
@@ -91,6 +97,20 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
         }
         onClick={gotoNextWallpaper}
       />
+      {isFullscreen && (
+        <div className="wallpaper-view-fullscreen">
+          <img
+            src={data.uri}
+            alt="wallpaper"
+            id="wallpaper-in-view-fullscreen"
+            draggable="false"
+            onDoubleClick={() => {
+              setIsFullscreen(false);
+            }}
+          />
+          <h2>Double Click on the image to exit full-screen</h2>
+        </div>
+      )}
     </div>
   );
 }

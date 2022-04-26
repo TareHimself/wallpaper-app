@@ -4,7 +4,11 @@ import { BiSearchAlt } from 'react-icons/bi';
 import { FiSettings } from 'react-icons/fi';
 import GlobalAppContext from 'renderer/GlobalAppContext';
 
-export default function Dashboard() {
+export default function Dashboard({
+  setShowSettings,
+}: {
+  setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const { setQuery, setUploadedFiles } = useContext(GlobalAppContext);
 
   function onSearchChange(event: SyntheticEvent<HTMLInputElement, Event>) {
@@ -57,7 +61,12 @@ export default function Dashboard() {
         <BiSearchAlt />
         <input type="text" onChange={onSearchChange} />
       </div>
-      <FiSettings className="dashboard-icon" />
+      <FiSettings
+        className="dashboard-icon"
+        onClick={() => {
+          setShowSettings(true);
+        }}
+      />
     </div>
   );
 }
