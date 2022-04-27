@@ -9,7 +9,7 @@ export default function Settings({
   activeClass: string;
   setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const { settings } = useContext(GlobalAppContext);
+  const { settings, setDiscordAuthData } = useContext(GlobalAppContext);
 
   const [userData, setUserData] = useState<IUserAccountData | undefined>(
     undefined
@@ -18,12 +18,14 @@ export default function Settings({
   const startLogin = useCallback(() => {
     window.electron.ipcRenderer
       .openLogin()
-      // eslint-disable-next-line promise/always-return
-      .then((loginInfo) => {
-        console.log(loginInfo);
+      .then((loginResponse: ILoginResponse) => {
+        // eslint-disable-next-line promise/always-return
+        if (setDiscordAuthData) {
+          setDiscordAuthData(loginResponse.discordAuthData);
+        }
       })
       .catch(console.log);
-  }, []);
+  }, [setDiscordAuthData]);
 
   return (
     <div className={activeClass}>

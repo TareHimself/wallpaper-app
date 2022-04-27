@@ -13,7 +13,7 @@ declare global {
     options: string;
   }
 
-  interface IDiscordLoginInfo {
+  interface IDiscordAuthData {
     access_token: string;
     expires_in: number;
     refresh_token: string;
@@ -59,6 +59,14 @@ declare global {
     setWallpapers: React.Dispatch<React.SetStateAction<IWallpaperData[]>>;
     settings: IApplicationSettings | undefined;
     setSettings: (settings: IApplicationSettings) => void;
+    setDiscordAuthData: React.Dispatch<
+      React.SetStateAction<IDiscordAuthData | undefined>
+    >;
+  }
+
+  interface ILoginResponse {
+    token: string;
+    discordAuthData: IDiscordAuthData;
   }
 
   interface Window {
@@ -68,7 +76,7 @@ declare global {
         uploadFiles(lastUploadPath: string): Promise<ISystemFilesResult>;
         loadSettings(): Promise<IApplicationSettings>;
         saveSettings(settings: IApplicationSettings): Promise<boolean>;
-        openLogin(): Promise<IDiscordLoginInfo>;
+        openLogin(): Promise<ILoginResponse>;
         on(
           channel: string,
           func: (...args: unknown[]) => void

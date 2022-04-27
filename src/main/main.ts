@@ -20,14 +20,17 @@ import {
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import axios from 'axios';
+import { io, Socket } from 'socket.io-client';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const express = require('express');
+const macaddress = require('macaddress');
 
-const authServer = express();
+let devicePhysicalAddress = '';
+let socket: Socket;
 
 export default class AppUpdater {
   constructor() {
@@ -71,9 +74,18 @@ const installExtensions = async () => {
 };
 
 const createWindow = async () => {
+  devicePhysicalAddress = await macaddress.one();
   if (isDevelopment) {
     await installExtensions();
   }
+
+  socket = io('ws://localhost:3001/', {
+    reconnectionDelayMax: 10000,
+  });
+
+  socket.on('connect', () => {
+    socket.emit('auth', devicePhysicalAddress);
+  });
 
   const RESOURCES_PATH = app.isPackaged
     ? path.join(process.resourcesPath, 'assets')
@@ -231,37 +243,20 @@ ipcMain.on('load-settings', async (event, _args) => {
 });
 
 ipcMain.on('open-login', async (event, _args) => {
-  const url =
-    'https://discord.com/api/oauth2/authorize?client_id=967602114350174348&redirect_uri=http%3A%2F%2Flocalhost%3A49153%2Fauth&response_type=code&scope=identify';
+  const url = `https://discord.com/api/oauth2/authorize?client_id=967602114350174348&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2Fauth&response_type=code&scope=identify&state=${devicePhysicalAddress}`;
 
-  let authServerHandle: any;
+  socket.on('open-login', (response: ILoginResponse) => {
+    event.reply('open-login', response);
+  });
+
+  require('electron').shell.openExternal(url);
+
+  /* let authServerHandle: any;
   authServer.get('/auth', async (request: any, response: any) => {
     response.send('You may now close this window');
     if (authServerHandle) {
       await authServerHandle.close();
       authServerHandle = undefined;
-
-      const data = new URLSearchParams({
-        client_id: '',
-        client_secret: '',
-        grant_type: 'authorization_code',
-        code: request.query.code,
-        redirect_uri: 'http://localhost:49153/auth',
-      });
-
-      const discordResponse = await axios.post(
-        'https://discordapp.com/api/oauth2/token',
-        data
-      );
-
-      const discordAuthData = discordResponse.data;
-      const refreshDate = new Date();
-      refreshDate.setSeconds(
-        new Date().getUTCSeconds() + discordAuthData.expires_in
-      );
-
-      discordAuthData.refresh_at = refreshDate.toUTCString();
-
       const encryptedData = safeStorage.encryptString(
         JSON.stringify(discordAuthData)
       );
@@ -277,7 +272,5 @@ ipcMain.on('open-login', async (event, _args) => {
     }
   });
 
-  authServerHandle = authServer.listen(49153);
-
-  require('electron').shell.openExternal(url);
+  authServerHandle = authServer.listen(49153); */
 });

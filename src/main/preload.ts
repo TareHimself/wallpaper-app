@@ -39,7 +39,7 @@ contextBridge.exposeInMainWorld('electron', {
     },
     openLogin() {
       ipcRenderer.send('open-login', '');
-      return new Promise<IDiscordLoginInfo>((resolve, _reject) => {
+      return new Promise<ILoginResponse>((resolve, _reject) => {
         ipcRenderer.once('open-login', (_event, response) => {
           resolve(response);
         });

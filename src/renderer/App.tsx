@@ -30,6 +30,10 @@ export default function App() {
     undefined
   );
 
+  const [discordAuthData, setDiscordAuthData] = useState<
+    IDiscordAuthData | undefined
+  >(undefined);
+
   const queryToLow = query.toLowerCase();
 
   const queriedWallpapers = query.length
@@ -55,6 +59,7 @@ export default function App() {
           setWallpapers,
           settings,
           setSettings,
+          setDiscordAuthData,
         }}
       >
         <div id="sub-root">
