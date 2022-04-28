@@ -24,15 +24,9 @@ export default function App() {
 
   const [settings, setSettings] = useSettings();
 
-  const [shouldShowSettings, setShowSettings] = useState(true);
+  const [shouldShowSettings, setShowSettings] = useState(false);
 
-  const [userData, setUserData] = useState<IUserAccountData | undefined>(
-    undefined
-  );
-
-  const [discordAuthData, setDiscordAuthData] = useState<
-    IDiscordAuthData | undefined
-  >(undefined);
+  const [loginData, setLoginData] = useState<ILoginData | undefined>(undefined);
 
   const queryToLow = query.toLowerCase();
 
@@ -46,7 +40,9 @@ export default function App() {
 
   useEffect(() => {
     document.body.classList.add('theme-dark');
-  });
+  }, []);
+
+  console.log('rendered');
 
   return (
     <Router>
@@ -59,7 +55,9 @@ export default function App() {
           setWallpapers,
           settings,
           setSettings,
-          setDiscordAuthData,
+          loginData,
+          setLoginData,
+          setShowSettings,
         }}
       >
         <div id="sub-root">
@@ -67,14 +65,13 @@ export default function App() {
             <Route path="/" element={<Home />} />
           </Routes>
         </div>
-        <Dashboard setShowSettings={setShowSettings} />
+        <Dashboard />
         <Settings
           activeClass={
             shouldShowSettings
               ? 'wallpaper-settings-open'
               : 'wallpaper-settings-closed'
           }
-          setShowSettings={setShowSettings}
         />
         {currentWallpaper !== undefined && (
           <WallpaperViewModal data={currentWallpaper} />

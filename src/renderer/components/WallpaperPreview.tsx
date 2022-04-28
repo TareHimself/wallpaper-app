@@ -5,9 +5,15 @@ import { BiSearchAlt } from 'react-icons/bi';
 import { IoMdDownload } from 'react-icons/io';
 import { IoResizeOutline } from 'react-icons/io5';
 
-export default function WallpaperPreview({ data }: { data: IWallpaperData }) {
-  const { setCurrentWallpaper } = useContext(GlobalAppContext);
-
+export default function WallpaperPreview({
+  data,
+  setCurrentWallpaper,
+}: {
+  data: IWallpaperData;
+  setCurrentWallpaper:
+    | React.Dispatch<React.SetStateAction<IWallpaperData | undefined>>
+    | undefined;
+}) {
   function onImageLoaded(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _imageLoadEvent: SyntheticEvent<HTMLImageElement, Event>

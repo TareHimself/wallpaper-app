@@ -39,8 +39,40 @@ contextBridge.exposeInMainWorld('electron', {
     },
     openLogin() {
       ipcRenderer.send('open-login', '');
-      return new Promise<ILoginResponse>((resolve, _reject) => {
+      return new Promise<ILoginData>((resolve, _reject) => {
         ipcRenderer.once('open-login', (_event, response) => {
+          resolve(response);
+        });
+      });
+    },
+    getLogin() {
+      ipcRenderer.send('get-login', '');
+      return new Promise<ILoginData | undefined>((resolve, _reject) => {
+        ipcRenderer.once('get-login', (_event, response) => {
+          resolve(response);
+        });
+      });
+    },
+    updateLogin(data: ILoginData) {
+      ipcRenderer.send('update-login', data);
+      return new Promise<void>((resolve, _reject) => {
+        ipcRenderer.once('update-login', (_event, response) => {
+          resolve(response);
+        });
+      });
+    },
+    logout() {
+      ipcRenderer.send('logout', '');
+      return new Promise<void>((resolve, _reject) => {
+        ipcRenderer.once('logout', (_event, response) => {
+          resolve(response);
+        });
+      });
+    },
+    uploadImages(images: IConvertedSystemFiles[]) {
+      ipcRenderer.send('upload-images', images);
+      return new Promise<IWallpaperData[]>((resolve, _reject) => {
+        ipcRenderer.once('upload-images', (_event, response) => {
           resolve(response);
         });
       });

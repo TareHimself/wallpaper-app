@@ -22,6 +22,15 @@ declare global {
     refresh_at: string;
   }
 
+  interface IDiscordUserData {
+    id: string;
+    username: string;
+    avatar: string;
+    avatar_decoration: unknown;
+    discriminator: string;
+    public_flags: number;
+  }
+
   interface IWallpaperData {
     id: string;
 
@@ -59,14 +68,16 @@ declare global {
     setWallpapers: React.Dispatch<React.SetStateAction<IWallpaperData[]>>;
     settings: IApplicationSettings | undefined;
     setSettings: (settings: IApplicationSettings) => void;
-    setDiscordAuthData: React.Dispatch<
-      React.SetStateAction<IDiscordAuthData | undefined>
-    >;
+    loginData: ILoginData | undefined;
+    setLoginData: React.Dispatch<React.SetStateAction<ILoginData | undefined>>;
+    setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
   }
 
-  interface ILoginResponse {
+  interface ILoginData {
     token: string;
     discordAuthData: IDiscordAuthData;
+    discordUserData: IDiscordUserData;
+    userAccountData: IUserAccountData;
   }
 
   interface Window {
@@ -76,7 +87,13 @@ declare global {
         uploadFiles(lastUploadPath: string): Promise<ISystemFilesResult>;
         loadSettings(): Promise<IApplicationSettings>;
         saveSettings(settings: IApplicationSettings): Promise<boolean>;
-        openLogin(): Promise<ILoginResponse>;
+        openLogin(): Promise<ILoginData>;
+        getLogin(): Promise<ILoginData | undefined>;
+        updateLogin(data: ILoginData): Promise<void>;
+        logout(): Promise<void>;
+        uploadImages(
+          images: IConvertedSystemFiles[]
+        ): Promise<IWallpaperData[]>;
         on(
           channel: string,
           func: (...args: unknown[]) => void

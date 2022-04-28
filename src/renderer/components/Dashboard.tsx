@@ -4,12 +4,9 @@ import { BiSearchAlt } from 'react-icons/bi';
 import { FiSettings } from 'react-icons/fi';
 import GlobalAppContext from 'renderer/GlobalAppContext';
 
-export default function Dashboard({
-  setShowSettings,
-}: {
-  setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
-  const { setQuery, setUploadedFiles } = useContext(GlobalAppContext);
+export default function Dashboard() {
+  const { setQuery, setUploadedFiles, loginData, setShowSettings } =
+    useContext(GlobalAppContext);
 
   function onSearchChange(event: SyntheticEvent<HTMLInputElement, Event>) {
     if (setQuery) {
@@ -20,6 +17,12 @@ export default function Dashboard({
   const isUploading = useRef(false);
 
   const uploadFiles = useCallback(async () => {
+    if (!loginData) {
+      if (setShowSettings) {
+        setShowSettings(true);
+      }
+      return;
+    }
     if (isUploading.current) return;
 
     isUploading.current = true;
@@ -52,7 +55,7 @@ export default function Dashboard({
     if (setUploadedFiles) {
       setUploadedFiles(images);
     }
-  }, [setUploadedFiles]);
+  }, [loginData, setShowSettings, setUploadedFiles]);
 
   return (
     <div id="dashboard">
@@ -64,7 +67,9 @@ export default function Dashboard({
       <FiSettings
         className="dashboard-icon"
         onClick={() => {
-          setShowSettings(true);
+          if (setShowSettings) {
+            setShowSettings(true);
+          }
         }}
       />
     </div>

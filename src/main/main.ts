@@ -19,14 +19,12 @@ import {
 } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import axios from 'axios';
 import { io, Socket } from 'socket.io-client';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
 const fs = require('fs').promises;
 const fsSync = require('fs');
-const express = require('express');
 const macaddress = require('macaddress');
 
 let devicePhysicalAddress = '';
@@ -41,6 +39,13 @@ export default class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+
+const loginDataPath = path.join(
+  app.getPath('userData'),
+  'loginData.wallpaperz'
+);
+
+const settingsPath = path.join(app.getPath('userData'), 'settings.json');
 
 ipcMain.on('ipc-example', async (event, args) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
@@ -84,7 +89,7 @@ const createWindow = async () => {
   });
 
   socket.on('connect', () => {
-    socket.emit('auth', devicePhysicalAddress);
+    socket.emit('client-identify', devicePhysicalAddress);
   });
 
   const RESOURCES_PATH = app.isPackaged
@@ -204,10 +209,7 @@ ipcMain.on('upload-files', async (event, args) => {
 
 // read selected images from disk
 ipcMain.on('save-settings', async (event, args) => {
-  fs.writeFile(
-    path.join(app.getAppPath(), 'settings.json'),
-    JSON.stringify(args, null, 3)
-  )
+  fs.writeFile(settingsPath, JSON.stringify(args, null, 3))
     .then(() => {
       event.reply('save-settings', true);
     })
@@ -215,8 +217,8 @@ ipcMain.on('save-settings', async (event, args) => {
 });
 
 ipcMain.on('load-settings', async (event, _args) => {
-  if (fsSync.existsSync(path.join(app.getAppPath(), 'settings.json'))) {
-    fs.readFile(path.join(app.getAppPath(), 'settings.json'))
+  if (fsSync.existsSync(settingsPath)) {
+    fs.readFile(settingsPath)
       .then((file: string) => {
         const settingsAsJson = JSON.parse(file);
 
@@ -231,10 +233,7 @@ ipcMain.on('load-settings', async (event, _args) => {
       bIsLoggedIn: false,
     };
 
-    fs.writeFile(
-      path.join(app.getAppPath(), 'settings.json'),
-      JSON.stringify(defaultSettings, null, 3)
-    )
+    fs.writeFile(settingsPath, JSON.stringify(defaultSettings, null, 3))
       .then(() => {
         event.reply('load-settings', defaultSettings);
       })
@@ -245,32 +244,46 @@ ipcMain.on('load-settings', async (event, _args) => {
 ipcMain.on('open-login', async (event, _args) => {
   const url = `https://discord.com/api/oauth2/authorize?client_id=967602114350174348&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2Fauth&response_type=code&scope=identify&state=${devicePhysicalAddress}`;
 
-  socket.on('open-login', (response: ILoginResponse) => {
-    event.reply('open-login', response);
+  socket.on('open-login', async (response: ILoginData) => {
+    const encryptedData = safeStorage.encryptString(JSON.stringify(response));
+
+    fs.writeFile(loginDataPath, encryptedData)
+      .then(() => {
+        event.reply('open-login', response);
+      })
+      .catch(console.log);
   });
 
   require('electron').shell.openExternal(url);
+});
 
-  /* let authServerHandle: any;
-  authServer.get('/auth', async (request: any, response: any) => {
-    response.send('You may now close this window');
-    if (authServerHandle) {
-      await authServerHandle.close();
-      authServerHandle = undefined;
-      const encryptedData = safeStorage.encryptString(
-        JSON.stringify(discordAuthData)
-      );
+ipcMain.on('get-login', async (event, _args) => {
+  if (fsSync.existsSync(loginDataPath)) {
+    const encryptedLoginData = await fs.readFile(loginDataPath);
+    const decryptedLoginData = safeStorage.decryptString(encryptedLoginData);
 
-      fs.writeFile(
-        path.join(app.getAppPath(), 'DoNotShare.wallpaper'),
-        encryptedData
-      )
-        .then(() => {
-          event.reply('open-login', discordAuthData);
-        })
-        .catch(console.log);
-    }
-  });
+    const loginData = JSON.parse(decryptedLoginData);
 
-  authServerHandle = authServer.listen(49153); */
+    event.reply('get-login', loginData);
+  } else {
+    event.reply('get-login', undefined);
+  }
+});
+
+ipcMain.on('update-login', async (event, newLoginData) => {
+  const encryptedData = safeStorage.encryptString(JSON.stringify(newLoginData));
+  await fs.writeFile(loginDataPath, encryptedData);
+  event.reply('update-login');
+});
+
+ipcMain.on('logout', async (event, newLoginData) => {
+  if (fsSync.existsSync(loginDataPath)) {
+    await fs.unlink(loginDataPath);
+  }
+  event.reply('logout');
+});
+
+ipcMain.on('upload-images', async (event, images) => {
+  console.log(new Date().toUTCString());
+  socket.emit('upload-images', images);
 });

@@ -45,6 +45,8 @@ export default function WallpaperUploadModal({
   const uploadWallpapers = useCallback(async () => {
     const wallpapersForApi: IWallpaperData[] = Array<IWallpaperData>();
 
+    window.electron.ipcRenderer.uploadImages(files);
+
     files.forEach((file: IConvertedSystemFiles) => {
       wallpapersForApi.push({
         id: file.uri,
