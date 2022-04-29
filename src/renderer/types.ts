@@ -92,7 +92,8 @@ declare global {
         updateLogin(data: ILoginData): Promise<void>;
         logout(): Promise<void>;
         uploadImages(
-          images: IConvertedSystemFiles[]
+          images: IConvertedSystemFiles[],
+          uploader_id: string
         ): Promise<IWallpaperData[]>;
         on(
           channel: string,
@@ -105,10 +106,11 @@ declare global {
 
   interface ISystemFilesResult {
     result: boolean;
-    files: Uint8Array[] | Buffer[];
+    files: Array<[Uint8Array | Buffer, number]>;
   }
 
   interface IConvertedSystemFiles {
+    id: number;
     uri: string;
     file: Uint8Array;
     height: number;

@@ -193,10 +193,17 @@ ipcMain.on('upload-files', async (event, args) => {
       } else if (result.filePaths.length === 0) {
         event.reply('upload-files', { result: false, files: [] });
       } else {
-        const readers: Promise<Buffer>[] = [];
+        const readers: Promise<[Buffer, number]>[] = [];
 
-        result.filePaths.forEach((filePath) => {
-          readers.push(fs.readFile(filePath));
+        // eslint-disable-next-line no-inner-declarations
+        async function readFile(
+          fileToLoad: string,
+          index: number
+        ): Promise<[Buffer, number]> {
+          return [await fs.readFile(fileToLoad), index];
+        }
+        result.filePaths.forEach((filePath: string, index: number) => {
+          readers.push(readFile(filePath, index));
         });
 
         const filesLoaded = await Promise.all(readers);
@@ -283,7 +290,10 @@ ipcMain.on('logout', async (event, newLoginData) => {
   event.reply('logout');
 });
 
-ipcMain.on('upload-images', async (event, images) => {
-  console.log(new Date().toUTCString());
-  socket.emit('upload-images', images);
+ipcMain.on('upload-images', async (event, images, uploader_id) => {
+  socket.once('upload-images', (result: [IWallpaperData, number]) => {
+    console.log(result);
+  });
+
+  socket.emit('upload-images', images, uploader_id);
 });

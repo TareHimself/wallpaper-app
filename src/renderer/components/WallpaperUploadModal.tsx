@@ -9,8 +9,13 @@ export default function WallpaperUploadModal({
 }: {
   uploads: IConvertedSystemFiles[];
 }) {
-  const { setCurrentWallpaper, wallpapers, setWallpapers, setUploadedFiles } =
-    useContext(GlobalAppContext);
+  const {
+    setCurrentWallpaper,
+    wallpapers,
+    setWallpapers,
+    setUploadedFiles,
+    loginData,
+  } = useContext(GlobalAppContext);
 
   const [files, setFiles] = useState(uploads);
 
@@ -25,7 +30,7 @@ export default function WallpaperUploadModal({
     (upload: IConvertedSystemFiles, uploadIndex: number) => {
       const element = (
         <WallpaperUploadItem
-          key={upload.uri}
+          key={upload.id}
           data={upload}
           index={uploadIndex}
           updateFunc={updateIndexCallback}
@@ -45,7 +50,12 @@ export default function WallpaperUploadModal({
   const uploadWallpapers = useCallback(async () => {
     const wallpapersForApi: IWallpaperData[] = Array<IWallpaperData>();
 
-    window.electron.ipcRenderer.uploadImages(files);
+    if (loginData?.userAccountData?.id) {
+      window.electron.ipcRenderer.uploadImages(
+        files,
+        loginData?.userAccountData?.id
+      );
+    }
 
     files.forEach((file: IConvertedSystemFiles) => {
       wallpapersForApi.push({
@@ -68,7 +78,13 @@ export default function WallpaperUploadModal({
     if (setUploadedFiles) {
       setUploadedFiles(Array<IConvertedSystemFiles>());
     }
-  }, [files, setUploadedFiles, setWallpapers, wallpapers]);
+  }, [
+    files,
+    loginData?.userAccountData?.id,
+    setUploadedFiles,
+    setWallpapers,
+    wallpapers,
+  ]);
 
   const cancelUpload = useCallback(async () => {
     setFiles(Array<IConvertedSystemFiles>());

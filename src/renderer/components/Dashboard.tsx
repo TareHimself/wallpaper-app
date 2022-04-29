@@ -38,8 +38,9 @@ export default function Dashboard() {
     }
 
     if (response?.files.length) {
-      response?.files.forEach((buffer: Uint8Array) => {
+      response?.files.forEach(([buffer, index]: [Uint8Array, number]) => {
         images.push({
+          id: index,
           uri: URL.createObjectURL(
             new Blob([buffer], { type: 'image/png' } /* (1) */)
           ),

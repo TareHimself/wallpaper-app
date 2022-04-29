@@ -42,8 +42,6 @@ export default function App() {
     document.body.classList.add('theme-dark');
   }, []);
 
-  console.log('rendered');
-
   return (
     <Router>
       <GlobalAppContext.Provider

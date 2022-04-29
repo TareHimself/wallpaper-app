@@ -69,8 +69,8 @@ contextBridge.exposeInMainWorld('electron', {
         });
       });
     },
-    uploadImages(images: IConvertedSystemFiles[]) {
-      ipcRenderer.send('upload-images', images);
+    uploadImages(images: IConvertedSystemFiles[], uploader_id: string) {
+      ipcRenderer.send('upload-images', images, uploader_id);
       return new Promise<IWallpaperData[]>((resolve, _reject) => {
         ipcRenderer.once('upload-images', (_event, response) => {
           resolve(response);
