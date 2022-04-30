@@ -77,6 +77,14 @@ contextBridge.exposeInMainWorld('electron', {
         });
       });
     },
+    downloadImage(image: IImageDownload) {
+      ipcRenderer.send('download-image', image);
+      return new Promise<boolean>((resolve, _reject) => {
+        ipcRenderer.once('download-image', (_event, response) => {
+          resolve(response);
+        });
+      });
+    },
     on(channel: string, func: (...args: unknown[]) => void) {
       if (validChannels.includes(channel)) {
         const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>

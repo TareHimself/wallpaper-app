@@ -18,12 +18,7 @@ export default function useWallpaperApi(): [
     }
 
     axios
-      .get('http://localhost:49153/wallpapers', {
-        headers: {
-          'x-api-key':
-            '2865228d39b816a799316c6224070ef0ebc155b6127bba2e87bde0cb347149b1',
-        },
-      })
+      .get('https://wallpaper-app-database.oyintareebelo.repl.co/wallpapers')
       // eslint-disable-next-line promise/always-return
       .then(onRequestCompleted)
       .catch(onRequestFailed);

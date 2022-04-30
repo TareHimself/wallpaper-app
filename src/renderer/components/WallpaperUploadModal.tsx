@@ -50,28 +50,18 @@ export default function WallpaperUploadModal({
   const uploadWallpapers = useCallback(async () => {
     const wallpapersForApi: IWallpaperData[] = Array<IWallpaperData>();
 
-    if (loginData?.userAccountData?.id) {
-      window.electron.ipcRenderer.uploadImages(
-        files,
-        loginData?.userAccountData?.id
-      );
+    if (loginData?.userAccountData?.id && wallpapers && setWallpapers) {
+      const results = (await window.electron.ipcRenderer
+        .uploadImages(files, loginData?.userAccountData?.id)
+        // eslint-disable-next-line promise/always-return
+        .catch(console.log)) as IWallpaperData[];
+
+      setWallpapers([...wallpapers, ...results]);
     }
 
     files.forEach((file: IConvertedSystemFiles) => {
-      wallpapersForApi.push({
-        id: file.uri,
-        uri: file.uri,
-        width: file.width,
-        height: file.height,
-        downloads: 0,
-        uploaded_at: 20220422060000,
-        uploader: 'Tare',
-        tags: file.tags,
-      });
+      URL.revokeObjectURL(file.uri);
     });
-    if (wallpapers && setWallpapers) {
-      setWallpapers([...wallpapers, ...wallpapersForApi]);
-    }
 
     setFiles(Array<IConvertedSystemFiles>());
 

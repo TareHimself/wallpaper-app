@@ -46,6 +46,30 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
     }
   }
 
+  const downloadWallpaper = useCallback(() => {
+    if (
+      wallpapers &&
+      currentItemIndex !== undefined &&
+      wallpapers[currentItemIndex]
+    ) {
+      const wallpaperToDownload = document.getElementById(
+        'wallpaper-in-view'
+      ) as HTMLImageElement;
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('get', wallpaperToDownload.src);
+      xhr.responseType = 'blob';
+      xhr.onload = async function () {
+        window.electron.ipcRenderer.downloadImage({
+          id: wallpapers[currentItemIndex].id,
+          data: await (xhr.response as Blob).arrayBuffer(),
+        });
+      };
+
+      xhr.send();
+    }
+  }, [currentItemIndex, wallpapers]);
+
   return (
     <div role="none" className="wallpaper-view" onClick={onAttemptClickOut}>
       <BsChevronCompactLeft
@@ -79,7 +103,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
               }
             }}
           />
-          <BsDownload />
+          <BsDownload onClick={downloadWallpaper} />
           <BsArrowsFullscreen
             onClick={() => {
               setIsFullscreen(true);

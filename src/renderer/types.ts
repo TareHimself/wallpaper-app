@@ -49,6 +49,11 @@ declare global {
     tags: string;
   }
 
+  interface IImageDownload {
+    id: string;
+    data: ArrayBuffer;
+  }
+
   interface IApplicationSettings {
     defaultDownloadPath: string;
     maxItemsPerPage: number;
@@ -95,6 +100,8 @@ declare global {
           images: IConvertedSystemFiles[],
           uploader_id: string
         ): Promise<IWallpaperData[]>;
+
+        downloadImage(image: IImageDownload): Promise<boolean>;
         on(
           channel: string,
           func: (...args: unknown[]) => void

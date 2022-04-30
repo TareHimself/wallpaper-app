@@ -703,6 +703,10 @@ p {
   border-radius: 40px;
 }
 
+#image-downloader{
+  visibility: collapse;
+}
+
 @media only screen and (max-width: 1580px) {
   .item-grid {
     grid-template-columns: repeat(2, var(--rowWidth));

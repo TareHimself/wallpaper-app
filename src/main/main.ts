@@ -84,7 +84,7 @@ const createWindow = async () => {
     await installExtensions();
   }
 
-  socket = io('ws://localhost:3001/', {
+  socket = io('ws://wallpaperz-server.oyintare.dev', {
     reconnectionDelayMax: 10000,
   });
 
@@ -291,9 +291,22 @@ ipcMain.on('logout', async (event, newLoginData) => {
 });
 
 ipcMain.on('upload-images', async (event, images, uploader_id) => {
-  socket.once('upload-images', (result: [IWallpaperData, number]) => {
-    console.log(result);
+  socket.once('upload-images', (results: IWallpaperData[]) => {
+    event.reply('upload-images', results);
   });
 
   socket.emit('upload-images', images, uploader_id);
+});
+
+ipcMain.on('download-image', async (event, image: IImageDownload) => {
+  const downloadPath = path.join(app.getPath('pictures'), `${image.id}.jpg`);
+
+  fs.writeFile(downloadPath, Buffer.from(image.data))
+    .then(() => {
+      event.reply('download-image', true);
+    })
+    .catch((error: Error) => {
+      event.reply('download-image', false);
+      console.log(error);
+    });
 });
