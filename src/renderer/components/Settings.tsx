@@ -37,10 +37,11 @@ export default function Settings({
 
   useEffect(() => {
     async function tryLogin() {
-      const loginFromLocal = await window.electron.ipcRenderer.getLogin();
-
-      if (loginFromLocal && setLoginData) {
-        setLoginData(loginFromLocal);
+      if (window.electron) {
+        const loginFromLocal = await window.electron.ipcRenderer.getLogin();
+        if (loginFromLocal && setLoginData) {
+          setLoginData(loginFromLocal);
+        }
       }
     }
 

@@ -44,42 +44,46 @@ export default function App() {
     document.body.classList.add('theme-dark');
   }, []);
 
-  return (
-    <Router>
-      <GlobalAppContext.Provider
-        value={{
-          setStartPointForView,
-          wallpapers: queriedWallpapers,
-          setQuery,
-          setUploadedFiles,
-          setWallpapers,
-          settings,
-          setSettings,
-          loginData,
-          setLoginData,
-          setShowSettings,
-        }}
-      >
-        <div id="sub-root">
-          <Routes>
-            <Route path="/" element={<Home />} />
-          </Routes>
-        </div>
-        <Dashboard />
-        <Settings
-          activeClass={
-            shouldShowSettings
-              ? 'wallpaper-settings-open'
-              : 'wallpaper-settings-closed'
-          }
-        />
-        {startPointForView !== undefined && (
-          <WallpaperViewModal data={startPointForView} />
-        )}
-        {uploadedFiles.length > 0 && (
-          <WallpaperUploadModal uploads={uploadedFiles} />
-        )}
-      </GlobalAppContext.Provider>
-    </Router>
-  );
+  if (window.electron) {
+    return (
+      <Router>
+        <GlobalAppContext.Provider
+          value={{
+            setStartPointForView,
+            wallpapers: queriedWallpapers,
+            setQuery,
+            setUploadedFiles,
+            setWallpapers,
+            settings,
+            setSettings,
+            loginData,
+            setLoginData,
+            setShowSettings,
+          }}
+        >
+          <div id="sub-root">
+            <Routes>
+              <Route path="/" element={<Home />} />
+            </Routes>
+          </div>
+          <Dashboard />
+          <Settings
+            activeClass={
+              shouldShowSettings
+                ? 'wallpaper-settings-open'
+                : 'wallpaper-settings-closed'
+            }
+          />
+          {startPointForView !== undefined && (
+            <WallpaperViewModal data={startPointForView} />
+          )}
+          {uploadedFiles.length > 0 && (
+            <WallpaperUploadModal uploads={uploadedFiles} />
+          )}
+        </GlobalAppContext.Provider>
+      </Router>
+    );
+  }
+
+  return <div />;
 }

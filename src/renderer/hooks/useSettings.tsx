@@ -7,19 +7,26 @@ export default function useSettings(): [
   const [data, setData] = useState<IApplicationSettings | undefined>(undefined);
 
   const updateSettings = useCallback((settings: IApplicationSettings) => {
-    window.electron.ipcRenderer.saveSettings(settings);
+    if (window.electron) {
+      window.electron.ipcRenderer.saveSettings(settings);
+    }
+
     setData(settings);
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line promise/valid-params
-    window.electron.ipcRenderer
-      .loadSettings()
-      // eslint-disable-next-line promise/always-return
-      .then((settings) => {
-        setData(settings);
-      })
-      .catch();
+    if (window.electron) {
+      // eslint-disable-next-line promise/valid-params
+      window.electron.ipcRenderer
+        .loadSettings()
+        // eslint-disable-next-line promise/always-return
+        .then((settings) => {
+          setData(settings);
+        })
+        .catch();
+    } else {
+      setData(undefined);
+    }
   }, []);
 
   return [data, updateSettings];

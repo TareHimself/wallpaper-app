@@ -88,10 +88,10 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
 
   console.log(currentIndex);
 
-  useEffect(() => {
+  /* useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, []);* */
 
   return (
     <div role="none" className="wallpaper-view" onClick={onAttemptClickOut}>
