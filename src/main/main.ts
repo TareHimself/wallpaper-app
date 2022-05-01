@@ -231,7 +231,7 @@ ipcMain.on('save-settings', async (event, args: IApplicationSettings) => {
     .catch(console.log);
 });
 
-ipcMain.on('load-settings', async (event, _args) => {
+ipcMain.on('load-settings', async (event) => {
   if (fsSync.existsSync(settingsPath)) {
     fs.readFile(settingsPath)
       .then((file: string) => {
@@ -259,7 +259,7 @@ ipcMain.on('load-settings', async (event, _args) => {
   }
 });
 
-ipcMain.on('open-login', async (event, _args) => {
+ipcMain.on('open-login', async (event) => {
   const url = `https://discord.com/api/oauth2/authorize?client_id=967602114350174348&redirect_uri=https%3A%2F%2Fwallpaperz-server.oyintare.dev%2Fauth&response_type=code&scope=identify&state=${devicePhysicalAddress}`;
 
   socket.on('open-login', async (response: ILoginData) => {
@@ -275,7 +275,7 @@ ipcMain.on('open-login', async (event, _args) => {
   require('electron').shell.openExternal(url);
 });
 
-ipcMain.on('get-login', async (event, _args) => {
+ipcMain.on('get-login', async (event) => {
   if (fsSync.existsSync(loginDataPath)) {
     const encryptedLoginData = await fs.readFile(loginDataPath);
     const decryptedLoginData = safeStorage.decryptString(encryptedLoginData);

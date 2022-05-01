@@ -8,13 +8,7 @@ import {
 import { CgClose } from 'react-icons/cg';
 import { IoMdDownload } from 'react-icons/io';
 import { IoResizeOutline } from 'react-icons/io5';
-import {
-  SyntheticEvent,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { SyntheticEvent, useCallback, useContext, useState } from 'react';
 import GlobalAppContext from '../GlobalAppContext';
 
 const clickOutClassnames = ['wallpaper-view', 'wallpaper-view-container'];
@@ -36,7 +30,6 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
     if (currentIndex < wallpapers.length - 1) {
       setCurrentIndex(currentIndex + 1);
     }
-    console.log('Event', currentIndex);
   }
 
   function gotoPreviousWallpaper() {
@@ -75,7 +68,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
       const xhr = new XMLHttpRequest();
       xhr.open('get', wallpaperToDownload.src);
       xhr.responseType = 'blob';
-      xhr.onload = async function () {
+      xhr.onload = async () => {
         window.electron.ipcRenderer.downloadImage({
           id: wallpapers[currentIndex].id,
           data: await (xhr.response as Blob).arrayBuffer(),
@@ -85,8 +78,6 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
       xhr.send();
     }
   }, [currentIndex, wallpapers]);
-
-  console.log(currentIndex);
 
   /* useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);

@@ -26,9 +26,7 @@ export default function Dashboard() {
     if (isUploading.current) return;
 
     isUploading.current = true;
-    const response = await window.electron.ipcRenderer
-      .uploadFiles('')
-      .catch(console.log);
+    const response = await window.electron.ipcRenderer.uploadFiles('');
 
     const images: IConvertedSystemFiles[] = [];
 

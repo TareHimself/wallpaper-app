@@ -10,8 +10,7 @@ contextBridge.exposeInMainWorld('electron', {
     uploadFiles(lastUploadPath: string) {
       ipcRenderer.send('upload-files', lastUploadPath);
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      return new Promise<ISystemFilesResult>((resolve, _reject) => {
+      return new Promise<ISystemFilesResult>((resolve) => {
         ipcRenderer.once('upload-files', (_event, response) => {
           resolve(response);
         });
@@ -20,8 +19,7 @@ contextBridge.exposeInMainWorld('electron', {
     loadSettings() {
       ipcRenderer.send('load-settings', '');
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      return new Promise<IApplicationSettings>((resolve, _reject) => {
+      return new Promise<IApplicationSettings>((resolve) => {
         ipcRenderer.once('load-settings', (_event, response) => {
           resolve(response);
         });
@@ -30,8 +28,7 @@ contextBridge.exposeInMainWorld('electron', {
     saveSettings(settings: IApplicationSettings) {
       ipcRenderer.send('save-settings', settings);
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      return new Promise<boolean>((resolve, _reject) => {
+      return new Promise<boolean>((resolve) => {
         ipcRenderer.once('save-settings', (_event, response) => {
           resolve(response);
         });
@@ -39,7 +36,7 @@ contextBridge.exposeInMainWorld('electron', {
     },
     openLogin() {
       ipcRenderer.send('open-login', '');
-      return new Promise<ILoginData>((resolve, _reject) => {
+      return new Promise<ILoginData>((resolve) => {
         ipcRenderer.once('open-login', (_event, response) => {
           resolve(response);
         });
@@ -47,7 +44,7 @@ contextBridge.exposeInMainWorld('electron', {
     },
     getLogin() {
       ipcRenderer.send('get-login', '');
-      return new Promise<ILoginData | undefined>((resolve, _reject) => {
+      return new Promise<ILoginData | undefined>((resolve) => {
         ipcRenderer.once('get-login', (_event, response) => {
           resolve(response);
         });
@@ -55,7 +52,7 @@ contextBridge.exposeInMainWorld('electron', {
     },
     updateLogin(data: ILoginData) {
       ipcRenderer.send('update-login', data);
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>((resolve) => {
         ipcRenderer.once('update-login', (_event, response) => {
           resolve(response);
         });
@@ -63,7 +60,7 @@ contextBridge.exposeInMainWorld('electron', {
     },
     logout() {
       ipcRenderer.send('logout', '');
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>((resolve) => {
         ipcRenderer.once('logout', (_event, response) => {
           resolve(response);
         });
@@ -71,7 +68,7 @@ contextBridge.exposeInMainWorld('electron', {
     },
     uploadImages(images: IConvertedSystemFiles[], uploader_id: string) {
       ipcRenderer.send('upload-images', images, uploader_id);
-      return new Promise<IWallpaperData[]>((resolve, _reject) => {
+      return new Promise<IWallpaperData[]>((resolve) => {
         ipcRenderer.once('upload-images', (_event, response) => {
           resolve(response);
         });
@@ -79,7 +76,7 @@ contextBridge.exposeInMainWorld('electron', {
     },
     downloadImage(image: IImageDownload) {
       ipcRenderer.send('download-image', image);
-      return new Promise<boolean>((resolve, _reject) => {
+      return new Promise<boolean>((resolve) => {
         ipcRenderer.once('download-image', (_event, response) => {
           resolve(response);
         });

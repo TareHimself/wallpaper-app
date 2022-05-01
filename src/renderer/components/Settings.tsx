@@ -20,7 +20,7 @@ export default function Settings({
           setLoginData(loginResponse);
         }
       })
-      .catch(console.log);
+      .catch(alert);
   }, [setLoginData]);
 
   const logout = useCallback(() => {
@@ -32,7 +32,7 @@ export default function Settings({
           setLoginData(undefined);
         }
       })
-      .catch(console.log);
+      .catch(alert);
   }, [setLoginData]);
 
   useEffect(() => {

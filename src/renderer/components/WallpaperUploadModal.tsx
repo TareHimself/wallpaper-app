@@ -44,10 +44,10 @@ export default function WallpaperUploadModal({
 
   const uploadWallpapers = useCallback(async () => {
     if (loginData?.userAccountData?.id && wallpapers && setWallpapers) {
-      const results = (await window.electron.ipcRenderer
-        .uploadImages(files, loginData?.userAccountData?.id)
-        // eslint-disable-next-line promise/always-return
-        .catch(console.log)) as IWallpaperData[];
+      const results = (await window.electron.ipcRenderer.uploadImages(
+        files,
+        loginData?.userAccountData?.id
+      )) as IWallpaperData[];
 
       setWallpapers([...wallpapers, ...results]);
     }
