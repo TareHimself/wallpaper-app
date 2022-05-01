@@ -1,13 +1,14 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { AiOutlineCaretLeft } from 'react-icons/ai';
 import GlobalAppContext from 'renderer/GlobalAppContext';
+import BooleanSetting from './SettingsHelpers/BooleanSetting';
 
 export default function Settings({
   activeClass = 'wallpaper-settings-closed',
 }: {
   activeClass: string;
 }) {
-  const { loginData, setLoginData, setShowSettings } =
+  const { loginData, setLoginData, setShowSettings, settings, setSettings } =
     useContext(GlobalAppContext);
 
   const startLogin = useCallback(() => {
@@ -46,6 +47,15 @@ export default function Settings({
     tryLogin();
   }, [setLoginData]);
 
+  const onUpdateFullscreen = useCallback(
+    (newValue: boolean) => {
+      if (setSettings && settings) {
+        setSettings({ ...settings, bShouldUseFullscreen: newValue });
+      }
+    },
+    [setSettings, settings]
+  );
+
   return (
     <div className={activeClass}>
       <div className="wallpaper-settings-container">
@@ -69,7 +79,12 @@ export default function Settings({
           </div>
           <div className="wallpaper-settings-item">
             <h3>Fullscreen ?</h3>
-            <div className="wallpaper-settings-item-content" />
+            <div className="wallpaper-settings-item-content">
+              <BooleanSetting
+                value={settings?.bShouldUseFullscreen || false}
+                onValueUpdated={onUpdateFullscreen}
+              />
+            </div>
           </div>
           <div className="wallpaper-settings-item">
             <h3>Max Items Per Page</h3>

@@ -559,18 +559,38 @@ p {
   outline: none;
 }
 
+@keyframes open-settings {
+  from {
+    width: 0px;
+  }
+
+  to {
+    width: 600px;
+  }
+}
+
+@keyframes close-settings {
+  from {
+    width: 600px;
+  }
+
+  to {
+    width: 0px;
+  }
+}
+
 .wallpaper-settings-open,
 .wallpaper-settings-closed {
   position: absolute;
   display: flex;
   left: 50%;
-  top: 50%;
+  top: calc(50% - 5px);
   transform: translate(-50%, -50%);
-  height: 100vh;
+  height: calc(100vh + 5px);
   width: 100vw;
   justify-content: flex-end;
   align-items: stretch;
-  transition: all 0.3s ease-in-out;
+  transition: background-color 0.1s ease-in-out;
 }
 
 .wallpaper-settings-open {
@@ -586,15 +606,19 @@ p {
   position: relative;
   height: 100%;
   background-color: var(--level0);
-  transition: all 0.3s ease-in-out;
+  width: 0px;
 }
 
 .wallpaper-settings-open .wallpaper-settings-container {
-  width: 600px;
+  animation-duration: 0.5s;
+  animation-name: open-settings;
+  animation-fill-mode: forwards;
 }
 
 .wallpaper-settings-closed .wallpaper-settings-container {
-  width: 0px;
+  animation-duration: 0.5s;
+  animation-name: close-settings;
+  animation-fill-mode: forwards;
 }
 
 .wallpaper-settings-container-inner {
@@ -642,6 +666,7 @@ p {
   padding-left: 5px;
   color: var(--icon-color);
   transition: all 0.1s ease-in-out;
+  transform: rotate(180deg);
 }
 
 .wallpaper-settings-back svg:hover {
@@ -697,14 +722,38 @@ p {
 
 .wallpaper-settings-item-content {
   min-height: 60px;
-  height: fit-content;
+  height: 60px;
   width: 100%;
   background-color: var(--level1);
   border-radius: 40px;
 }
 
-#image-downloader{
+#image-downloader {
   visibility: collapse;
+}
+
+.boolean-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  position: relative;
+  flex-direction: row;
+  height: 100%;
+}
+
+.boolean-setting-true,
+.boolean-setting-false {
+  position: relative;
+  display: flex;
+  background: transparent;
+  border: 2px solid var(--icon-color);
+  padding: 0;
+  border-radius: 20px;
+  height: 45px;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  transition: all 0.3s ease-in-out;
 }
 
 @media only screen and (max-width: 1580px) {

@@ -6,14 +6,14 @@ import GlobalAppContext from 'renderer/GlobalAppContext';
 export default function Home() {
   let wallpaperElements: Array<ReactElement> = [];
 
-  const { wallpapers, setCurrentWallpaper } = useContext(GlobalAppContext);
+  const { wallpapers, setStartPointForView } = useContext(GlobalAppContext);
 
   if (wallpapers?.length) {
     wallpaperElements = wallpapers.map((apiData) => (
       <WallpaperPreview
         key={apiData.id}
         data={apiData}
-        setCurrentWallpaper={setCurrentWallpaper}
+        setStartPointForView={setStartPointForView}
       />
     ));
   }

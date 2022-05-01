@@ -62,7 +62,7 @@ declare global {
   }
 
   interface IGlobalContext {
-    setCurrentWallpaper: React.Dispatch<
+    setStartPointForView: React.Dispatch<
       React.SetStateAction<IWallpaperData | undefined>
     >;
     wallpapers: IWallpaperData[];

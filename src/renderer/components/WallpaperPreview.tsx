@@ -7,10 +7,10 @@ import { IoResizeOutline } from 'react-icons/io5';
 
 export default function WallpaperPreview({
   data,
-  setCurrentWallpaper,
+  setStartPointForView,
 }: {
   data: IWallpaperData;
-  setCurrentWallpaper:
+  setStartPointForView:
     | React.Dispatch<React.SetStateAction<IWallpaperData | undefined>>
     | undefined;
 }) {
@@ -24,8 +24,8 @@ export default function WallpaperPreview({
       role="none"
       className="grid-item"
       onClick={() => {
-        if (setCurrentWallpaper) {
-          setCurrentWallpaper(data);
+        if (setStartPointForView) {
+          setStartPointForView(data);
         }
       }}
     >

@@ -11,7 +11,7 @@ import useSettings from './hooks/useSettings';
 import Settings from './components/Settings';
 
 export default function App() {
-  const [currentWallpaper, setCurrentWallpaper] = useState<
+  const [startPointForView, setStartPointForView] = useState<
     IWallpaperData | undefined
   >(undefined);
 
@@ -31,12 +31,16 @@ export default function App() {
   const queryToLow = query.toLowerCase();
 
   const queriedWallpapers = query.length
-    ? wallpapers.filter((wallpaper) => wallpaper.tags.includes(queryToLow))
+    ? wallpapers.filter((wallpaper) =>
+        wallpaper.tags.toLowerCase().includes(queryToLow)
+      )
     : wallpapers;
 
   // eslint-disable-next-line no-empty
   if (settings) {
   }
+
+  console.log('rendered');
 
   useEffect(() => {
     document.body.classList.add('theme-dark');
@@ -46,7 +50,7 @@ export default function App() {
     <Router>
       <GlobalAppContext.Provider
         value={{
-          setCurrentWallpaper,
+          setStartPointForView,
           wallpapers: queriedWallpapers,
           setQuery,
           setUploadedFiles,
@@ -71,8 +75,8 @@ export default function App() {
               : 'wallpaper-settings-closed'
           }
         />
-        {currentWallpaper !== undefined && (
-          <WallpaperViewModal data={currentWallpaper} />
+        {startPointForView !== undefined && (
+          <WallpaperViewModal data={startPointForView} />
         )}
         {uploadedFiles.length > 0 && (
           <WallpaperUploadModal uploads={uploadedFiles} />

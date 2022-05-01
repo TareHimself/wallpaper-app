@@ -84,7 +84,7 @@ const createWindow = async () => {
     await installExtensions();
   }
 
-  socket = io('ws://wallpaperz-server.oyintare.dev', {
+  socket = io('wss://wallpaperz-server.oyintare.dev', {
     reconnectionDelayMax: 10000,
   });
 
@@ -214,8 +214,16 @@ ipcMain.on('upload-files', async (event, args) => {
     .catch(console.log);
 });
 
+async function applySettings(settings: IApplicationSettings) {
+  if (mainWindow) {
+    mainWindow.setFullScreen(settings.bShouldUseFullscreen);
+  }
+}
+
 // read selected images from disk
-ipcMain.on('save-settings', async (event, args) => {
+ipcMain.on('save-settings', async (event, args: IApplicationSettings) => {
+  applySettings(args);
+
   fs.writeFile(settingsPath, JSON.stringify(args, null, 3))
     .then(() => {
       event.reply('save-settings', true);
@@ -229,6 +237,7 @@ ipcMain.on('load-settings', async (event, _args) => {
       .then((file: string) => {
         const settingsAsJson = JSON.parse(file);
 
+        applySettings(settingsAsJson);
         event.reply('load-settings', settingsAsJson);
       })
       .catch(console.log);
@@ -240,6 +249,8 @@ ipcMain.on('load-settings', async (event, _args) => {
       bIsLoggedIn: false,
     };
 
+    applySettings(defaultSettings);
+
     fs.writeFile(settingsPath, JSON.stringify(defaultSettings, null, 3))
       .then(() => {
         event.reply('load-settings', defaultSettings);
@@ -249,7 +260,7 @@ ipcMain.on('load-settings', async (event, _args) => {
 });
 
 ipcMain.on('open-login', async (event, _args) => {
-  const url = `https://discord.com/api/oauth2/authorize?client_id=967602114350174348&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2Fauth&response_type=code&scope=identify&state=${devicePhysicalAddress}`;
+  const url = `https://discord.com/api/oauth2/authorize?client_id=967602114350174348&redirect_uri=https%3A%2F%2Fwallpaperz-server.oyintare.dev%2Fauth&response_type=code&scope=identify&state=${devicePhysicalAddress}`;
 
   socket.on('open-login', async (response: ILoginData) => {
     const encryptedData = safeStorage.encryptString(JSON.stringify(response));

@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-bind */
 import {
   BsArrowsFullscreen,
   BsDownload,
@@ -8,50 +9,65 @@ import { CgClose } from 'react-icons/cg';
 import { IoMdDownload } from 'react-icons/io';
 import { IoResizeOutline } from 'react-icons/io5';
 import GlobalAppContext from 'renderer/GlobalAppContext';
-import { SyntheticEvent, useCallback, useContext, useState } from 'react';
+import {
+  SyntheticEvent,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 const clickOutClassnames = ['wallpaper-view', 'wallpaper-view-container'];
 
 export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
-  const { setCurrentWallpaper } = useContext(GlobalAppContext);
+  const { wallpapers, setStartPointForView } = useContext(GlobalAppContext);
 
-  const { wallpapers } = useContext(GlobalAppContext);
+  const [currentIndex, setCurrentIndex] = useState<number>(
+    wallpapers?.indexOf(data) || 0
+  );
+
+  const currentWallpaper = wallpapers ? wallpapers[currentIndex] : data;
 
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
-  const currentItemIndex: number | undefined = wallpapers?.indexOf(data);
+  function gotoNextWallpaper() {
+    if (!wallpapers) return;
 
-  const gotoNextWallpaper = useCallback(() => {
-    if (!wallpapers || !setCurrentWallpaper || currentItemIndex === undefined)
-      return;
-
-    if (currentItemIndex !== -1 && currentItemIndex < wallpapers.length - 1) {
-      setCurrentWallpaper(wallpapers[currentItemIndex + 1]);
+    if (currentIndex < wallpapers.length - 1) {
+      setCurrentIndex(currentIndex + 1);
     }
-  }, [currentItemIndex, setCurrentWallpaper, wallpapers]);
+    console.log('Event', currentIndex);
+  }
 
-  const gotoPreviousWallpaper = useCallback(() => {
-    if (!wallpapers || !setCurrentWallpaper || currentItemIndex === undefined)
-      return;
+  function gotoPreviousWallpaper() {
+    if (!wallpapers) return;
 
-    if (currentItemIndex !== -1 && currentItemIndex > 0) {
-      setCurrentWallpaper(wallpapers[currentItemIndex - 1]);
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
     }
-  }, [currentItemIndex, setCurrentWallpaper, wallpapers]);
+  }
+
+  function handleKeyPress(event: KeyboardEvent) {
+    if (event.key === 'ArrowLeft') {
+      gotoPreviousWallpaper();
+    } else if (event.key === 'ArrowRight') {
+      gotoNextWallpaper();
+    }
+  }
 
   function onAttemptClickOut(event: SyntheticEvent<HTMLElement, Event>) {
     const element = event.target as HTMLElement;
-    if (clickOutClassnames.includes(element.className) && setCurrentWallpaper) {
-      setCurrentWallpaper(undefined);
+    if (
+      clickOutClassnames.includes(element.className) &&
+      setStartPointForView
+    ) {
+      document.removeEventListener('keypress', handleKeyPress);
+      setStartPointForView(undefined);
     }
   }
 
   const downloadWallpaper = useCallback(() => {
-    if (
-      wallpapers &&
-      currentItemIndex !== undefined &&
-      wallpapers[currentItemIndex]
-    ) {
+    if (wallpapers && currentIndex !== undefined && wallpapers[currentIndex]) {
       const wallpaperToDownload = document.getElementById(
         'wallpaper-in-view'
       ) as HTMLImageElement;
@@ -61,20 +77,27 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
       xhr.responseType = 'blob';
       xhr.onload = async function () {
         window.electron.ipcRenderer.downloadImage({
-          id: wallpapers[currentItemIndex].id,
+          id: wallpapers[currentIndex].id,
           data: await (xhr.response as Blob).arrayBuffer(),
         });
       };
 
       xhr.send();
     }
-  }, [currentItemIndex, wallpapers]);
+  }, [currentIndex, wallpapers]);
+
+  console.log(currentIndex);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div role="none" className="wallpaper-view" onClick={onAttemptClickOut}>
       <BsChevronCompactLeft
         className={
-          currentItemIndex !== undefined && currentItemIndex > 0
+          currentIndex !== undefined && currentIndex > 0
             ? 'next-item-left'
             : 'next-item-disabled'
         }
@@ -83,14 +106,15 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
       <div className="wallpaper-view-container">
         <div className="wallpaper-view-panel-top">
           <span>
-            <h2>{data.downloads}</h2> <IoMdDownload />
+            <h2>{currentWallpaper.downloads}</h2> <IoMdDownload />
           </span>
           <span>
-            <h2>{`${data.width}x${data.height}`}</h2> <IoResizeOutline />
+            <h2>{`${currentWallpaper.width}x${currentWallpaper.height}`}</h2>
+            <IoResizeOutline />
           </span>
         </div>
         <img
-          src={data.uri}
+          src={currentWallpaper.uri}
           alt="wallpaper"
           id="wallpaper-in-view"
           draggable="false"
@@ -98,8 +122,9 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
         <div className="wallpaper-view-panel-bottom">
           <CgClose
             onClick={() => {
-              if (setCurrentWallpaper) {
-                setCurrentWallpaper(undefined);
+              if (setStartPointForView) {
+                document.removeEventListener('keypress', handleKeyPress);
+                setStartPointForView(undefined);
               }
             }}
           />
@@ -114,8 +139,8 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
 
       <BsChevronCompactRight
         className={
-          currentItemIndex !== undefined &&
-          currentItemIndex < (wallpapers ? wallpapers.length - 1 : 0)
+          currentIndex !== undefined &&
+          currentIndex < (wallpapers ? wallpapers.length - 1 : 0)
             ? 'next-item-right'
             : 'next-item-disabled'
         }
