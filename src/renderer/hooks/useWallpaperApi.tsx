@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { items } from './sampleWallpapers.json';
 
 export default function useWallpaperApi(): [
@@ -9,7 +9,9 @@ export default function useWallpaperApi(): [
   const [data, setData] = useState(Array<IWallpaperData>());
 
   useEffect(() => {
-    async function onRequestCompleted(response: AxiosResponse<any, any>) {
+    async function onRequestCompleted(
+      response: AxiosResponse<IWallpaperData[], AxiosError>
+    ) {
       setData(response.data);
     }
 

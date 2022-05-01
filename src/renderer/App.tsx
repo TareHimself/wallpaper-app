@@ -40,8 +40,6 @@ export default function App() {
   if (settings) {
   }
 
-  console.log('rendered');
-
   useEffect(() => {
     document.body.classList.add('theme-dark');
   }, []);

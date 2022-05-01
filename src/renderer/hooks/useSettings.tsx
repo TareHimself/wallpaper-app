@@ -12,13 +12,14 @@ export default function useSettings(): [
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line promise/valid-params
     window.electron.ipcRenderer
       .loadSettings()
       // eslint-disable-next-line promise/always-return
       .then((settings) => {
         setData(settings);
       })
-      .catch(console.log);
+      .catch();
   }, []);
 
   return [data, updateSettings];

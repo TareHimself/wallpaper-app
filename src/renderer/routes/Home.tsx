@@ -1,7 +1,7 @@
 import '../css/Main.css';
 import { ReactElement, useContext } from 'react';
-import WallpaperPreview from 'renderer/components/WallpaperPreview';
-import GlobalAppContext from 'renderer/GlobalAppContext';
+import WallpaperPreview from '../components/WallpaperPreview';
+import GlobalAppContext from '../GlobalAppContext';
 
 export default function Home() {
   let wallpaperElements: Array<ReactElement> = [];
