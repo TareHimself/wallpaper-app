@@ -1,5 +1,5 @@
-import GlobalAppContext from 'renderer/GlobalAppContext';
 import { SyntheticEvent, useCallback, useContext, useState } from 'react';
+import GlobalAppContext from '../GlobalAppContext';
 import WallpaperUploadItem from './WallpaperUploadItem';
 
 const clickOutClassnames = ['wallpaper-view', 'wallpaper-view-container'];

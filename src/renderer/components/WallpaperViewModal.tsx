@@ -8,7 +8,6 @@ import {
 import { CgClose } from 'react-icons/cg';
 import { IoMdDownload } from 'react-icons/io';
 import { IoResizeOutline } from 'react-icons/io5';
-import GlobalAppContext from 'renderer/GlobalAppContext';
 import {
   SyntheticEvent,
   useCallback,
@@ -16,6 +15,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+import GlobalAppContext from '../GlobalAppContext';
 
 const clickOutClassnames = ['wallpaper-view', 'wallpaper-view-container'];
 

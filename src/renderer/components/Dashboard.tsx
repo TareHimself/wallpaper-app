@@ -2,7 +2,7 @@ import { SyntheticEvent, useCallback, useContext, useRef } from 'react';
 import { AiOutlineCloudUpload } from 'react-icons/ai';
 import { BiSearchAlt } from 'react-icons/bi';
 import { FiSettings } from 'react-icons/fi';
-import GlobalAppContext from 'renderer/GlobalAppContext';
+import GlobalAppContext from '../GlobalAppContext';
 
 export default function Dashboard() {
   const { setQuery, setUploadedFiles, loginData, setShowSettings } =
