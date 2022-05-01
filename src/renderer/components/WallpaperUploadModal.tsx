@@ -9,13 +9,8 @@ export default function WallpaperUploadModal({
 }: {
   uploads: IConvertedSystemFiles[];
 }) {
-  const {
-    setCurrentWallpaper,
-    wallpapers,
-    setWallpapers,
-    setUploadedFiles,
-    loginData,
-  } = useContext(GlobalAppContext);
+  const { wallpapers, setWallpapers, setUploadedFiles, loginData } =
+    useContext(GlobalAppContext);
 
   const [files, setFiles] = useState(uploads);
 
@@ -42,14 +37,12 @@ export default function WallpaperUploadModal({
 
   function onAttemptClickOut(event: SyntheticEvent<HTMLElement, Event>) {
     const element = event.target as HTMLElement;
-    if (clickOutClassnames.includes(element.className) && setCurrentWallpaper) {
-      setCurrentWallpaper(undefined);
+    // eslint-disable-next-line no-empty
+    if (clickOutClassnames.includes(element.className)) {
     }
   }
 
   const uploadWallpapers = useCallback(async () => {
-    const wallpapersForApi: IWallpaperData[] = Array<IWallpaperData>();
-
     if (loginData?.userAccountData?.id && wallpapers && setWallpapers) {
       const results = (await window.electron.ipcRenderer
         .uploadImages(files, loginData?.userAccountData?.id)

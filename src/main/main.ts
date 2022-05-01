@@ -294,7 +294,7 @@ ipcMain.on('update-login', async (event, newLoginData) => {
   event.reply('update-login');
 });
 
-ipcMain.on('logout', async (event, newLoginData) => {
+ipcMain.on('logout', async (event) => {
   if (fsSync.existsSync(loginDataPath)) {
     await fs.unlink(loginDataPath);
   }
