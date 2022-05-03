@@ -749,11 +749,20 @@ p {
   border: 2px solid var(--icon-color);
   padding: 0;
   border-radius: 20px;
-  height: 45px;
+  height: 37px;
   align-items: center;
   justify-content: center;
   width: 150px;
   transition: all 0.3s ease-in-out;
+}
+
+.boolean-setting-true:hover,
+.boolean-setting-false:hover {
+  border-color: var(--icon-color-hover);
+}
+
+.boolean-setting-true {
+  border-color: var(--icon-color-hover);
 }
 
 @media only screen and (max-width: 1580px) {
