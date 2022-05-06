@@ -50,7 +50,7 @@ contextBridge.exposeInMainWorld('electron', {
         });
       });
     },
-    updateLogin(data: ILoginData) {
+    updateLogin(data: ILoginData | undefined) {
       ipcRenderer.send('update-login', data);
       return new Promise<void>((resolve) => {
         ipcRenderer.once('update-login', (_event, response) => {

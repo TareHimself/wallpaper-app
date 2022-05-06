@@ -289,6 +289,13 @@ ipcMain.on('get-login', async (event) => {
 });
 
 ipcMain.on('update-login', async (event, newLoginData) => {
+  if (newLoginData === undefined) {
+    if (fsSync.existsSync(loginDataPath)) {
+      await fs.unlink(loginDataPath);
+    }
+    event.reply('update-login');
+    return;
+  }
   const encryptedData = safeStorage.encryptString(JSON.stringify(newLoginData));
   await fs.writeFile(loginDataPath, encryptedData);
   event.reply('update-login');

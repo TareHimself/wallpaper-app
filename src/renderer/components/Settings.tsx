@@ -35,19 +35,6 @@ export default function Settings({
       .catch(alert);
   }, [setLoginData]);
 
-  useEffect(() => {
-    async function tryLogin() {
-      if (window.electron) {
-        const loginFromLocal = await window.electron.ipcRenderer.getLogin();
-        if (loginFromLocal && setLoginData) {
-          setLoginData(loginFromLocal);
-        }
-      }
-    }
-
-    tryLogin();
-  }, [setLoginData]);
-
   const onUpdateFullscreen = useCallback(
     (newValue: boolean) => {
       if (setSettings && settings) {

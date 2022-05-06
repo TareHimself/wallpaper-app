@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
+import axios from 'axios';
 import Home from './routes/Home';
 import './css/Main.css';
 import Dashboard from './components/Dashboard';
@@ -9,11 +10,14 @@ import useWallpaperApi from './hooks/useWallpaperApi';
 import WallpaperUploadModal from './components/WallpaperUploadModal';
 import useSettings from './hooks/useSettings';
 import Settings from './components/Settings';
+import useLogin from './hooks/useLogin';
 
 export default function App() {
   const [startPointForView, setStartPointForView] = useState<
     IWallpaperData | undefined
   >(undefined);
+
+  const bHasVerifiedUserLogin = useRef(false);
 
   const [query, setQuery] = useState('');
 
@@ -26,7 +30,7 @@ export default function App() {
 
   const [shouldShowSettings, setShowSettings] = useState(false);
 
-  const [loginData, setLoginData] = useState<ILoginData | undefined>(undefined);
+  const [loginData, setLoginData] = useLogin();
 
   const queryToLow = query.toLowerCase();
 
@@ -41,8 +45,34 @@ export default function App() {
   }
 
   useEffect(() => {
+    if (loginData?.discordAuthData && !bHasVerifiedUserLogin.current) {
+      bHasVerifiedUserLogin.current = true;
+
+      if (new Date(loginData.discordAuthData.refresh_at) < new Date()) {
+        console.log('Expired Access token');
+      }
+
+      axios
+        .get('https://discordapp.com/api/oauth2/@me', {
+          headers: {
+            Authorization: `${loginData.discordAuthData.token_type} ${loginData.discordAuthData.access_token}`,
+          },
+        })
+        .then((response) => {
+          // eslint-disable-next-line promise/always-return
+          if (response?.data?.user) {
+            loginData.discordUserData = response.data.user;
+            loginData.userAccountData.avatar = `https://cdn.discordapp.com/avatars/${loginData.discordUserData.id}/${loginData.discordUserData.avatar}.webp?size=1024`;
+            setLoginData(loginData);
+
+            // update backend here
+          }
+        })
+        .catch(alert);
+    }
+
     document.body.classList.add('theme-dark');
-  }, []);
+  }, [loginData, loginData?.discordAuthData, setLoginData]);
 
   if (window.electron) {
     return (

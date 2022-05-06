@@ -74,7 +74,7 @@ declare global {
     settings: IApplicationSettings | undefined;
     setSettings: (settings: IApplicationSettings) => void;
     loginData: ILoginData | undefined;
-    setLoginData: React.Dispatch<React.SetStateAction<ILoginData | undefined>>;
+    setLoginData: (newLogin: ILoginData | undefined) => void;
     setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
   }
 
@@ -94,7 +94,7 @@ declare global {
         saveSettings(settings: IApplicationSettings): Promise<boolean>;
         openLogin(): Promise<ILoginData>;
         getLogin(): Promise<ILoginData | undefined>;
-        updateLogin(data: ILoginData): Promise<void>;
+        updateLogin(data: ILoginData | undefined): Promise<void>;
         logout(): Promise<void>;
         uploadImages(
           images: IConvertedSystemFiles[],
