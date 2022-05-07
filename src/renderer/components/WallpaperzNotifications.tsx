@@ -1,19 +1,17 @@
 import { useEffect } from 'react';
-import { addNotification } from 'renderer/utils';
+import { addNotification } from '../utils';
 
 export default function Notifications() {
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    function onNotificationRecieved(_e: Event) {
-      /* const actualEvent = e as CustomEvent;
-      const notificationData = actualEvent.detail as INotificationInfo; */
+    function onNotificationRecieved(e: Event) {
+      const actualEvent = e as CustomEvent;
     }
 
     document.addEventListener('notification', onNotificationRecieved);
 
     const noti = {
       title: 'hi',
-      content: 'Read thissssssssssssss',
+      content: 'Read this',
       displayTime: 200,
     };
 
@@ -21,6 +19,6 @@ export default function Notifications() {
     return () => {
       document.removeEventListener('notification', onNotificationRecieved);
     };
-  }, []);
+  });
   return <div />;
 }

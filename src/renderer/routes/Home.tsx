@@ -1,5 +1,5 @@
 import '../css/Main.css';
-import { ReactElement, useContext, useEffect, useRef } from 'react';
+import { ReactElement, useContext } from 'react';
 import WallpaperPreview from '../components/WallpaperPreview';
 import GlobalAppContext from '../GlobalAppContext';
 

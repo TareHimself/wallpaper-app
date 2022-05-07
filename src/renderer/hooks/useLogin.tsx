@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import axios, { AxiosError, AxiosResponse } from 'axios';
-import { items } from './sampleWallpapers.json';
+import axios from 'axios';
 
 export default function useLogin(): [
   ILoginData | undefined,

@@ -77,9 +77,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
         });
       };
 
-      xhr.onerror = async (error) => {
-        console.log(error);
-      };
+      xhr.onerror = alert;
 
       xhr.send();
     }

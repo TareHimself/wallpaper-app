@@ -55,10 +55,10 @@ export default function WallpaperUploadModal({
     if (uploadingStatus.current) return;
     uploadingStatus.current = true;
     if (loginData?.userAccountData?.id && wallpapers && refreshWallpapers) {
-      const results = (await window.electron.ipcRenderer.uploadImages(
+      await window.electron.ipcRenderer.uploadImages(
         files,
         loginData?.userAccountData?.id
-      )) as IWallpaperData[];
+      );
 
       refreshWallpapers();
     }
