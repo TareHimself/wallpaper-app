@@ -76,6 +76,7 @@ declare global {
     loginData: ILoginData | undefined;
     setLoginData: (newLogin: ILoginData | undefined) => void;
     setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
+    refreshWallpapers: () => void;
   }
 
   interface ILoginData {
@@ -123,6 +124,12 @@ declare global {
     height: number;
     width: number;
     tags: string;
+  }
+
+  interface INotificationInfo {
+    title: string;
+    content: string;
+    displayTime: number;
   }
 }
 

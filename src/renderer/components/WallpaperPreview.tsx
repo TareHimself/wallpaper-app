@@ -3,7 +3,7 @@ import '../css/Main.css';
 import { BiSearchAlt } from 'react-icons/bi';
 import { IoMdDownload } from 'react-icons/io';
 import { IoResizeOutline } from 'react-icons/io5';
-import generateThumbnail from 'renderer/utils';
+import { generateThumbnail } from 'renderer/utils';
 
 export default function WallpaperPreview({
   data,
@@ -24,7 +24,7 @@ export default function WallpaperPreview({
       `https://wallpaperz.nyc3.cdn.digitaloceanspaces.com/wallpapers/${data.id}.png`
     ) {
       generateThumbnail(data.id)
-        .then((thumbnail) => {
+        .then((thumbnail: string) => {
           const element = document.getElementById(`thumb-${data.id}`);
           // eslint-disable-next-line promise/always-return
           if (element) {

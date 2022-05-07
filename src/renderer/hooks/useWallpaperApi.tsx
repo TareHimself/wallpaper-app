@@ -6,7 +6,11 @@ export default function useWallpaperApi(
   page: number,
   maxItems: number,
   query: string
-): [IWallpaperData[], React.Dispatch<React.SetStateAction<IWallpaperData[]>>] {
+): [
+  IWallpaperData[],
+  React.Dispatch<React.SetStateAction<IWallpaperData[]>>,
+  () => void
+] {
   const [data, setData] = useState(Array<IWallpaperData>());
 
   async function onRequestCompleted(
@@ -17,6 +21,20 @@ export default function useWallpaperApi(
 
   async function onRequestFailed() {
     setData(items);
+  }
+
+  function refreshWallpapers() {
+    if (maxItems > 0) {
+      axios
+        .get(
+          `https://wallpaper-app-database.oyintareebelo.repl.co/wallpapers?o=${
+            page * maxItems
+          }&l=${maxItems}&q=${query}`
+        )
+        // eslint-disable-next-line promise/always-return
+        .then(onRequestCompleted)
+        .catch(onRequestFailed);
+    }
   }
 
   useEffect(() => {
@@ -33,5 +51,5 @@ export default function useWallpaperApi(
     }
   }, [maxItems, page, query]);
 
-  return [data, setData];
+  return [data, setData, refreshWallpapers];
 }

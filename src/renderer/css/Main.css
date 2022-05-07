@@ -584,9 +584,9 @@ p {
   position: absolute;
   display: flex;
   left: 50%;
-  top: calc(50% - 5px);
+  top: 50%;
   transform: translate(-50%, -50%);
-  height: calc(100vh + 5px);
+  height: calc(100vh + 10px);
   width: 100vw;
   justify-content: flex-end;
   align-items: stretch;

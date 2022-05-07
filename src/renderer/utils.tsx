@@ -71,7 +71,7 @@ class ThumbnailGenerator extends EventEmitter {
 
 let ThumbnailGuru: ThumbnailGenerator;
 
-export default async function generateThumbnail(id: string): Promise<string> {
+export async function generateThumbnail(id: string): Promise<string> {
   return new Promise<string>((resolve) => {
     if (!ThumbnailGuru) {
       ThumbnailGuru = new ThumbnailGenerator();
@@ -83,4 +83,12 @@ export default async function generateThumbnail(id: string): Promise<string> {
 
     ThumbnailGuru.getThumbnail(id);
   });
+}
+
+export function addNotification(data: INotificationInfo) {
+  document.dispatchEvent(
+    new CustomEvent<INotificationInfo>('notification', {
+      detail: data,
+    })
+  );
 }

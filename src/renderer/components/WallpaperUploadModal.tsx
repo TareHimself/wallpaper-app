@@ -16,7 +16,7 @@ export default function WallpaperUploadModal({
   uploads: IConvertedSystemFiles[];
 }) {
   const uploadingStatus = useRef(false);
-  const { wallpapers, setWallpapers, setUploadedFiles, loginData } =
+  const { wallpapers, refreshWallpapers, setUploadedFiles, loginData } =
     useContext(GlobalAppContext);
 
   const [files, setFiles] = useState(uploads);
@@ -54,13 +54,13 @@ export default function WallpaperUploadModal({
   const uploadWallpapers = useCallback(async () => {
     if (uploadingStatus.current) return;
     uploadingStatus.current = true;
-    if (loginData?.userAccountData?.id && wallpapers && setWallpapers) {
+    if (loginData?.userAccountData?.id && wallpapers && refreshWallpapers) {
       const results = (await window.electron.ipcRenderer.uploadImages(
         files,
         loginData?.userAccountData?.id
       )) as IWallpaperData[];
 
-      setWallpapers([...wallpapers, ...results]);
+      refreshWallpapers();
     }
 
     uploadingStatus.current = false;
@@ -78,7 +78,7 @@ export default function WallpaperUploadModal({
     files,
     loginData?.userAccountData?.id,
     setUploadedFiles,
-    setWallpapers,
+    refreshWallpapers,
     wallpapers,
   ]);
 

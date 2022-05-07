@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
 import Home from './routes/Home';
 import './css/Main.css';
@@ -11,6 +10,7 @@ import WallpaperUploadModal from './components/WallpaperUploadModal';
 import useSettings from './hooks/useSettings';
 import Settings from './components/Settings';
 import useLogin from './hooks/useLogin';
+import Notifications from './components/NotificationContainer';
 
 export default function App() {
   const [startPointForView, setStartPointForView] = useState<
@@ -27,9 +27,9 @@ export default function App() {
 
   const [settings, setSettings] = useSettings();
 
-  const [wallpapers, setWallpapers] = useWallpaperApi(
+  const [wallpapers, setWallpapers, refreshWallpapers] = useWallpaperApi(
     0,
-    30, // settings?.maxItemsPerPage || 0,
+    12, // settings?.maxItemsPerPage || 0,
     query.toLowerCase()
   );
 
@@ -73,42 +73,40 @@ export default function App() {
 
   if (window.electron) {
     return (
-      <Router>
-        <GlobalAppContext.Provider
-          value={{
-            setStartPointForView,
-            wallpapers,
-            setQuery,
-            setUploadedFiles,
-            setWallpapers,
-            settings,
-            setSettings,
-            loginData,
-            setLoginData,
-            setShowSettings,
-          }}
-        >
-          <div id="sub-root">
-            <Routes>
-              <Route path="/" element={<Home />} />
-            </Routes>
-          </div>
-          <Dashboard />
-          <Settings
-            activeClass={
-              shouldShowSettings
-                ? 'wallpaper-settings-open'
-                : 'wallpaper-settings-closed'
-            }
-          />
-          {startPointForView !== undefined && (
-            <WallpaperViewModal data={startPointForView} />
-          )}
-          {uploadedFiles.length > 0 && (
-            <WallpaperUploadModal uploads={uploadedFiles} />
-          )}
-        </GlobalAppContext.Provider>
-      </Router>
+      <GlobalAppContext.Provider
+        value={{
+          setStartPointForView,
+          wallpapers,
+          setQuery,
+          setUploadedFiles,
+          setWallpapers,
+          settings,
+          setSettings,
+          loginData,
+          setLoginData,
+          setShowSettings,
+          refreshWallpapers,
+        }}
+      >
+        <div id="sub-root">
+          <Home />
+        </div>
+        <Dashboard />
+        <Settings
+          activeClass={
+            shouldShowSettings
+              ? 'wallpaper-settings-open'
+              : 'wallpaper-settings-closed'
+          }
+        />
+        {startPointForView !== undefined && (
+          <WallpaperViewModal data={startPointForView} />
+        )}
+        {uploadedFiles.length > 0 && (
+          <WallpaperUploadModal uploads={uploadedFiles} />
+        )}
+        <Notifications />
+      </GlobalAppContext.Provider>
     );
   }
 
