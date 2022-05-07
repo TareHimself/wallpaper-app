@@ -67,12 +67,18 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
 
       const xhr = new XMLHttpRequest();
       xhr.open('get', wallpaperToDownload.src);
+
       xhr.responseType = 'blob';
+
       xhr.onload = async () => {
         window.electron.ipcRenderer.downloadImage({
           id: wallpapers[currentIndex].id,
           data: await (xhr.response as Blob).arrayBuffer(),
         });
+      };
+
+      xhr.onerror = async (error) => {
+        console.log(error);
       };
 
       xhr.send();

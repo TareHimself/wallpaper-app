@@ -332,3 +332,15 @@ ipcMain.on('download-image', async (event, image: IImageDownload) => {
       console.log(error);
     });
 });
+
+ipcMain.on('clear-cache', async (event) => {
+  if (mainWindow) {
+    await mainWindow.webContents.session.clearCache();
+  }
+
+  event.reply('clear-cache');
+});
+
+ipcMain.on('update-thumb-cache', async (event, cacheUpdate) => {
+  event.reply('update-thumb-cache', true);
+});

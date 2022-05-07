@@ -1,8 +1,9 @@
-import { SyntheticEvent } from 'react';
+import { SyntheticEvent, useEffect } from 'react';
 import '../css/Main.css';
 import { BiSearchAlt } from 'react-icons/bi';
 import { IoMdDownload } from 'react-icons/io';
 import { IoResizeOutline } from 'react-icons/io5';
+import generateThumbnail from 'renderer/utils';
 
 export default function WallpaperPreview({
   data,
@@ -13,11 +14,27 @@ export default function WallpaperPreview({
     | React.Dispatch<React.SetStateAction<IWallpaperData | undefined>>
     | undefined;
 }) {
-  function onImageLoaded(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _imageLoadEvent: SyntheticEvent<HTMLImageElement, Event>
-  ) {}
+  const uri =
+    localStorage.getItem(data.id) ||
+    `https://wallpaperz.nyc3.cdn.digitaloceanspaces.com/wallpapers/${data.id}.png`;
 
+  useEffect(() => {
+    if (
+      uri ===
+      `https://wallpaperz.nyc3.cdn.digitaloceanspaces.com/wallpapers/${data.id}.png`
+    ) {
+      generateThumbnail(data.id)
+        .then((thumbnail) => {
+          const element = document.getElementById(`thumb-${data.id}`);
+          // eslint-disable-next-line promise/always-return
+          if (element) {
+            const imageElement = element as HTMLImageElement;
+            imageElement.src = thumbnail;
+          }
+        })
+        .catch(alert);
+    }
+  }, [data.id, uri]);
   return (
     <div
       role="none"
@@ -29,12 +46,13 @@ export default function WallpaperPreview({
       }}
     >
       <img
-        src={data.uri}
-        alt="someImage"
-        onLoad={onImageLoaded}
+        id={`thumb-${data.id}`}
+        src={uri}
+        alt={`${data.id} preview`}
         draggable="false"
         loading="lazy"
         decoding="async"
+        crossOrigin="anonymous"
       />
       <BiSearchAlt className="wallpaper-preview-icon" />
       <div className="wallpaper-preview-size">
