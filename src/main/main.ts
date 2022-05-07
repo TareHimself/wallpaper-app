@@ -193,14 +193,18 @@ ipcMain.on('upload-files', async (event, args) => {
       } else if (result.filePaths.length === 0) {
         event.reply('upload-files', { result: false, files: [] });
       } else {
-        const readers: Promise<[Buffer, number]>[] = [];
+        const readers: Promise<[Buffer, number, string]>[] = [];
 
         // eslint-disable-next-line no-inner-declarations
         async function readFile(
           fileToLoad: string,
           index: number
-        ): Promise<[Buffer, number]> {
-          return [await fs.readFile(fileToLoad), index];
+        ): Promise<[Buffer, number, string]> {
+          return [
+            await fs.readFile(fileToLoad),
+            index,
+            path.parse(fileToLoad).name,
+          ];
         }
         result.filePaths.forEach((filePath: string, index: number) => {
           readers.push(readFile(filePath, index));

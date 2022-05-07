@@ -140,7 +140,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
       {isFullscreen && (
         <div className="wallpaper-view-fullscreen">
           <img
-            src={data.uri}
+            src={currentWallpaper.uri}
             alt="wallpaper"
             id="wallpaper-in-view-fullscreen"
             draggable="false"

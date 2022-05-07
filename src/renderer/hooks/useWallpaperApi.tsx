@@ -1,30 +1,37 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { items } from './sampleWallpapers.json';
 
-export default function useWallpaperApi(): [
-  IWallpaperData[],
-  React.Dispatch<React.SetStateAction<IWallpaperData[]>>
-] {
+export default function useWallpaperApi(
+  page: number,
+  maxItems: number,
+  query: string
+): [IWallpaperData[], React.Dispatch<React.SetStateAction<IWallpaperData[]>>] {
   const [data, setData] = useState(Array<IWallpaperData>());
 
+  async function onRequestCompleted(
+    response: AxiosResponse<IWallpaperData[], AxiosError>
+  ) {
+    setData(response.data);
+  }
+
+  async function onRequestFailed() {
+    setData(items);
+  }
+
   useEffect(() => {
-    async function onRequestCompleted(
-      response: AxiosResponse<IWallpaperData[], AxiosError>
-    ) {
-      setData(response.data);
+    if (maxItems > 0) {
+      axios
+        .get(
+          `https://wallpaper-app-database.oyintareebelo.repl.co/wallpapers?o=${
+            page * maxItems
+          }&l=${maxItems}&q=${query}`
+        )
+        // eslint-disable-next-line promise/always-return
+        .then(onRequestCompleted)
+        .catch(onRequestFailed);
     }
-
-    async function onRequestFailed() {
-      setData(items);
-    }
-
-    axios
-      .get('https://wallpaper-app-database.oyintareebelo.repl.co/wallpapers')
-      // eslint-disable-next-line promise/always-return
-      .then(onRequestCompleted)
-      .catch(onRequestFailed);
-  }, []);
+  }, [maxItems, page, query]);
 
   return [data, setData];
 }

@@ -33,6 +33,8 @@ export default function WallpaperPreview({
         alt="someImage"
         onLoad={onImageLoaded}
         draggable="false"
+        loading="lazy"
+        decoding="async"
       />
       <BiSearchAlt className="wallpaper-preview-icon" />
       <div className="wallpaper-preview-size">

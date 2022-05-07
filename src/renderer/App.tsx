@@ -24,21 +24,18 @@ export default function App() {
   const [uploadedFiles, setUploadedFiles] = useState(
     Array<IConvertedSystemFiles>()
   );
-  const [wallpapers, setWallpapers] = useWallpaperApi();
 
   const [settings, setSettings] = useSettings();
+
+  const [wallpapers, setWallpapers] = useWallpaperApi(
+    0,
+    30, // settings?.maxItemsPerPage || 0,
+    query.toLowerCase()
+  );
 
   const [shouldShowSettings, setShowSettings] = useState(false);
 
   const [loginData, setLoginData] = useLogin();
-
-  const queryToLow = query.toLowerCase();
-
-  const queriedWallpapers = query.length
-    ? wallpapers.filter((wallpaper) =>
-        wallpaper.tags.toLowerCase().includes(queryToLow)
-      )
-    : wallpapers;
 
   // eslint-disable-next-line no-empty
   if (settings) {
@@ -49,7 +46,7 @@ export default function App() {
       bHasVerifiedUserLogin.current = true;
 
       if (new Date(loginData.discordAuthData.refresh_at) < new Date()) {
-        console.log('Expired Access token');
+        alert('Expired Access token');
       }
 
       axios
@@ -80,7 +77,7 @@ export default function App() {
         <GlobalAppContext.Provider
           value={{
             setStartPointForView,
-            wallpapers: queriedWallpapers,
+            wallpapers,
             setQuery,
             setUploadedFiles,
             setWallpapers,

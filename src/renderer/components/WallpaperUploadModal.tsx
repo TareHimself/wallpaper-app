@@ -1,4 +1,10 @@
-import { SyntheticEvent, useCallback, useContext, useState } from 'react';
+import {
+  SyntheticEvent,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+} from 'react';
 import GlobalAppContext from '../GlobalAppContext';
 import WallpaperUploadItem from './WallpaperUploadItem';
 
@@ -9,12 +15,14 @@ export default function WallpaperUploadModal({
 }: {
   uploads: IConvertedSystemFiles[];
 }) {
+  const uploadingStatus = useRef(false);
   const { wallpapers, setWallpapers, setUploadedFiles, loginData } =
     useContext(GlobalAppContext);
 
   const [files, setFiles] = useState(uploads);
 
   function updateIndex(index: number, update: IConvertedSystemFiles) {
+    if (uploadingStatus.current) return;
     files[index] = update;
     setFiles([...files]);
   }
@@ -36,6 +44,7 @@ export default function WallpaperUploadModal({
   );
 
   function onAttemptClickOut(event: SyntheticEvent<HTMLElement, Event>) {
+    if (uploadingStatus.current) return;
     const element = event.target as HTMLElement;
     // eslint-disable-next-line no-empty
     if (clickOutClassnames.includes(element.className)) {
@@ -43,6 +52,8 @@ export default function WallpaperUploadModal({
   }
 
   const uploadWallpapers = useCallback(async () => {
+    if (uploadingStatus.current) return;
+    uploadingStatus.current = true;
     if (loginData?.userAccountData?.id && wallpapers && setWallpapers) {
       const results = (await window.electron.ipcRenderer.uploadImages(
         files,
@@ -51,6 +62,8 @@ export default function WallpaperUploadModal({
 
       setWallpapers([...wallpapers, ...results]);
     }
+
+    uploadingStatus.current = false;
 
     files.forEach((file: IConvertedSystemFiles) => {
       URL.revokeObjectURL(file.uri);
@@ -70,6 +83,7 @@ export default function WallpaperUploadModal({
   ]);
 
   const cancelUpload = useCallback(async () => {
+    if (uploadingStatus.current) return;
     setFiles(Array<IConvertedSystemFiles>());
     if (setUploadedFiles) {
       setUploadedFiles(Array<IConvertedSystemFiles>());

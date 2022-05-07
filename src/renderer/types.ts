@@ -113,7 +113,7 @@ declare global {
 
   interface ISystemFilesResult {
     result: boolean;
-    files: Array<[Uint8Array | Buffer, number]>;
+    files: Array<[Uint8Array | Buffer, number, string]>;
   }
 
   interface IConvertedSystemFiles {

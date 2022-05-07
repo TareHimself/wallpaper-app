@@ -1,16 +1,37 @@
-import { SyntheticEvent, useCallback, useContext, useRef } from 'react';
+import { useCallback, useContext, useRef } from 'react';
 import { AiOutlineCloudUpload } from 'react-icons/ai';
 import { BiSearchAlt } from 'react-icons/bi';
 import { FiSettings } from 'react-icons/fi';
 import GlobalAppContext from '../GlobalAppContext';
 
+const typingThrottle = 500;
+
 export default function Dashboard() {
   const { setQuery, setUploadedFiles, loginData, setShowSettings } =
     useContext(GlobalAppContext);
 
-  function onSearchChange(event: SyntheticEvent<HTMLInputElement, Event>) {
+  const updateTyping = useRef<number | undefined>(undefined);
+
+  function updateSearchText() {
+    updateTyping.current = undefined;
     if (setQuery) {
-      setQuery(event.currentTarget.value);
+      setQuery(
+        (document.getElementById('search-input') as HTMLInputElement).value
+      );
+    }
+  }
+  function onSearchChange() {
+    if (updateTyping.current !== undefined) {
+      clearTimeout(updateTyping.current);
+      updateTyping.current = window.setTimeout(
+        updateSearchText,
+        typingThrottle
+      );
+    } else {
+      updateTyping.current = window.setTimeout(
+        updateSearchText,
+        typingThrottle
+      );
     }
   }
 
@@ -36,18 +57,20 @@ export default function Dashboard() {
     }
 
     if (response?.files.length) {
-      response?.files.forEach(([buffer, index]: [Uint8Array, number]) => {
-        images.push({
-          id: index,
-          uri: URL.createObjectURL(
-            new Blob([buffer], { type: 'image/png' } /* (1) */)
-          ),
-          file: buffer,
-          width: 0,
-          height: 0,
-          tags: '',
-        });
-      });
+      response?.files.forEach(
+        ([buffer, index, tags]: [Uint8Array, number, string]) => {
+          images.push({
+            id: index,
+            uri: URL.createObjectURL(
+              new Blob([buffer], { type: 'image/png' } /* (1) */)
+            ),
+            file: buffer,
+            width: 0,
+            height: 0,
+            tags,
+          });
+        }
+      );
     }
 
     isUploading.current = false;
@@ -61,7 +84,7 @@ export default function Dashboard() {
       <AiOutlineCloudUpload className="dashboard-icon" onClick={uploadFiles} />
       <div id="search">
         <BiSearchAlt />
-        <input type="text" onChange={onSearchChange} />
+        <input type="text" onChange={onSearchChange} id="search-input" />
       </div>
       <FiSettings
         className="dashboard-icon"

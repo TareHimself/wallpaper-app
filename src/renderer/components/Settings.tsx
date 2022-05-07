@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect } from 'react';
+import { useCallback, useContext } from 'react';
 import { AiOutlineCaretLeft } from 'react-icons/ai';
 import GlobalAppContext from '../GlobalAppContext';
 import BooleanSetting from './SettingsHelpers/BooleanSetting';

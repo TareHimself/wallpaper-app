@@ -37,6 +37,7 @@ export default function WallpaperUploadItem({
       <div className="tags-input">
         <input
           type="text"
+          value={data.tags}
           onChange={onTagsChanged}
           placeholder="wallpaper tags seperated by commas"
         />
