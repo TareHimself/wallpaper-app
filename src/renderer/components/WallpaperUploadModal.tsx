@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { addNotification } from 'renderer/utils';
 import GlobalAppContext from '../GlobalAppContext';
 import WallpaperUploadItem from './WallpaperUploadItem';
 
@@ -55,10 +56,13 @@ export default function WallpaperUploadModal({
     if (uploadingStatus.current) return;
     uploadingStatus.current = true;
     if (loginData?.userAccountData?.id && wallpapers && refreshWallpapers) {
+      addNotification('Uploading Wallpapers');
       await window.electron.ipcRenderer.uploadImages(
         files,
         loginData?.userAccountData?.id
       );
+
+      addNotification('Upload Complete');
 
       refreshWallpapers();
     }

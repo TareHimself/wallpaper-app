@@ -66,7 +66,7 @@ declare global {
       React.SetStateAction<IWallpaperData | undefined>
     >;
     wallpapers: IWallpaperData[];
-    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    setSearchQuery: (search: string) => void;
     setUploadedFiles: React.Dispatch<
       React.SetStateAction<IConvertedSystemFiles[]>
     >;
@@ -75,7 +75,7 @@ declare global {
     setSettings: (settings: IApplicationSettings) => void;
     loginData: ILoginData | undefined;
     setLoginData: (newLogin: ILoginData | undefined) => void;
-    setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
+    setSettingsState: React.Dispatch<React.SetStateAction<string>>;
     refreshWallpapers: () => void;
   }
 
@@ -127,9 +127,8 @@ declare global {
   }
 
   interface INotificationInfo {
-    title: string;
+    id: number;
     content: string;
-    displayTime: number;
   }
 }
 

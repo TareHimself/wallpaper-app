@@ -4,11 +4,11 @@ import GlobalAppContext from '../GlobalAppContext';
 import BooleanSetting from './SettingsHelpers/BooleanSetting';
 
 export default function Settings({
-  activeClass = 'wallpaper-settings-closed',
+  activeClass = 'wallpaper-settings-neutral',
 }: {
   activeClass: string;
 }) {
-  const { loginData, setLoginData, setShowSettings, settings, setSettings } =
+  const { loginData, setLoginData, setSettingsState, settings, setSettings } =
     useContext(GlobalAppContext);
 
   const startLogin = useCallback(() => {
@@ -86,8 +86,8 @@ export default function Settings({
         <div className="wallpaper-settings-back">
           <AiOutlineCaretLeft
             onClick={() => {
-              if (setShowSettings) {
-                setShowSettings(false);
+              if (setSettingsState) {
+                setSettingsState('closed');
               }
             }}
           />

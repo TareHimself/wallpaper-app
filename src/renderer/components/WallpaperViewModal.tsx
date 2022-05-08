@@ -9,6 +9,7 @@ import { CgClose } from 'react-icons/cg';
 import { IoMdDownload } from 'react-icons/io';
 import { IoResizeOutline } from 'react-icons/io5';
 import { SyntheticEvent, useCallback, useContext, useState } from 'react';
+import { addNotification } from 'renderer/utils';
 import GlobalAppContext from '../GlobalAppContext';
 
 const clickOutClassnames = ['wallpaper-view', 'wallpaper-view-container'];
@@ -127,6 +128,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
           <BsArrowsFullscreen
             onClick={() => {
               setIsFullscreen(true);
+              addNotification('Double Click To Exit');
             }}
           />
         </div>
@@ -152,7 +154,6 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
               setIsFullscreen(false);
             }}
           />
-          <h2>Double Click on the image to exit full-screen</h2>
         </div>
       )}
     </div>

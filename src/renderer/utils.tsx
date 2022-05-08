@@ -85,10 +85,28 @@ export async function generateThumbnail(id: string): Promise<string> {
   });
 }
 
-export function addNotification(data: INotificationInfo) {
+function pad(number: number) {
+  return number < 10 ? `0${number}` : `${number}`;
+}
+
+export function TimeToSqliteInteger(date: Date) {
+  return parseInt(
+    `${date.getUTCFullYear()}${pad(date.getUTCMonth())}${pad(
+      date.getUTCDate()
+    )}${pad(date.getUTCHours())}${pad(date.getUTCMinutes())}${pad(
+      date.getUTCSeconds()
+    )}${pad(date.getUTCMilliseconds())}`,
+    10
+  );
+}
+
+export function addNotification(noti: string) {
   document.dispatchEvent(
     new CustomEvent<INotificationInfo>('notification', {
-      detail: data,
+      detail: {
+        id: TimeToSqliteInteger(new Date()),
+        content: noti,
+      },
     })
   );
 }

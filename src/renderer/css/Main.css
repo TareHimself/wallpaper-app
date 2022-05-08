@@ -50,6 +50,10 @@ body {
   width: inherit;
   overflow-y: overlay;
   padding-top: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 /* width */
@@ -102,17 +106,17 @@ p {
 
 #dashboard {
   position: absolute;
-  top: 0;
-  left: 50%;
-  height: 100px;
-  width: 85%;
-  display: flex;
-  border-radius: 25px;
-  background-color: var(--level0);
-  transform: translateX(-50%);
-  margin: 20px auto;
-  align-items: center;
-  justify-content: space-around;
+    top: 0;
+    left: 50%;
+    height: 120px;
+    width: 85%;
+    display: flex;
+    border-radius: 0 0 25px 25px;
+    background-color: var(--level0);
+    transform: translateX(-50%);
+    margin: 0 auto;
+    align-items: center;
+    justify-content: space-around;
 }
 
 #search {
@@ -380,7 +384,7 @@ p {
   height: 100%;
   width: 100%;
   display: flex;
-  z-index: 2;
+  z-index: 1;
 }
 
 @keyframes slidein {
@@ -580,7 +584,8 @@ p {
 }
 
 .wallpaper-settings-open,
-.wallpaper-settings-closed {
+.wallpaper-settings-closed,
+.wallpaper-settings-neutral {
   position: absolute;
   display: flex;
   left: 50%;
@@ -597,12 +602,17 @@ p {
   background-color: rgba(32, 32, 32, 0.9);
 }
 
-.wallpaper-settings-closed {
+.wallpaper-settings-closed, .wallpaper-settings-neutral {
   background-color: rgba(0, 0, 0, 0);
   pointer-events: none;
 }
 
-.wallpaper-settings-container {
+.wallpaper-settings-neutral{
+  background-color: rgba(0, 0, 0, 0);
+  pointer-events: none;
+}
+
+.wallpaper-settings-container  {
   position: relative;
   height: 100%;
   background-color: var(--level0);
@@ -763,6 +773,109 @@ p {
 
 .boolean-setting-true {
   border-color: var(--icon-color-hover);
+}
+
+.wallpaper-page-select{
+  height: 30px;
+  width: fit-content;
+  margin-bottom: 50px;
+  display: flex;
+}
+
+.wallpaper-page-select button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 30px;
+  font-size: 30px;
+  margin: 0px 10px;
+}
+
+#wallpaper-notification-panel{
+  pointer-events: none;
+  position: absolute;
+  display: flex;
+  width: 400px;
+  height: 600px;
+  top: 120px;
+  left: 0;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.wallpaper-notification-panel-inner{
+  pointer-events: none;
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: inherit;
+  top: 120px;
+  left: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+
+@keyframes notification-slide-in {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+    margin-bottom: -70px;
+  }
+
+  50%{
+    margin-bottom: 10px 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+
+  }
+}
+
+@keyframes notification-slide-out {
+  from {
+    transform: translateX(0%);
+  }
+
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.wallpaper-notification-item,.wallpaper-notification-item-closed{
+  pointer-events: none;
+  position: relative;
+    display: flex;
+    width: 100%;
+    height: 35px;
+    min-height: 70px;
+    top: 120px;
+    left: 0;
+    margin-top: 10px;
+    background-color: var(--level1);
+    border-radius: 0 20px 20px 0;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.wallpaper-notification-item h2,.wallpaper-notification-item-closed h2{
+  font-size: 18px;
+  margin: 0;
+}
+.wallpaper-notification-item{
+  animation-duration: 0.75s;
+  animation-name: notification-slide-in;
+  animation-fill-mode: forwards;
+}
+
+.wallpaper-notification-item-closed{
+  animation-duration: 0.5s;
+  animation-name: notification-slide-out;
+  animation-fill-mode: forwards;
 }
 
 @media only screen and (max-width: 1580px) {

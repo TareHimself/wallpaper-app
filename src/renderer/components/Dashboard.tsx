@@ -2,20 +2,21 @@ import { useCallback, useContext, useRef } from 'react';
 import { AiOutlineCloudUpload } from 'react-icons/ai';
 import { BiSearchAlt } from 'react-icons/bi';
 import { FiSettings } from 'react-icons/fi';
+import { addNotification } from 'renderer/utils';
 import GlobalAppContext from '../GlobalAppContext';
 
 const typingThrottle = 500;
 
 export default function Dashboard() {
-  const { setQuery, setUploadedFiles, loginData, setShowSettings } =
+  const { setSearchQuery, setUploadedFiles, loginData, setSettingsState } =
     useContext(GlobalAppContext);
 
   const updateTyping = useRef<number | undefined>(undefined);
 
   function updateSearchText() {
     updateTyping.current = undefined;
-    if (setQuery) {
-      setQuery(
+    if (setSearchQuery) {
+      setSearchQuery(
         (document.getElementById('search-input') as HTMLInputElement).value
       );
     }
@@ -39,9 +40,10 @@ export default function Dashboard() {
 
   const uploadFiles = useCallback(async () => {
     if (!loginData) {
-      if (setShowSettings) {
-        setShowSettings(true);
-      }
+      /* if (setSettingsState) {
+        setSettingsState('open');
+      } */
+      addNotification('You Must Be Logged In To Upload');
       return;
     }
     if (isUploading.current) return;
@@ -77,7 +79,7 @@ export default function Dashboard() {
     if (setUploadedFiles) {
       setUploadedFiles(images);
     }
-  }, [loginData, setShowSettings, setUploadedFiles]);
+  }, [loginData, setUploadedFiles]);
 
   return (
     <div id="dashboard">
@@ -89,8 +91,8 @@ export default function Dashboard() {
       <FiSettings
         className="dashboard-icon"
         onClick={() => {
-          if (setShowSettings) {
-            setShowSettings(true);
+          if (setSettingsState) {
+            setSettingsState('open');
           }
         }}
       />

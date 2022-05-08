@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { items } from './sampleWallpapers.json';
+import { addNotification } from 'renderer/utils';
 
 export default function useWallpaperApi(
   page: number,
@@ -9,41 +9,40 @@ export default function useWallpaperApi(
 ): [
   IWallpaperData[],
   React.Dispatch<React.SetStateAction<IWallpaperData[]>>,
-  () => void
+  () => void,
+  boolean
 ] {
   const [data, setData] = useState(Array<IWallpaperData>());
 
-  async function onRequestCompleted(
-    response: AxiosResponse<IWallpaperData[], AxiosError>
-  ) {
-    setData(response.data);
-  }
+  const hasNextPage = useRef(false);
 
-  async function onRequestFailed() {
-    setData(items);
-  }
+  const refreshWallpapers = useCallback(() => {
+    async function onRequestCompleted(
+      response: AxiosResponse<IWallpaperData[], AxiosError>
+    ) {
+      const wallpapersFromApi: IWallpaperData[] = response.data;
 
-  function refreshWallpapers() {
-    if (maxItems > 0) {
-      axios
-        .get(
-          `https://wallpaper-app-database.oyintareebelo.repl.co/wallpapers?o=${
-            page * maxItems
-          }&l=${maxItems}&q=${query}`
-        )
-        // eslint-disable-next-line promise/always-return
-        .then(onRequestCompleted)
-        .catch(onRequestFailed);
+      if (wallpapersFromApi.length > maxItems) {
+        wallpapersFromApi.pop();
+        wallpapersFromApi.pop();
+        hasNextPage.current = true;
+      } else {
+        hasNextPage.current = false;
+      }
+
+      setData(wallpapersFromApi);
     }
-  }
 
-  useEffect(() => {
+    async function onRequestFailed() {
+      addNotification('Failed to fetch wallpapers');
+    }
+
     if (maxItems > 0) {
       axios
         .get(
           `https://wallpaper-app-database.oyintareebelo.repl.co/wallpapers?o=${
             page * maxItems
-          }&l=${maxItems}&q=${query}`
+          }&l=${maxItems + 2}&q=${query}`
         )
         // eslint-disable-next-line promise/always-return
         .then(onRequestCompleted)
@@ -51,5 +50,9 @@ export default function useWallpaperApi(
     }
   }, [maxItems, page, query]);
 
-  return [data, setData, refreshWallpapers];
+  useEffect(() => {
+    refreshWallpapers();
+  }, [maxItems, page, query, refreshWallpapers]);
+
+  return [data, setData, refreshWallpapers, hasNextPage.current];
 }
