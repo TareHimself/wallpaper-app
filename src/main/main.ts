@@ -27,6 +27,14 @@ const fs = require('fs').promises;
 const fsSync = require('fs');
 const macaddress = require('macaddress');
 
+let mainWindow: BrowserWindow | null = null;
+
+const loginDataPath = path.join(
+  app.getPath('userData'),
+  'loginData.wallpaperz'
+);
+
+const settingsPath = path.join(app.getPath('userData'), 'settings.json');
 let devicePhysicalAddress = '';
 let socket: Socket;
 
@@ -37,21 +45,6 @@ export default class AppUpdater {
     autoUpdater.checkForUpdatesAndNotify();
   }
 }
-
-let mainWindow: BrowserWindow | null = null;
-
-const loginDataPath = path.join(
-  app.getPath('userData'),
-  'loginData.wallpaperz'
-);
-
-const settingsPath = path.join(app.getPath('userData'), 'settings.json');
-
-ipcMain.on('ipc-example', async (event, args) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(args));
-  event.reply('ipc-example', msgTemplate('pong'));
-});
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -148,10 +141,6 @@ const createWindow = async () => {
   new AppUpdater();
 };
 
-/**
- * Add event listeners...
- */
-
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
@@ -172,57 +161,84 @@ app
   })
   .catch(console.log);
 
-// read selected images from disk
-ipcMain.on('upload-files', async (event, args) => {
-  dialog
-    .showOpenDialog({
-      title: 'Select the wallpapers to upload',
-      properties: ['openFile', 'multiSelections'],
-      defaultPath: args,
-      buttonLabel: 'Upload',
-      filters: [
-        {
-          name: 'wallpapers',
-          extensions: ['jpeg', 'png', 'jpg'],
-        },
-      ],
-    })
-    .then(async (result) => {
-      if (result.canceled) {
-        event.reply('upload-files', { result: false, files: [] });
-      } else if (result.filePaths.length === 0) {
-        event.reply('upload-files', { result: false, files: [] });
-      } else {
-        const readers: Promise<[Buffer, number, string]>[] = [];
-
-        // eslint-disable-next-line no-inner-declarations
-        async function readFile(
-          fileToLoad: string,
-          index: number
-        ): Promise<[Buffer, number, string]> {
-          return [
-            await fs.readFile(fileToLoad),
-            index,
-            path.parse(fileToLoad).name,
-          ];
-        }
-        result.filePaths.forEach((filePath: string, index: number) => {
-          readers.push(readFile(filePath, index));
-        });
-
-        const filesLoaded = await Promise.all(readers);
-
-        event.reply('upload-files', { result: true, files: filesLoaded });
-      }
-    })
-    .catch(console.log);
-});
-
-async function applySettings(settings: IApplicationSettings) {
+const applySettings = async (settings: IApplicationSettings) => {
   if (mainWindow) {
     mainWindow.setFullScreen(settings.bShouldUseFullscreen);
   }
-}
+};
+
+// read selected images from disk
+ipcMain.on(
+  'upload-files',
+  async (event, defaultUploadPath: string, pathsToUpload: string[]) => {
+    if (pathsToUpload.length) {
+      const readers: Promise<[Buffer, number, string]>[] = [];
+
+      // eslint-disable-next-line no-inner-declarations
+      async function readFile(
+        fileToLoad: string,
+        index: number
+      ): Promise<[Buffer, number, string]> {
+        return [
+          await fs.readFile(fileToLoad),
+          index,
+          path.parse(fileToLoad).name,
+        ];
+      }
+
+      pathsToUpload.forEach((filePath: string, index: number) => {
+        readers.push(readFile(filePath, index));
+      });
+
+      const filesLoaded = await Promise.all(readers);
+
+      event.reply('upload-files', { result: true, files: filesLoaded });
+    } else {
+      dialog
+        .showOpenDialog({
+          title: 'Select the wallpapers to upload',
+          properties: ['openFile', 'multiSelections'],
+          defaultPath: defaultUploadPath,
+          buttonLabel: 'Upload',
+          filters: [
+            {
+              name: 'wallpapers',
+              extensions: ['jpeg', 'png', 'jpg'],
+            },
+          ],
+        })
+        .then(async (result) => {
+          if (result.canceled) {
+            event.reply('upload-files', { result: false, files: [] });
+          } else if (result.filePaths.length === 0) {
+            event.reply('upload-files', { result: false, files: [] });
+          } else {
+            const readers: Promise<[Buffer, number, string]>[] = [];
+
+            // eslint-disable-next-line no-inner-declarations
+            async function readFile(
+              fileToLoad: string,
+              index: number
+            ): Promise<[Buffer, number, string]> {
+              return [
+                await fs.readFile(fileToLoad),
+                index,
+                path.parse(fileToLoad).name,
+              ];
+            }
+            result.filePaths.forEach((filePath: string, index: number) => {
+              readers.push(readFile(filePath, index));
+            });
+
+            const filesLoaded = await Promise.all(readers);
+
+            event.reply('upload-files', { result: true, files: filesLoaded });
+          }
+        })
+        .catch(console.log);
+    }
+  }
+);
 
 // read selected images from disk
 ipcMain.on('save-settings', async (event, args: IApplicationSettings) => {

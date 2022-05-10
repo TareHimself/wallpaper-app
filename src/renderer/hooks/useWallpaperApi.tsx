@@ -22,8 +22,7 @@ export default function useWallpaperApi(
     ) {
       const wallpapersFromApi: IWallpaperData[] = response.data;
 
-      if (wallpapersFromApi.length > maxItems) {
-        wallpapersFromApi.pop();
+      if (wallpapersFromApi.length - maxItems > 0) {
         wallpapersFromApi.pop();
         hasNextPage.current = true;
       } else {
@@ -42,7 +41,7 @@ export default function useWallpaperApi(
         .get(
           `https://wallpaper-app-database.oyintareebelo.repl.co/wallpapers?o=${
             page * maxItems
-          }&l=${maxItems + 2}&q=${query}`
+          }&l=${maxItems + 1}&q=${query}`
         )
         // eslint-disable-next-line promise/always-return
         .then(onRequestCompleted)

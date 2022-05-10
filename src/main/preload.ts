@@ -1,14 +1,26 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
-const validChannels = ['ipc-example', 'upload-files'];
+const validChannels = [
+  'ipc-example',
+  'upload-files',
+  'load-settings',
+  'save-settings',
+  'open-login',
+  'get-login',
+  'update-login',
+  'logout',
+  'upload-images',
+  'clear-cache',
+  'download-image',
+];
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
     myPing() {
       ipcRenderer.send('ipc-example', 'ping');
     },
-    uploadFiles(lastUploadPath: string) {
-      ipcRenderer.send('upload-files', lastUploadPath);
+    uploadFiles(lastUploadPath: string, paths: string[] = []) {
+      ipcRenderer.send('upload-files', lastUploadPath, paths);
 
       return new Promise<ISystemFilesResult>((resolve) => {
         ipcRenderer.once('upload-files', (_event, response) => {
@@ -79,6 +91,26 @@ contextBridge.exposeInMainWorld('electron', {
       return new Promise<boolean>((resolve) => {
         ipcRenderer.once('download-image', (_event, response) => {
           resolve(response);
+        });
+      });
+    },
+    clearCache() {
+      ipcRenderer.send('clear-cache');
+      localStorage.clear();
+      return new Promise<void>((resolve) => {
+        ipcRenderer.once('clear-cache', () => {
+          resolve();
+        });
+      });
+    },
+    clearThumbnailCache() {
+      localStorage.clear();
+    },
+    clearWallpaperCache() {
+      ipcRenderer.send('clear-cache');
+      return new Promise<void>((resolve) => {
+        ipcRenderer.once('clear-cache', () => {
+          resolve();
         });
       });
     },

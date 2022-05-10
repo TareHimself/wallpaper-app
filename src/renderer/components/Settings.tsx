@@ -8,8 +8,14 @@ export default function Settings({
 }: {
   activeClass: string;
 }) {
-  const { loginData, setLoginData, setSettingsState, settings, setSettings } =
-    useContext(GlobalAppContext);
+  const {
+    loginData,
+    setLoginData,
+    setSettingsState,
+    settings,
+    setSettings,
+    refreshWallpapers,
+  } = useContext(GlobalAppContext);
 
   const startLogin = useCallback(() => {
     window.electron.ipcRenderer
@@ -78,9 +84,28 @@ export default function Settings({
             <h3>Max Items Per Page</h3>
             <div className="wallpaper-settings-item-content" />
           </div>
+          {false && (
+            <div className="wallpaper-settings-item">
+              <h3>Default Download Path</h3>
+              <div className="wallpaper-settings-item-content" />
+            </div>
+          )}
           <div className="wallpaper-settings-item">
-            <h3>Default Download Path</h3>
-            <div className="wallpaper-settings-item-content" />
+            <h3>Clear Thumbnail Cache</h3>
+            <div className="wallpaper-settings-item-content">
+              <button
+                type="button"
+                className="setting-button"
+                onClick={() => {
+                  window.electron.ipcRenderer.clearThumbnailCache();
+                  if (refreshWallpapers) {
+                    refreshWallpapers();
+                  }
+                }}
+              >
+                <h3>Clear</h3>
+              </button>
+            </div>
           </div>
         </div>
         <div className="wallpaper-settings-back">

@@ -22,5 +22,8 @@
   },
   "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   "editor.formatOnSave": true,
-  "editor.formatOnPaste": false
+  "editor.formatOnPaste": false,
+  "[css]": {
+    "editor.defaultFormatter": "vscode.css-language-features"
+  }
 }

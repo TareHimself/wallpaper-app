@@ -12,12 +12,13 @@ body {
   font-family: sans-serif;
   height: 100vh;
   overflow: hidden;
-
   user-select: none;
   -moz-user-select: none;
   -khtml-user-select: none;
   -webkit-user-select: none;
   -o-user-select: none;
+  /*background: url(https://wallpaperz.nyc3.cdn.digitaloceanspaces.com/wallpapers/2ae88c51-3f27-493a-bfd0-e078a61b14ec.png);*/
+  background-size: cover;
 }
 
 .theme-dark {
@@ -106,17 +107,17 @@ p {
 
 #dashboard {
   position: absolute;
-    top: 0;
-    left: 50%;
-    height: 120px;
-    width: 85%;
-    display: flex;
-    border-radius: 0 0 25px 25px;
-    background-color: var(--level0);
-    transform: translateX(-50%);
-    margin: 0 auto;
-    align-items: center;
-    justify-content: space-around;
+  top: 0;
+  left: 50%;
+  height: 120px;
+  width: 85%;
+  display: flex;
+  border-radius: 0 0 25px 25px;
+  background-color: var(--level0);
+  transform: translateX(-50%);
+  margin: 0 auto;
+  align-items: center;
+  justify-content: space-around;
 }
 
 #search {
@@ -198,17 +199,19 @@ p {
   border-radius: 20px;
   align-items: center;
   justify-content: center;
+  border: 1px solid var(--level0);
 }
 
 .grid-item img {
   position: absolute;
-  width: var(--rowWidth);
+  width: 100% * 1.1;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
   transition: all 0.3s ease-in-out;
 }
 
 .grid-item:hover img {
-  width: calc(var(--rowWidth) * 1.2);
+  width: calc(100% * 1.2);
 }
 
 .wallpaper-preview-icon {
@@ -352,18 +355,18 @@ p {
   margin: 0 10px;
 }
 
-.wallpaper-view-panel-bottom svg {
+.wallpaper-view-panel-bottom svg,
+.wallpaper-view-panel-top svg {
   margin: 5px;
-  width: 40px;
-  height: 40px;
+  font-size: 40px;
   color: var(--icon-color);
   transition: all 0.2s ease-in-out;
 }
 
-.wallpaper-view-panel-bottom svg:hover {
+.wallpaper-view-panel-bottom svg:hover,
+.wallpaper-view-panel-top svg:hover {
   margin: 0px;
-  width: 50px;
-  height: 50px;
+  font-size: 50px;
   color: var(--icon-color-hover);
 }
 
@@ -422,7 +425,7 @@ p {
   object-fit: cover;
 }
 
-.wallpaper-upload {
+#wallpaper-upload {
   position: absolute;
   top: 0;
   left: 0;
@@ -602,17 +605,18 @@ p {
   background-color: rgba(32, 32, 32, 0.9);
 }
 
-.wallpaper-settings-closed, .wallpaper-settings-neutral {
+.wallpaper-settings-closed,
+.wallpaper-settings-neutral {
   background-color: rgba(0, 0, 0, 0);
   pointer-events: none;
 }
 
-.wallpaper-settings-neutral{
+.wallpaper-settings-neutral {
   background-color: rgba(0, 0, 0, 0);
   pointer-events: none;
 }
 
-.wallpaper-settings-container  {
+.wallpaper-settings-container {
   position: relative;
   height: 100%;
   background-color: var(--level0);
@@ -731,11 +735,14 @@ p {
 }
 
 .wallpaper-settings-item-content {
+  display: flex;
+  align-items: center;
   min-height: 60px;
   height: 60px;
   width: 100%;
   background-color: var(--level1);
   border-radius: 40px;
+  justify-content: center;
 }
 
 #image-downloader {
@@ -749,16 +756,18 @@ p {
   position: relative;
   flex-direction: row;
   height: 100%;
+  width: 100%;
 }
 
 .boolean-setting-true,
-.boolean-setting-false {
+.boolean-setting-false,
+.setting-button {
   position: relative;
   display: flex;
   background: transparent;
   border: 2px solid var(--icon-color);
   padding: 0;
-  border-radius: 20px;
+  border-radius: 15px;
   height: 37px;
   align-items: center;
   justify-content: center;
@@ -767,22 +776,35 @@ p {
 }
 
 .boolean-setting-true:hover,
-.boolean-setting-false:hover {
+.boolean-setting-false:hover,
+.setting-button:hover {
   border-color: var(--icon-color-hover);
+}
+
+.boolean-setting-true h3,
+.boolean-setting-false h3,
+.setting-button h3 {
+  transition: all 0.3s ease-in-out;
+}
+
+.boolean-setting-true:hover h3,
+.boolean-setting-false:hover h3,
+.setting-button:hover h3 {
+  color: var(--icon-color-hover);
 }
 
 .boolean-setting-true {
   border-color: var(--icon-color-hover);
 }
 
-.wallpaper-page-select{
+.wallpaper-page-select {
   height: 30px;
   width: fit-content;
   margin-bottom: 50px;
   display: flex;
 }
 
-.wallpaper-page-select button{
+.wallpaper-page-select button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -792,7 +814,7 @@ p {
   margin: 0px 10px;
 }
 
-#wallpaper-notification-panel{
+#wallpaper-notification-panel {
   pointer-events: none;
   position: absolute;
   display: flex;
@@ -804,7 +826,7 @@ p {
   z-index: 2;
 }
 
-.wallpaper-notification-panel-inner{
+.wallpaper-notification-panel-inner {
   pointer-events: none;
   position: relative;
   display: flex;
@@ -824,14 +846,13 @@ p {
     margin-bottom: -70px;
   }
 
-  50%{
+  50% {
     margin-bottom: 10px 0;
   }
 
   to {
     transform: translateX(0);
     opacity: 1;
-
   }
 }
 
@@ -845,37 +866,65 @@ p {
   }
 }
 
-.wallpaper-notification-item,.wallpaper-notification-item-closed{
+.wallpaper-notification-item,
+.wallpaper-notification-item-closed {
   pointer-events: none;
   position: relative;
-    display: flex;
-    width: 100%;
-    height: 35px;
-    min-height: 70px;
-    top: 120px;
-    left: 0;
-    margin-top: 10px;
-    background-color: var(--level1);
-    border-radius: 0 20px 20px 0;
-    align-items: center;
-    flex-direction: row;
-    justify-content: space-around;
+  display: flex;
+  width: 100%;
+  height: 35px;
+  min-height: 70px;
+  top: 120px;
+  left: 0;
+  margin-top: 10px;
+  background-color: var(--level1);
+  border-radius: 0 20px 20px 0;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-around;
 }
 
-.wallpaper-notification-item h2,.wallpaper-notification-item-closed h2{
+.wallpaper-notification-item h2,
+.wallpaper-notification-item-closed h2 {
   font-size: 18px;
   margin: 0;
 }
-.wallpaper-notification-item{
+
+.wallpaper-notification-item {
   animation-duration: 0.75s;
   animation-name: notification-slide-in;
   animation-fill-mode: forwards;
 }
 
-.wallpaper-notification-item-closed{
+.wallpaper-notification-item-closed {
   animation-duration: 0.5s;
   animation-name: notification-slide-out;
   animation-fill-mode: forwards;
+}
+
+#wallpaper-drag-upload {
+  position: absolute;
+  display: flex;
+  top: -5px;
+  left: 0;
+  height: calc(100vh + 10px);
+  width: 100%;
+  background-color: rgba(32, 32, 32, 0.9);
+  justify-content: center;
+  align-items: center;
+}
+
+#wallpaper-drag-upload svg {
+  color: var(--icon-color);
+  font-size: 100px;
+}
+
+#drag-area {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
 }
 
 @media only screen and (max-width: 1580px) {

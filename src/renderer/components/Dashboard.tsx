@@ -49,7 +49,7 @@ export default function Dashboard() {
     if (isUploading.current) return;
 
     isUploading.current = true;
-    const response = await window.electron.ipcRenderer.uploadFiles('');
+    const response = await window.electron.ipcRenderer.uploadFiles('', []);
 
     const images: IConvertedSystemFiles[] = [];
 
@@ -86,7 +86,12 @@ export default function Dashboard() {
       <AiOutlineCloudUpload className="dashboard-icon" onClick={uploadFiles} />
       <div id="search">
         <BiSearchAlt />
-        <input type="text" onChange={onSearchChange} id="search-input" />
+        <input
+          type="text"
+          onChange={onSearchChange}
+          id="search-input"
+          draggable="false"
+        />
       </div>
       <FiSettings
         className="dashboard-icon"

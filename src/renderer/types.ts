@@ -90,7 +90,10 @@ declare global {
     electron: {
       ipcRenderer: {
         myPing(): void;
-        uploadFiles(lastUploadPath: string): Promise<ISystemFilesResult>;
+        uploadFiles(
+          lastUploadPath: string,
+          paths: string[]
+        ): Promise<ISystemFilesResult>;
         loadSettings(): Promise<IApplicationSettings>;
         saveSettings(settings: IApplicationSettings): Promise<boolean>;
         openLogin(): Promise<ILoginData>;
@@ -101,8 +104,10 @@ declare global {
           images: IConvertedSystemFiles[],
           uploader_id: string
         ): Promise<IWallpaperData[]>;
-
         downloadImage(image: IImageDownload): Promise<boolean>;
+        clearCache(): Promise<void>;
+        clearThumbnailCache(): void;
+        clearWallpaperCache(): Promise<void>;
         on(
           channel: string,
           func: (...args: unknown[]) => void

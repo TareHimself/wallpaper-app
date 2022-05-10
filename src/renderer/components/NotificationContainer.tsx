@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { addNotification } from 'renderer/utils';
 
 const NOTIFICATION_TIMEOUT_TIME = 2750;
 

@@ -6,7 +6,7 @@ import {
   BsChevronCompactRight,
 } from 'react-icons/bs';
 import { CgClose } from 'react-icons/cg';
-import { IoMdDownload } from 'react-icons/io';
+import { VscInfo } from 'react-icons/vsc';
 import { IoResizeOutline } from 'react-icons/io5';
 import { SyntheticEvent, useCallback, useContext, useState } from 'react';
 import { addNotification } from 'renderer/utils';
@@ -72,10 +72,12 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
       xhr.responseType = 'blob';
 
       xhr.onload = async () => {
-        window.electron.ipcRenderer.downloadImage({
-          id: wallpapers[currentIndex].id,
+        await window.electron.ipcRenderer.downloadImage({
+          id: `${wallpapers[currentIndex].tags} ${wallpapers[currentIndex].id}`,
           data: await (xhr.response as Blob).arrayBuffer(),
         });
+
+        addNotification('Wallpaper Downloaded!');
       };
 
       xhr.onerror = alert;
@@ -101,9 +103,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
       />
       <div className="wallpaper-view-container">
         <div className="wallpaper-view-panel-top">
-          <span>
-            <h2>{currentWallpaper.downloads}</h2> <IoMdDownload />
-          </span>
+          <VscInfo />
           <span>
             <h2>{`${currentWallpaper.width}x${currentWallpaper.height}`}</h2>
             <IoResizeOutline />

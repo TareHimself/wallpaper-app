@@ -1,10 +1,4 @@
-import {
-  SyntheticEvent,
-  useCallback,
-  useContext,
-  useRef,
-  useState,
-} from 'react';
+import { SyntheticEvent, useCallback, useContext, useState } from 'react';
 import { addNotification } from 'renderer/utils';
 import GlobalAppContext from '../GlobalAppContext';
 import WallpaperUploadItem from './WallpaperUploadItem';
@@ -16,19 +10,22 @@ export default function WallpaperUploadModal({
 }: {
   uploads: IConvertedSystemFiles[];
 }) {
-  const uploadingStatus = useRef(false);
+  const [uploadingStatus, setUploadingStatus] = useState(false);
   const { wallpapers, refreshWallpapers, setUploadedFiles, loginData } =
     useContext(GlobalAppContext);
 
   const [files, setFiles] = useState(uploads);
 
   function updateIndex(index: number, update: IConvertedSystemFiles) {
-    if (uploadingStatus.current) return;
+    if (uploadingStatus) return;
     files[index] = update;
     setFiles([...files]);
   }
 
-  const updateIndexCallback = useCallback(updateIndex, [files]);
+  const updateIndexCallback = useCallback(updateIndex, [
+    files,
+    uploadingStatus,
+  ]);
 
   const elements = files.map(
     (upload: IConvertedSystemFiles, uploadIndex: number) => {
@@ -45,7 +42,7 @@ export default function WallpaperUploadModal({
   );
 
   function onAttemptClickOut(event: SyntheticEvent<HTMLElement, Event>) {
-    if (uploadingStatus.current) return;
+    if (uploadingStatus) return;
     const element = event.target as HTMLElement;
     // eslint-disable-next-line no-empty
     if (clickOutClassnames.includes(element.className)) {
@@ -53,8 +50,8 @@ export default function WallpaperUploadModal({
   }
 
   const uploadWallpapers = useCallback(async () => {
-    if (uploadingStatus.current) return;
-    uploadingStatus.current = true;
+    if (uploadingStatus) return;
+    setUploadingStatus(true);
     if (loginData?.userAccountData?.id && wallpapers && refreshWallpapers) {
       addNotification('Uploading Wallpapers');
       await window.electron.ipcRenderer.uploadImages(
@@ -67,7 +64,7 @@ export default function WallpaperUploadModal({
       refreshWallpapers();
     }
 
-    uploadingStatus.current = false;
+    setUploadingStatus(false);
 
     files.forEach((file: IConvertedSystemFiles) => {
       URL.revokeObjectURL(file.uri);
@@ -79,32 +76,35 @@ export default function WallpaperUploadModal({
       setUploadedFiles(Array<IConvertedSystemFiles>());
     }
   }, [
-    files,
+    uploadingStatus,
     loginData?.userAccountData?.id,
-    setUploadedFiles,
-    refreshWallpapers,
     wallpapers,
+    refreshWallpapers,
+    files,
+    setUploadedFiles,
   ]);
 
   const cancelUpload = useCallback(async () => {
-    if (uploadingStatus.current) return;
+    if (uploadingStatus) return;
     setFiles(Array<IConvertedSystemFiles>());
     if (setUploadedFiles) {
       setUploadedFiles(Array<IConvertedSystemFiles>());
     }
-  }, [setUploadedFiles]);
+  }, [setUploadedFiles, uploadingStatus]);
 
   return (
-    <div role="none" className="wallpaper-upload" onClick={onAttemptClickOut}>
+    <div role="none" id="wallpaper-upload" onClick={onAttemptClickOut}>
       <div className="wallpaper-uploads-container">{elements}</div>
-      <div className="wallpaper-upload-buttons">
-        <button type="button" onClick={cancelUpload}>
-          <h2>Cancel</h2>
-        </button>
-        <button type="button" onClick={uploadWallpapers}>
-          <h2>Upload</h2>
-        </button>
-      </div>
+      {!uploadingStatus && (
+        <div className="wallpaper-upload-buttons">
+          <button type="button" onClick={cancelUpload}>
+            <h2>Cancel</h2>
+          </button>
+          <button type="button" onClick={uploadWallpapers}>
+            <h2>Upload</h2>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -58,9 +58,6 @@ export default function WallpaperPreview({
       <div className="wallpaper-preview-size">
         <h3>{`${data.width}x${data.height}`}</h3> <IoResizeOutline />
       </div>
-      <div className="wallpaper-preview-downloads">
-        <h3>{data.downloads}</h3> <IoMdDownload />
-      </div>
     </div>
   );
 }
