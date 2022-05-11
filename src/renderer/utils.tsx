@@ -15,6 +15,21 @@ export function TimeToSqliteInteger(date: Date) {
   );
 }
 
+export function SqlIntegerToTime(number: number) {
+  const string = number.toString();
+
+  const newDate = new Date();
+
+  newDate.setUTCSeconds(parseInt(string.slice(-2, string.length), 10));
+  newDate.setUTCMinutes(parseInt(string.slice(-4, string.length - 2), 10));
+  newDate.setUTCHours(parseInt(string.slice(-6, string.length - 4), 10));
+  newDate.setUTCDate(parseInt(string.slice(-8, string.length - 6), 10));
+  newDate.setUTCMonth(parseInt(string.slice(-10, string.length - 8), 10));
+  newDate.setUTCFullYear(parseInt(string.slice(0, -10), 10));
+
+  return newDate;
+}
+
 export function addNotification(noti: string) {
   document.dispatchEvent(
     new CustomEvent<INotificationInfo>('notification', {

@@ -3,7 +3,7 @@ import { addNotification } from 'renderer/utils';
 import GlobalAppContext from '../GlobalAppContext';
 import WallpaperUploadItem from './WallpaperUploadItem';
 
-const clickOutClassnames = ['wallpaper-view', 'wallpaper-view-container'];
+const clickOutClassnames = ['wp-view', 'wp-view-container'];
 
 export default function WallpaperUploadModal({
   uploads,
@@ -93,10 +93,10 @@ export default function WallpaperUploadModal({
   }, [setUploadedFiles, uploadingStatus]);
 
   return (
-    <div role="none" id="wallpaper-upload" onClick={onAttemptClickOut}>
-      <div className="wallpaper-uploads-container">{elements}</div>
+    <div role="none" id="wp-upload" onClick={onAttemptClickOut}>
+      <div className="wp-uploads-container">{elements}</div>
       {!uploadingStatus && (
-        <div className="wallpaper-upload-buttons">
+        <div className="wp-upload-buttons">
           <button type="button" onClick={cancelUpload}>
             <h2>Cancel</h2>
           </button>

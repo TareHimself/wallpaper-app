@@ -4,7 +4,7 @@ import GlobalAppContext from '../GlobalAppContext';
 import BooleanSetting from './SettingsHelpers/BooleanSetting';
 
 export default function Settings({
-  activeClass = 'wallpaper-settings-neutral',
+  activeClass = 'wp-settings-neutral',
 }: {
   activeClass: string;
 }) {
@@ -52,9 +52,9 @@ export default function Settings({
 
   return (
     <div className={activeClass}>
-      <div className="wallpaper-settings-container">
-        <div className="wallpaper-settings-container-inner">
-          <div className="wallpaper-settings-login">
+      <div className="wp-settings-container">
+        <div className="wp-settings-container-inner">
+          <div className="wp-settings-login">
             {loginData !== undefined && (
               <>
                 <img src={loginData.userAccountData.avatar} alt="profile" />
@@ -71,28 +71,28 @@ export default function Settings({
               </button>
             )}
           </div>
-          <div className="wallpaper-settings-item">
+          <div className="wp-settings-item">
             <h3>Fullscreen ?</h3>
-            <div className="wallpaper-settings-item-content">
+            <div className="wp-settings-item-content">
               <BooleanSetting
                 value={settings?.bShouldUseFullscreen || false}
                 onValueUpdated={onUpdateFullscreen}
               />
             </div>
           </div>
-          <div className="wallpaper-settings-item">
+          <div className="wp-settings-item">
             <h3>Max Items Per Page</h3>
-            <div className="wallpaper-settings-item-content" />
+            <div className="wp-settings-item-content" />
           </div>
           {false && (
-            <div className="wallpaper-settings-item">
+            <div className="wp-settings-item">
               <h3>Default Download Path</h3>
-              <div className="wallpaper-settings-item-content" />
+              <div className="wp-settings-item-content" />
             </div>
           )}
-          <div className="wallpaper-settings-item">
+          <div className="wp-settings-item">
             <h3>Clear Thumbnail Cache</h3>
-            <div className="wallpaper-settings-item-content">
+            <div className="wp-settings-item-content">
               <button
                 type="button"
                 className="setting-button"
@@ -108,7 +108,7 @@ export default function Settings({
             </div>
           </div>
         </div>
-        <div className="wallpaper-settings-back">
+        <div className="wp-settings-back">
           <AiOutlineCaretLeft
             onClick={() => {
               if (setSettingsState) {

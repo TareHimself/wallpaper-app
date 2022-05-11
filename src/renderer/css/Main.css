@@ -24,6 +24,7 @@ body {
 .theme-dark {
   --level0: #2c2f33;
   --level1: #44494f;
+  --level2: #7a7a7a;
   --primaryText: white;
   --icon-color: white;
   --icon-color-hover: rgb(46, 227, 0);
@@ -34,6 +35,7 @@ body {
 .theme-light {
   --level0: #cdcdcd;
   --level1: #444444;
+  --level2: #1f1f1f;
   --primaryText: rgb(255, 255, 255);
   --icon-color: rgb(255, 255, 255);
   --icon-color-hover: rgb(46, 227, 0);
@@ -214,7 +216,7 @@ p {
   width: calc(100% * 1.2);
 }
 
-.wallpaper-preview-icon {
+.wp-preview-icon {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -225,17 +227,17 @@ p {
   transition: all 0.3s ease-in-out;
 }
 
-.grid-item .wallpaper-preview-icon {
+.grid-item .wp-preview-icon {
   top: 100%;
   transform: translateY(50%);
 }
 
-.grid-item:hover .wallpaper-preview-icon {
+.grid-item:hover .wp-preview-icon {
   top: 50%;
   transform: translateY(-50%);
 }
 
-.wallpaper-preview-size {
+.wp-preview-size {
   position: absolute;
   display: flex;
   top: 0%;
@@ -251,7 +253,7 @@ p {
   justify-content: space-evenly;
 }
 
-.wallpaper-preview-downloads {
+.wp-preview-downloads {
   position: absolute;
   display: flex;
   top: 100%;
@@ -268,13 +270,13 @@ p {
   justify-content: space-evenly;
 }
 
-.wallpaper-preview-downloads,
-.wallpaper-preview-size svg {
+.wp-preview-downloads,
+.wp-preview-size svg {
   font-size: 20px;
   color: var(--icon-color);
 }
 
-.wallpaper-view {
+.wp-view {
   position: absolute;
   top: 0;
   left: 0;
@@ -288,16 +290,16 @@ p {
   justify-content: space-evenly;
 }
 
-.wallpaper-view .next-item-right,
-.wallpaper-view .next-item-left {
+.wp-view .next-item-right,
+.wp-view .next-item-left {
   height: 60%;
   font-size: 100px;
   color: var(--icon-color);
   transition: all 0.3s ease-in-out;
 }
 
-.wallpaper-view .next-item-right:hover,
-.wallpaper-view .next-item-left:hover {
+.wp-view .next-item-right:hover,
+.wp-view .next-item-left:hover {
   color: var(--icon-color-hover);
 }
 
@@ -316,7 +318,7 @@ p {
   transform: translateX(-10%);
 }
 
-.wallpaper-view-container {
+.wp-view-container {
   position: relative;
   top: 0;
   left: 0;
@@ -330,8 +332,8 @@ p {
   margin: 20px 0px;
 }
 
-.wallpaper-view-panel-bottom,
-.wallpaper-view-panel-top {
+.wp-view-panel-bottom,
+.wp-view-panel-top {
   position: relative;
   display: flex;
   width: 100%;
@@ -343,34 +345,34 @@ p {
   justify-content: space-evenly;
 }
 
-.wallpaper-view-panel-top span {
+.wp-view-panel-top span {
   display: flex;
   align-items: center;
   flex-direction: row;
 }
 
-.wallpaper-view-panel-top span svg {
+.wp-view-panel-top span svg {
   color: var(--icon-color);
   font-size: 25px;
   margin: 0 10px;
 }
 
-.wallpaper-view-panel-bottom svg,
-.wallpaper-view-panel-top svg {
+.wp-view-panel-bottom svg,
+.wp-view-panel-top svg {
   margin: 5px;
   font-size: 40px;
   color: var(--icon-color);
   transition: all 0.2s ease-in-out;
 }
 
-.wallpaper-view-panel-bottom svg:hover,
-.wallpaper-view-panel-top svg:hover {
+.wp-view-panel-bottom svg:hover,
+.wp-view-panel-top svg:hover {
   margin: 0px;
   font-size: 50px;
   color: var(--icon-color-hover);
 }
 
-#wallpaper-in-view {
+#wp-in-view {
   max-height: 70%;
   height: min-content;
   width: fit-content;
@@ -379,7 +381,7 @@ p {
   border-radius: 20px;
 }
 
-.wallpaper-view-fullscreen {
+.wp-view-fullscreen {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -404,7 +406,7 @@ p {
   }
 }
 
-.wallpaper-view-fullscreen h2 {
+.wp-view-fullscreen h2 {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -418,14 +420,14 @@ p {
   pointer-events: none;
 }
 
-#wallpaper-in-view-fullscreen {
+#wp-in-view-fullscreen {
   position: relative;
   height: 100%;
   width: 100%;
   object-fit: cover;
 }
 
-#wallpaper-upload {
+#wp-upload {
   position: absolute;
   top: 0;
   left: 0;
@@ -439,7 +441,7 @@ p {
   justify-content: space-evenly;
 }
 
-.wallpaper-uploads-container {
+.wp-uploads-container {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -452,12 +454,12 @@ p {
   column-gap: 30px;
 }
 
-.wallpaper-uploads-container::-webkit-scrollbar-thumb {
+.wp-uploads-container::-webkit-scrollbar-thumb {
   background-color: var(--scroll1);
   border-radius: 10px;
 }
 
-.wallpaper-upload-size {
+.wp-upload-size {
   position: absolute;
   display: flex;
   top: 0%;
@@ -473,12 +475,12 @@ p {
   justify-content: space-around;
 }
 
-.wallpaper-upload-size svg {
+.wp-upload-size svg {
   font-size: 20px;
   color: var(--icon-color);
 }
 
-.wallpaper-upload-buttons {
+.wp-upload-buttons {
   position: absolute;
   display: flex;
   top: 85%;
@@ -495,7 +497,7 @@ p {
   justify-content: space-around;
 }
 
-.wallpaper-upload-buttons button {
+.wp-upload-buttons button {
   position: relative;
   display: flex;
   background: transparent;
@@ -509,17 +511,17 @@ p {
   transition: all 0.3s ease-in-out;
 }
 
-.wallpaper-upload-buttons button h2 {
+.wp-upload-buttons button h2 {
   position: relative;
   margin: 0;
   transition: all 0.3s ease-in-out;
 }
 
-.wallpaper-upload-buttons button:hover {
+.wp-upload-buttons button:hover {
   border: 2px solid var(--icon-color-hover);
 }
 
-.wallpaper-upload-buttons button:hover h2 {
+.wp-upload-buttons button:hover h2 {
   color: var(--icon-color-hover);
 }
 
@@ -586,9 +588,9 @@ p {
   }
 }
 
-.wallpaper-settings-open,
-.wallpaper-settings-closed,
-.wallpaper-settings-neutral {
+.wp-settings-open,
+.wp-settings-closed,
+.wp-settings-neutral {
   position: absolute;
   display: flex;
   left: 50%;
@@ -601,41 +603,41 @@ p {
   transition: background-color 0.1s ease-in-out;
 }
 
-.wallpaper-settings-open {
+.wp-settings-open {
   background-color: rgba(32, 32, 32, 0.9);
 }
 
-.wallpaper-settings-closed,
-.wallpaper-settings-neutral {
+.wp-settings-closed,
+.wp-settings-neutral {
   background-color: rgba(0, 0, 0, 0);
   pointer-events: none;
 }
 
-.wallpaper-settings-neutral {
+.wp-settings-neutral {
   background-color: rgba(0, 0, 0, 0);
   pointer-events: none;
 }
 
-.wallpaper-settings-container {
+.wp-settings-container {
   position: relative;
   height: 100%;
   background-color: var(--level0);
   width: 0px;
 }
 
-.wallpaper-settings-open .wallpaper-settings-container {
+.wp-settings-open .wp-settings-container {
   animation-duration: 0.5s;
   animation-name: open-settings;
   animation-fill-mode: forwards;
 }
 
-.wallpaper-settings-closed .wallpaper-settings-container {
+.wp-settings-closed .wp-settings-container {
   animation-duration: 0.5s;
   animation-name: close-settings;
   animation-fill-mode: forwards;
 }
 
-.wallpaper-settings-container-inner {
+.wp-settings-container-inner {
   position: relative;
   display: flex;
   height: 100%;
@@ -647,7 +649,7 @@ p {
   overflow-y: overlay;
 }
 
-.wallpaper-settings-login {
+.wp-settings-login {
   display: flex;
   min-width: 80%;
   aspect-ratio: 1;
@@ -659,7 +661,7 @@ p {
   border-bottom: 2px solid var(--icon-color);
 }
 
-.wallpaper-settings-back {
+.wp-settings-back {
   position: absolute;
   display: flex;
   top: -5px;
@@ -673,7 +675,7 @@ p {
   justify-content: flex-start;
 }
 
-.wallpaper-settings-back svg {
+.wp-settings-back svg {
   height: 50px;
   aspect-ratio: 1;
   font-size: 40px;
@@ -683,20 +685,20 @@ p {
   transform: rotate(180deg);
 }
 
-.wallpaper-settings-back svg:hover {
+.wp-settings-back svg:hover {
   font-size: 50px;
   padding-left: 0px;
   color: var(--icon-color-hover);
 }
 
-.wallpaper-settings-login img {
+.wp-settings-login img {
   object-fit: cover;
   width: 60%;
   aspect-ratio: 1;
   border-radius: 50%;
 }
 
-.wallpaper-settings-login button {
+.wp-settings-login button {
   position: relative;
   display: flex;
   background: transparent;
@@ -710,31 +712,31 @@ p {
   transition: all 0.3s ease-in-out;
 }
 
-.wallpaper-settings-login button h2 {
+.wp-settings-login button h2 {
   position: relative;
   margin: 0;
   transition: all 0.3s ease-in-out;
 }
 
-.wallpaper-settings-login button:hover {
+.wp-settings-login button:hover {
   border: 2px solid var(--icon-color-hover);
 }
 
-.wallpaper-settings-login button:hover h2 {
+.wp-settings-login button:hover h2 {
   color: var(--icon-color-hover);
 }
 
-.wallpaper-settings-item {
+.wp-settings-item {
   height: fit-content;
   width: 90%;
   margin: 20px 0;
 }
 
-.wallpaper-settings-item h3 {
+.wp-settings-item h3 {
   text-align: center;
 }
 
-.wallpaper-settings-item-content {
+.wp-settings-item-content {
   display: flex;
   align-items: center;
   min-height: 60px;
@@ -797,14 +799,14 @@ p {
   border-color: var(--icon-color-hover);
 }
 
-.wallpaper-page-select {
+.wp-page-select {
   height: 30px;
   width: fit-content;
   margin-bottom: 50px;
   display: flex;
 }
 
-.wallpaper-page-select button {
+.wp-page-select button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -814,7 +816,7 @@ p {
   margin: 0px 10px;
 }
 
-#wallpaper-notification-panel {
+#wp-notification-panel {
   pointer-events: none;
   position: absolute;
   display: flex;
@@ -826,7 +828,7 @@ p {
   z-index: 2;
 }
 
-.wallpaper-notification-panel-inner {
+.wp-notification-panel-inner {
   pointer-events: none;
   position: relative;
   display: flex;
@@ -866,8 +868,8 @@ p {
   }
 }
 
-.wallpaper-notification-item,
-.wallpaper-notification-item-closed {
+.wp-notification-item,
+.wp-notification-item-closed {
   pointer-events: none;
   position: relative;
   display: flex;
@@ -877,32 +879,32 @@ p {
   top: 120px;
   left: 0;
   margin-top: 10px;
-  background-color: var(--level1);
+  background-color: var(--level2);
   border-radius: 0 20px 20px 0;
   align-items: center;
   flex-direction: row;
   justify-content: space-around;
 }
 
-.wallpaper-notification-item h2,
-.wallpaper-notification-item-closed h2 {
+.wp-notification-item h2,
+.wp-notification-item-closed h2 {
   font-size: 18px;
   margin: 0;
 }
 
-.wallpaper-notification-item {
+.wp-notification-item {
   animation-duration: 0.75s;
   animation-name: notification-slide-in;
   animation-fill-mode: forwards;
 }
 
-.wallpaper-notification-item-closed {
+.wp-notification-item-closed {
   animation-duration: 0.5s;
   animation-name: notification-slide-out;
   animation-fill-mode: forwards;
 }
 
-#wallpaper-drag-upload {
+#wp-drag-upload {
   position: absolute;
   display: flex;
   top: -5px;
@@ -914,7 +916,7 @@ p {
   align-items: center;
 }
 
-#wallpaper-drag-upload svg {
+#wp-drag-upload svg {
   color: var(--icon-color);
   font-size: 100px;
 }
@@ -925,6 +927,90 @@ p {
   left: 0;
   height: 100vh;
   width: 100vw;
+}
+
+.wp-view-info {
+  position: absolute;
+  display: flex;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8);
+  align-items: center;
+  justify-content: center;
+}
+
+.wp-view-info-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--level1);
+  width: 500px;
+  height: 400px;
+  border-radius: 20px;
+  box-sizing: border-box;
+  padding: 20px;
+  justify-content: space-between;
+}
+
+.wp-view-info-content svg {
+  font-size: 20px;
+  color: var(--icon-color);
+  transition: all 0.3s ease-in-out;
+}
+
+.wp-view-info-content svg:hover {
+  color: var(--icon-color-hover);
+}
+
+.wp-view-info-content-btns {
+  display: flex;
+  width: 100%;
+  height: fit-content;
+  justify-content: space-around;
+}
+
+.wp-view-info-content-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 300px;
+  width: 400px;
+  margin: 0 auto;
+}
+
+.wp-view-info-content-data h2 {
+  font-size: 25px;
+  margin: 15px 0;
+  font-weight: bold;
+}
+
+.wp-view-info-content-data h3 {
+  font-size: 15px;
+  margin: 5px 0;
+}
+
+.wp-view-info-content-btns button {
+  position: relative;
+  display: flex;
+  background: transparent;
+  border: 2px solid var(--icon-color);
+  padding: 0;
+  border-radius: 20px;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 50px;
+  font-size: 20px;
+  color: var(--icon-color);
+  transition: all 0.3s ease-in-out;
+}
+
+.wp-view-info-content-btns button:hover {
+  border: 2px solid var(--icon-color-hover);
+  color: var(--icon-color-hover);
 }
 
 @media only screen and (max-width: 1580px) {

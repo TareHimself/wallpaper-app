@@ -42,7 +42,7 @@ export default function WallpaperUploadItem({
           placeholder="wallpaper tags seperated by commas"
         />
       </div>
-      <div className="wallpaper-upload-size">
+      <div className="wp-upload-size">
         <h3>{`${data.width}x${data.height}`}</h3>
         <IoResizeOutline />
       </div>

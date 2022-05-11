@@ -12,7 +12,7 @@ function NotificationItem({
   function removeNotification() {
     const elementToRemove = document.getElementById(data.id.toString());
     if (elementToRemove) {
-      elementToRemove.className = 'wallpaper-notification-item-closed';
+      elementToRemove.className = 'wp-notification-item-closed';
       setTimeout(reduceNotifications, 500);
     }
   }
@@ -22,7 +22,7 @@ function NotificationItem({
   });
 
   return (
-    <div id={`${data.id}`} className="wallpaper-notification-item">
+    <div id={`${data.id}`} className="wp-notification-item">
       <h2>{data.content}</h2>
     </div>
   );
@@ -70,10 +70,8 @@ export default function NotificationContainer() {
     });
 
   return (
-    <div id="wallpaper-notification-panel">
-      <div className="wallpaper-notification-panel-inner">
-        {sortedNotifications}
-      </div>
+    <div id="wp-notification-panel">
+      <div className="wp-notification-panel-inner">{sortedNotifications}</div>
     </div>
   );
 }

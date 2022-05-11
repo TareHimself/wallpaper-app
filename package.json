@@ -91,7 +91,7 @@
     "publish": {
       "provider": "github",
       "owner": "Oyintare Ebelo",
-      "repo": "wallpaper-app"
+      "repo": "wp-app"
     }
   },
   "repository": {

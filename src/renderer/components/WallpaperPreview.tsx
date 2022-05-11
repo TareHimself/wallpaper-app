@@ -54,8 +54,8 @@ export default function WallpaperPreview({
         decoding="async"
         crossOrigin="anonymous"
       />
-      <BiSearchAlt className="wallpaper-preview-icon" />
-      <div className="wallpaper-preview-size">
+      <BiSearchAlt className="wp-preview-icon" />
+      <div className="wp-preview-size">
         <h3>{`${data.width}x${data.height}`}</h3> <IoResizeOutline />
       </div>
     </div>

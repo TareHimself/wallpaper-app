@@ -9,13 +9,15 @@ import { CgClose } from 'react-icons/cg';
 import { VscInfo } from 'react-icons/vsc';
 import { IoResizeOutline } from 'react-icons/io5';
 import { SyntheticEvent, useCallback, useContext, useState } from 'react';
-import { addNotification } from 'renderer/utils';
+import { addNotification, SqlIntegerToTime } from 'renderer/utils';
+import { MdOutlineArrowBackIos } from 'react-icons/md';
 import GlobalAppContext from '../GlobalAppContext';
 
-const clickOutClassnames = ['wallpaper-view', 'wallpaper-view-container'];
+const clickOutClassnames = ['wp-view', 'wp-view-container'];
 
 export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
-  const { wallpapers, setStartPointForView } = useContext(GlobalAppContext);
+  const { wallpapers, setStartPointForView, loginData } =
+    useContext(GlobalAppContext);
 
   const [currentIndex, setCurrentIndex] = useState<number>(
     wallpapers?.indexOf(data) || 0
@@ -24,6 +26,14 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
   const currentWallpaper = wallpapers ? wallpapers[currentIndex] : data;
 
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+
+  const [isShowingInformation, setShouldShowInformation] =
+    useState<boolean>(false);
+
+  const bisLoggedIn = loginData !== undefined;
+
+  const bisOwnerOfWallpaper: boolean =
+    bisLoggedIn && loginData.userAccountData.id === currentWallpaper.uploader;
 
   function gotoNextWallpaper() {
     if (!wallpapers) return;
@@ -60,10 +70,18 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
     }
   }
 
+  const deleteOrReportWallpaper = useCallback(() => {
+    addNotification('This does not work yet, Tare is lazy');
+  }, []);
+
+  const editWallpaper = useCallback(() => {
+    addNotification('This does not work yet, Tare is lazy');
+  }, []);
+
   const downloadWallpaper = useCallback(() => {
     if (wallpapers && currentIndex !== undefined && wallpapers[currentIndex]) {
       const wallpaperToDownload = document.getElementById(
-        'wallpaper-in-view'
+        'wp-in-view'
       ) as HTMLImageElement;
 
       const xhr = new XMLHttpRequest();
@@ -92,7 +110,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
   }, []);* */
 
   return (
-    <div role="none" className="wallpaper-view" onClick={onAttemptClickOut}>
+    <div role="none" className="wp-view" onClick={onAttemptClickOut}>
       <BsChevronCompactLeft
         className={
           currentIndex !== undefined && currentIndex > 0
@@ -101,9 +119,13 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
         }
         onClick={gotoPreviousWallpaper}
       />
-      <div className="wallpaper-view-container">
-        <div className="wallpaper-view-panel-top">
-          <VscInfo />
+      <div className="wp-view-container">
+        <div className="wp-view-panel-top">
+          <VscInfo
+            onClick={() => {
+              setShouldShowInformation(true);
+            }}
+          />
           <span>
             <h2>{`${currentWallpaper.width}x${currentWallpaper.height}`}</h2>
             <IoResizeOutline />
@@ -112,10 +134,10 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
         <img
           src={currentWallpaper.uri}
           alt="wallpaper"
-          id="wallpaper-in-view"
+          id="wp-in-view"
           draggable="false"
         />
-        <div className="wallpaper-view-panel-bottom">
+        <div className="wp-view-panel-bottom">
           <CgClose
             onClick={() => {
               if (setStartPointForView) {
@@ -144,16 +166,58 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
         onClick={gotoNextWallpaper}
       />
       {isFullscreen && (
-        <div className="wallpaper-view-fullscreen">
+        <div className="wp-view-fullscreen">
           <img
             src={currentWallpaper.uri}
             alt="wallpaper"
-            id="wallpaper-in-view-fullscreen"
+            id="wp-in-view-fullscreen"
             draggable="false"
             onDoubleClick={() => {
               setIsFullscreen(false);
             }}
           />
+        </div>
+      )}
+      {isShowingInformation && (
+        <div
+          className="wp-view-info"
+          onClick={(event) => {
+            if ((event.target as HTMLElement).className === 'wp-view-info') {
+              setShouldShowInformation(false);
+            }
+          }}
+          role="none"
+        >
+          <div className="wp-view-info-content">
+            <MdOutlineArrowBackIos
+              onClick={() => {
+                setShouldShowInformation(false);
+              }}
+            />
+            <span className="wp-view-info-content-data">
+              <h2>Upload Date</h2>
+              <h3>
+                {SqlIntegerToTime(
+                  currentWallpaper.uploaded_at
+                ).toLocaleDateString()}
+              </h3>
+              <h2>Tags</h2>
+              <h3>{currentWallpaper.tags}</h3>
+            </span>
+
+            <span className="wp-view-info-content-btns">
+              {bisLoggedIn && (
+                <button onClick={deleteOrReportWallpaper} type="button">
+                  {bisOwnerOfWallpaper ? 'Delete' : 'Report'}
+                </button>
+              )}
+              {bisOwnerOfWallpaper && (
+                <button onClick={editWallpaper} type="button">
+                  Edit
+                </button>
+              )}
+            </span>
+          </div>
         </div>
       )}
     </div>

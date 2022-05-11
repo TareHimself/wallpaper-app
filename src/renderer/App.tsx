@@ -175,11 +175,7 @@ export default function App() {
     function onInitialDrag(_event: DragEvent) {
       const root = document.getElementById('root');
       const currentDragArea = document.getElementById('drag-area');
-      if (
-        root &&
-        !currentDragArea &&
-        !document.getElementById('wallpaper-upload')
-      ) {
+      if (root && !currentDragArea && !document.getElementById('wp-upload')) {
         const dragArea = document.createElement('div');
         dragArea.id = 'drag-area';
         dragArea.addEventListener('dragenter', onDragEnter);
@@ -227,7 +223,7 @@ export default function App() {
         <div id="sub-root">
           <Home />
           {(hasNextPage || hasPreviousPage) && (
-            <div className="wallpaper-page-select">
+            <div className="wp-page-select">
               {hasPreviousPage && (
                 <button type="button" onClick={gotoPreviousPage}>
                   <GrFormPrevious />
@@ -242,7 +238,7 @@ export default function App() {
           )}
         </div>
         <Dashboard />
-        <Settings activeClass={`wallpaper-settings-${settingsState}`} />
+        <Settings activeClass={`wp-settings-${settingsState}`} />
         {startPointForView !== undefined && (
           <WallpaperViewModal data={startPointForView} />
         )}
@@ -251,7 +247,7 @@ export default function App() {
         )}
 
         {wantsToDragUpload && (
-          <div id="wallpaper-drag-upload">
+          <div id="wp-drag-upload">
             <AiOutlineCloudUpload />
           </div>
         )}
