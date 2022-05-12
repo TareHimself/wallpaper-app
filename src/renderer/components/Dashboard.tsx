@@ -60,13 +60,10 @@ export default function Dashboard() {
 
     if (response?.files.length) {
       response?.files.forEach(
-        ([buffer, index, tags]: [Uint8Array, number, string]) => {
+        ([image, index, tags]: [string, number, string]) => {
           images.push({
             id: index,
-            uri: URL.createObjectURL(
-              new Blob([buffer], { type: 'image/png' } /* (1) */)
-            ),
-            file: buffer,
+            file: image,
             width: 0,
             height: 0,
             tags,

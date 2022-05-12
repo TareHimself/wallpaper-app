@@ -125,13 +125,10 @@ export default function App() {
             .then((result: ISystemFilesResult) => {
               setUploadedFiles(
                 result.files.map(
-                  ([buffer, index, tags]: [Uint8Array, number, string]) => {
+                  ([image, index, tags]: [string, number, string]) => {
                     return {
                       id: index,
-                      uri: URL.createObjectURL(
-                        new Blob([buffer], { type: 'image/png' } /* (1) */)
-                      ),
-                      file: buffer,
+                      file: image,
                       width: 0,
                       height: 0,
                       tags,

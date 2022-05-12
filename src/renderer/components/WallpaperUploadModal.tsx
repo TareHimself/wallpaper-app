@@ -66,10 +66,6 @@ export default function WallpaperUploadModal({
 
     setUploadingStatus(false);
 
-    files.forEach((file: IConvertedSystemFiles) => {
-      URL.revokeObjectURL(file.uri);
-    });
-
     setFiles(Array<IConvertedSystemFiles>());
 
     if (setUploadedFiles) {

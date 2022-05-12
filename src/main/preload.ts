@@ -114,6 +114,24 @@ contextBridge.exposeInMainWorld('electron', {
         });
       });
     },
+    thumnailCache: new Map<string, string>(),
+    loadThumnailCache() {
+      ipcRenderer.send('load-thumnails');
+      return new Promise<void>((resolve) => {
+        ipcRenderer.once('load-thumnails', (_event, cache) => {
+          this.thumnailCache = cache;
+          resolve();
+        });
+      });
+    },
+    updateThumnailCache(cache: Map<string, string>) {
+      ipcRenderer.send('save-thumnails', cache);
+      return new Promise<void>((resolve) => {
+        ipcRenderer.once('save-thumnails', () => {
+          resolve();
+        });
+      });
+    },
     on(channel: string, func: (...args: unknown[]) => void) {
       if (validChannels.includes(channel)) {
         const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>

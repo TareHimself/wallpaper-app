@@ -29,7 +29,7 @@ export default function WallpaperUploadItem({
   return (
     <div className="upload-item">
       <img
-        src={data.uri}
+        src={`data:image/png;base64,${data.file}`}
         alt="upload"
         onLoad={onImageLoaded}
         draggable="false"

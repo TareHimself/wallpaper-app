@@ -108,6 +108,9 @@ declare global {
         clearCache(): Promise<void>;
         clearThumbnailCache(): void;
         clearWallpaperCache(): Promise<void>;
+        thumbnailCache: Map<string, string>;
+        loadThumnailCache(): Promise<void>;
+        updateThumnailCache(cache: Map<string, string>): Promise<void>;
         on(
           channel: string,
           func: (...args: unknown[]) => void
@@ -119,13 +122,12 @@ declare global {
 
   interface ISystemFilesResult {
     result: boolean;
-    files: Array<[Uint8Array | Buffer, number, string]>;
+    files: Array<[string, number, string]>;
   }
 
   interface IConvertedSystemFiles {
     id: number;
-    uri: string;
-    file: Uint8Array;
+    file: string;
     height: number;
     width: number;
     tags: string;

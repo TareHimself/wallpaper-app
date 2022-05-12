@@ -20,6 +20,7 @@ import {
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { io, Socket } from 'socket.io-client';
+import axios from 'axios';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -28,6 +29,21 @@ const fsSync = require('fs');
 const macaddress = require('macaddress');
 
 let mainWindow: BrowserWindow | null = null;
+
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+
+  throw new Error('Failed To Aquire Instance Lock');
+}
+
+app.on('second-instance', () => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.focus();
+  }
+});
 
 const loginDataPath = path.join(
   app.getPath('userData'),
@@ -77,9 +93,14 @@ const createWindow = async () => {
     await installExtensions();
   }
 
-  socket = io('wss://wallpaperz-server.oyintare.dev', {
-    reconnectionDelayMax: 10000,
-  });
+  socket = io(
+    isDevelopment
+      ? 'ws://localhost:3001'
+      : 'wss://wallpaperz-server.oyintare.dev',
+    {
+      reconnectionDelayMax: 10000,
+    }
+  );
 
   socket.on('connect', () => {
     socket.emit('client-identify', devicePhysicalAddress);
@@ -172,15 +193,15 @@ ipcMain.on(
   'upload-files',
   async (event, defaultUploadPath: string, pathsToUpload: string[]) => {
     if (pathsToUpload.length) {
-      const readers: Promise<[Buffer, number, string]>[] = [];
+      const readers: Promise<[string, number, string]>[] = [];
 
       // eslint-disable-next-line no-inner-declarations
       async function readFile(
         fileToLoad: string,
         index: number
-      ): Promise<[Buffer, number, string]> {
+      ): Promise<[string, number, string]> {
         return [
-          await fs.readFile(fileToLoad),
+          (await fs.readFile(fileToLoad)).toString('base64'),
           index,
           path.parse(fileToLoad).name,
         ];
@@ -213,15 +234,15 @@ ipcMain.on(
           } else if (result.filePaths.length === 0) {
             event.reply('upload-files', { result: false, files: [] });
           } else {
-            const readers: Promise<[Buffer, number, string]>[] = [];
+            const readers: Promise<[string, number, string]>[] = [];
 
             // eslint-disable-next-line no-inner-declarations
             async function readFile(
               fileToLoad: string,
               index: number
-            ): Promise<[Buffer, number, string]> {
+            ): Promise<[string, number, string]> {
               return [
-                await fs.readFile(fileToLoad),
+                (await fs.readFile(fileToLoad)).toString('base64'),
                 index,
                 path.parse(fileToLoad).name,
               ];
@@ -328,13 +349,34 @@ ipcMain.on('logout', async (event) => {
   event.reply('logout');
 });
 
-ipcMain.on('upload-images', async (event, images, uploader_id) => {
-  socket.once('upload-images', (results: IWallpaperData[]) => {
-    event.reply('upload-images', results);
-  });
+ipcMain.on(
+  'upload-images',
+  async (event, images: IConvertedSystemFiles[], uploader_id) => {
+    const params = new URLSearchParams({
+      user: devicePhysicalAddress,
+      uploader: uploader_id,
+    });
 
-  socket.emit('upload-images', images, uploader_id);
-});
+    const serverUrl = isDevelopment
+      ? 'http://localhost:3001'
+      : 'https://wallpaperz-server.oyintare.dev';
+
+    console.log(`${serverUrl}/wallpapers?${params.toString()}`);
+
+    const response = await axios
+      .put(`${serverUrl}/wallpapers?${params.toString()}`, images, {
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+      })
+      .catch((error) => console.log(error.message));
+
+    if (response?.data) {
+      event.reply('upload-images', response?.data);
+    } else {
+      event.reply('upload-images', []);
+    }
+  }
+);
 
 ipcMain.on('download-image', async (event, image: IImageDownload) => {
   const downloadPath = path.join(app.getPath('pictures'), `${image.id}.jpg`);
