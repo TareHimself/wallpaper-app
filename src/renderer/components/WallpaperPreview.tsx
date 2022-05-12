@@ -15,7 +15,7 @@ export default function WallpaperPreview({
     | undefined;
 }) {
   const uri =
-    localStorage.getItem(data.id) ||
+    window.electron.ipcRenderer.thumbnailCache?.get(data.id) ||
     `https://wallpaperz.nyc3.cdn.digitaloceanspaces.com/wallpapers/${data.id}.png`;
 
   useEffect(() => {

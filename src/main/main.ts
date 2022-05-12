@@ -50,6 +50,11 @@ const loginDataPath = path.join(
   'loginData.wallpaperz'
 );
 
+const thumnailCachePath = path.join(
+  app.getPath('userData'),
+  'thumnails.wallpaperz'
+);
+
 const settingsPath = path.join(app.getPath('userData'), 'settings.json');
 let devicePhysicalAddress = '';
 let socket: Socket;
@@ -399,6 +404,27 @@ ipcMain.on('clear-cache', async (event) => {
   event.reply('clear-cache');
 });
 
-ipcMain.on('update-thumb-cache', async (event, cacheUpdate) => {
-  event.reply('update-thumb-cache', true);
+ipcMain.on('save-thumnails', async (event, newCache) => {
+  fs.writeFile(thumnailCachePath, JSON.stringify(newCache))
+    .then(() => {
+      event.reply('save-thumbnails', true);
+      console.log('SavedThumnails');
+    })
+    .catch((error: Error) => {
+      event.reply('save-thumbnails', false);
+      console.log(error);
+    });
+});
+
+ipcMain.on('load-thumbnails', async (event) => {
+  try {
+    if (fsSync.existsSync(thumnailCachePath)) {
+      const stringResult = await fs.readFile(thumnailCachePath);
+      event.reply('load-thumbnails', JSON.parse(stringResult));
+    } else {
+      event.reply('load-thumbnails', {});
+    }
+  } catch (error) {
+    event.reply('load-thumbnails', {});
+  }
 });
