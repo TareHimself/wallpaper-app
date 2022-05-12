@@ -99,8 +99,11 @@ class ThumbnailGenerator extends EventEmitter {
       );
 
       const result = this.canvas.toDataURL();
-      if (this.currentItem) {
-        localStorage.setItem(this.currentItem, result);
+      if (this.currentItem && window.electron.ipcRenderer.thumbnailCache) {
+        window.electron.ipcRenderer.thumbnailCache.set(
+          this.currentItem,
+          result
+        );
         this.emit(this.currentItem, result);
       }
       this.currentItem = undefined;
@@ -113,6 +116,12 @@ class ThumbnailGenerator extends EventEmitter {
     this.currentItem = this.thumbnailQueue.pop();
     if (!this.currentItem) {
       addNotification('Done Generating Thumbnails');
+      if (window.electron.ipcRenderer.thumbnailCache) {
+        window.electron.ipcRenderer.updateThumnailCache(
+          window.electron.ipcRenderer.thumbnailCache
+        );
+      }
+
       this.bHasNotified = false;
       return;
     }
