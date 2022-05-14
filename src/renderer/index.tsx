@@ -12,7 +12,6 @@ window.electron.ipcRenderer
       window.electron.ipcRenderer.thumbnailCache.set(key, value);
     });
 
-    console.log(window.electron.ipcRenderer.thumbnailCache.size);
     // eslint-disable-next-line promise/always-return
     if (container) {
       const root = createRoot(container);

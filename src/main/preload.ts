@@ -104,7 +104,7 @@ contextBridge.exposeInMainWorld('electron', {
       });
     },
     clearThumbnailCache() {
-      localStorage.clear();
+      this.thumbnailCache.clear();
     },
     clearWallpaperCache() {
       ipcRenderer.send('clear-cache');
