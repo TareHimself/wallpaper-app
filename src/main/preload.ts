@@ -23,9 +23,17 @@ contextBridge.exposeInMainWorld('electron', {
       ipcRenderer.send('upload-files', lastUploadPath, paths);
 
       return new Promise<ISystemFilesResult>((resolve) => {
-        ipcRenderer.once('upload-files', (_event, response) => {
-          resolve(response);
-        });
+        ipcRenderer.once(
+          'upload-files',
+          (_event, response: ISystemFilesResult) => {
+            response.files = response.files.map(([file, index, fileName]) => [
+              file,
+              index,
+              fileName.split(',').length > 2 ? fileName : '',
+            ]);
+            resolve(response);
+          }
+        );
       });
     },
     loadSettings() {

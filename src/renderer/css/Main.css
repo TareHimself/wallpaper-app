@@ -990,6 +990,30 @@ p {
 .wp-view-info-content-data h3 {
   font-size: 15px;
   margin: 5px 0;
+  width: 100%;
+  text-align: center;
+  resize: none;
+}
+
+
+.wp-view-info-content-data textarea {
+  width: 100%;
+  height: inherit;
+  padding: 5px;
+  margin-bottom: 20px;
+  pointer-events: none;
+  background: transparent;
+  color: var(--primaryText);
+  border: none;
+  font-family: "Roboto", sans-serif;
+  font-weight: normal;
+  resize: none;
+  border-radius: 20px;
+}
+
+.wp-view-info-content-data textarea:read-write {
+  border: solid 2px var(--icon-color);
+  pointer-events: all;
 }
 
 .wp-view-info-content-btns button {

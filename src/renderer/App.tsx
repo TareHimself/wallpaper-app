@@ -71,7 +71,8 @@ export default function App() {
 
       if (new Date(loginData.discordAuthData.refresh_at) < new Date()) {
         // refresh auth2 here
-        addNotification('Pls Re-Login to discord');
+        addNotification('Discord login expired so no pfp updates');
+        addNotification('In the future the login will auto refresh');
         return;
       }
       axios

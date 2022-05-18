@@ -23,6 +23,8 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
     wallpapers?.indexOf(data) || 0
   );
 
+  const [isEditingTags, setEditingTags] = useState<boolean>(false);
+
   const currentWallpaper = wallpapers ? wallpapers[currentIndex] : data;
 
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
@@ -74,9 +76,21 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
     addNotification('This does not work yet, Tare is lazy');
   }, []);
 
-  const editWallpaper = useCallback(() => {
-    addNotification('This does not work yet, Tare is lazy');
-  }, []);
+  const toggleEditWallpaper = useCallback(() => {
+    if (isEditingTags) {
+      setEditingTags(false);
+
+      const element = document.getElementById('tags-edit');
+
+      if (element) {
+        const tagsEdit = element as HTMLTextAreaElement;
+        tagsEdit.value = tagsEdit.value.toLowerCase();
+        console.log(tagsEdit.value);
+      }
+    } else {
+      setEditingTags(true);
+    }
+  }, [isEditingTags]);
 
   const downloadWallpaper = useCallback(() => {
     if (wallpapers && currentIndex !== undefined && wallpapers[currentIndex]) {
@@ -202,7 +216,12 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
                 ).toLocaleDateString()}
               </h3>
               <h2>Tags</h2>
-              <h3>{currentWallpaper.tags}</h3>
+              <textarea
+                id="tags-edit"
+                spellCheck={false}
+                defaultValue={currentWallpaper.tags}
+                readOnly={!isEditingTags}
+              />
             </span>
 
             <span className="wp-view-info-content-btns">
@@ -212,8 +231,8 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
                 </button>
               )}
               {bisOwnerOfWallpaper && (
-                <button onClick={editWallpaper} type="button">
-                  Edit
+                <button onClick={toggleEditWallpaper} type="button">
+                  {isEditingTags ? 'Save' : 'Edit'}
                 </button>
               )}
             </span>

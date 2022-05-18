@@ -51,6 +51,12 @@ export default function WallpaperUploadModal({
 
   const uploadWallpapers = useCallback(async () => {
     if (uploadingStatus) return;
+
+    if (files.filter((file) => file.tags.split(',').length < 3).length !== 0) {
+      addNotification('All wallpapers must have atleast 3 tags');
+      return;
+    }
+
     setUploadingStatus(true);
     if (loginData?.userAccountData?.id && wallpapers && refreshWallpapers) {
       addNotification('Uploading Wallpapers');
