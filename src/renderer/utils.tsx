@@ -4,13 +4,13 @@ function pad(number: number) {
   return number < 10 ? `0${number}` : `${number}`;
 }
 
-export function TimeToSqliteInteger(date: Date) {
+export function TimeToInteger(date: Date) {
   return parseInt(
     `${date.getUTCFullYear()}${pad(date.getUTCMonth())}${pad(
       date.getUTCDate()
     )}${pad(date.getUTCHours())}${pad(date.getUTCMinutes())}${pad(
       date.getUTCSeconds()
-    )}${pad(date.getUTCMilliseconds())}`,
+    )}`,
     10
   );
 }
@@ -19,7 +19,6 @@ export function SqlIntegerToTime(number: number) {
   const string = number.toString();
 
   const newDate = new Date();
-
   newDate.setUTCSeconds(parseInt(string.slice(-2, string.length), 10));
   newDate.setUTCMinutes(parseInt(string.slice(-4, string.length - 2), 10));
   newDate.setUTCHours(parseInt(string.slice(-6, string.length - 4), 10));
@@ -34,7 +33,7 @@ export function addNotification(noti: string) {
   document.dispatchEvent(
     new CustomEvent<INotificationInfo>('notification', {
       detail: {
-        id: TimeToSqliteInteger(new Date()),
+        id: performance.now(),
         content: noti,
       },
     })

@@ -111,9 +111,8 @@ contextBridge.exposeInMainWorld('electron', {
         });
       });
     },
-    clearThumbnailCache() {
-      this.thumbnailCache.clear();
-    },
+    thumbnailCache: new Map<string, string>(),
+    clearThumbnailCache() {},
     clearWallpaperCache() {
       ipcRenderer.send('clear-cache');
       return new Promise<void>((resolve) => {
@@ -122,7 +121,6 @@ contextBridge.exposeInMainWorld('electron', {
         });
       });
     },
-    thumbnailCache: new Map<string, string>(),
     loadThumnailCache() {
       ipcRenderer.send('load-thumbnails');
       return new Promise<[string, string][]>((resolve) => {

@@ -751,7 +751,8 @@ p {
   visibility: collapse;
 }
 
-.boolean-setting {
+.boolean-setting,
+.range-setting {
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -759,6 +760,42 @@ p {
   flex-direction: row;
   height: 100%;
   width: 100%;
+}
+
+.range-setting-button,
+.wp-page-select button {
+  position: relative;
+  display: flex;
+  background: transparent;
+  border: 2px solid var(--icon-color);
+  padding: 0;
+  border-radius: 50%;
+  height: 37px;
+  min-height: 37px;
+  max-height: 37px;
+  align-items: center;
+  justify-content: center;
+  width: 37px;
+  min-width: 37px;
+  max-width: 37px;
+  transition: all 0.3s ease-in-out;
+}
+
+.range-setting-button svg,
+.wp-page-select button svg {
+  font-size: 25px;
+  color: var(--icon-color);
+  transition: all 0.3s ease-in-out;
+}
+
+.range-setting-button:hover,
+.wp-page-select button:hover {
+  border-color: var(--icon-color-hover);
+}
+
+.range-setting-button:hover svg,
+.wp-page-select button:hover svg {
+  color: var(--icon-color-hover);
 }
 
 .boolean-setting-true,
@@ -888,8 +925,12 @@ p {
 
 .wp-notification-item h2,
 .wp-notification-item-closed h2 {
-  font-size: 18px;
+  font-size: 15px;
+  width: 100%;
+  text-align: center;
+  padding: 0 20px;
   margin: 0;
+  overflow-wrap: break-word;
 }
 
 .wp-notification-item {
@@ -995,7 +1036,6 @@ p {
   resize: none;
 }
 
-
 .wp-view-info-content-data textarea {
   width: 100%;
   height: inherit;
@@ -1005,7 +1045,7 @@ p {
   background: transparent;
   color: var(--primaryText);
   border: none;
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-weight: normal;
   resize: none;
   border-radius: 20px;

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { GrFormNext, GrFormPrevious } from 'react-icons/gr';
 import { AiOutlineCloudUpload } from 'react-icons/ai';
+import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 import Home from './routes/Home';
 import './css/Main.css';
 import Dashboard from './components/Dashboard';
@@ -36,7 +37,7 @@ export default function App() {
   const [wallpapers, setWallpapers, refreshWallpapers, hasNextPage] =
     useWallpaperApi(
       currentPage,
-      12, // settings?.maxItemsPerPage || 0,
+      settings?.maxItemsPerPage || 12,
       query.toLowerCase()
     );
 
@@ -55,7 +56,7 @@ export default function App() {
     const subRoot = document.getElementById('sub-root');
     if (subRoot) subRoot.scrollTo({ top: 0, behavior: 'smooth' });
 
-    setCurrentPage(currentPage - 1);
+    setCurrentPage(Math.max(0, currentPage - 1));
   }, [currentPage]);
 
   const setSearchQuery = useCallback((search: string) => {
@@ -71,8 +72,7 @@ export default function App() {
 
       if (new Date(loginData.discordAuthData.refresh_at) < new Date()) {
         // refresh auth2 here
-        addNotification('Discord login expired so no pfp updates');
-        addNotification('In the future the login will auto refresh');
+        addNotification('Discord login expired.');
         return;
       }
       axios
@@ -216,6 +216,7 @@ export default function App() {
           setLoginData,
           setSettingsState,
           refreshWallpapers,
+          setCurrentPage,
         }}
       >
         <div id="sub-root">
@@ -224,12 +225,12 @@ export default function App() {
             <div className="wp-page-select">
               {hasPreviousPage && (
                 <button type="button" onClick={gotoPreviousPage}>
-                  <GrFormPrevious />
+                  <BiLeftArrowAlt />
                 </button>
               )}
               {hasNextPage && (
                 <button type="button" onClick={gotoNextPage}>
-                  <GrFormNext />
+                  <BiRightArrowAlt />
                 </button>
               )}
             </div>

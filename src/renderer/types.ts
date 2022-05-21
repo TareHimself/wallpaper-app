@@ -76,6 +76,7 @@ declare global {
     loginData: ILoginData | undefined;
     setLoginData: (newLogin: ILoginData | undefined) => void;
     setSettingsState: React.Dispatch<React.SetStateAction<string>>;
+    setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
     refreshWallpapers: () => void;
   }
 

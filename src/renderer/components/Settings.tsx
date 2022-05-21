@@ -2,6 +2,7 @@ import { useCallback, useContext } from 'react';
 import { AiOutlineCaretLeft } from 'react-icons/ai';
 import GlobalAppContext from '../GlobalAppContext';
 import BooleanSetting from './SettingsHelpers/BooleanSetting';
+import RangeSetting from './SettingsHelpers/RangeSetting';
 
 export default function Settings({
   activeClass = 'wp-settings-neutral',
@@ -15,6 +16,7 @@ export default function Settings({
     settings,
     setSettings,
     refreshWallpapers,
+    setCurrentPage,
   } = useContext(GlobalAppContext);
 
   const startLogin = useCallback(() => {
@@ -50,6 +52,16 @@ export default function Settings({
     [setSettings, settings]
   );
 
+  const onUpdateRange = useCallback(
+    (newValue: number) => {
+      if (setSettings && settings) {
+        if (setCurrentPage) setCurrentPage(0);
+        setSettings({ ...settings, maxItemsPerPage: newValue });
+      }
+    },
+    [setCurrentPage, setSettings, settings]
+  );
+
   return (
     <div className={activeClass}>
       <div className="wp-settings-container">
@@ -82,7 +94,14 @@ export default function Settings({
           </div>
           <div className="wp-settings-item">
             <h3>Max Items Per Page</h3>
-            <div className="wp-settings-item-content" />
+            <div className="wp-settings-item-content">
+              <RangeSetting
+                value={settings?.maxItemsPerPage || 12}
+                onValueUpdated={onUpdateRange}
+                min={6}
+                max={24}
+              />
+            </div>
           </div>
           {false && (
             <div className="wp-settings-item">
@@ -97,7 +116,7 @@ export default function Settings({
                 type="button"
                 className="setting-button"
                 onClick={() => {
-                  window.electron.ipcRenderer.clearThumbnailCache();
+                  window.electron.ipcRenderer.thumbnailCache.clear();
                   if (refreshWallpapers) {
                     refreshWallpapers();
                   }
