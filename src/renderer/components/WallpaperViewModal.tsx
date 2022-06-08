@@ -9,8 +9,8 @@ import { CgClose } from 'react-icons/cg';
 import { VscInfo } from 'react-icons/vsc';
 import { IoResizeOutline } from 'react-icons/io5';
 import { SyntheticEvent, useCallback, useContext, useState } from 'react';
-import { addNotification, SqlIntegerToTime } from 'renderer/utils';
 import { MdOutlineArrowBackIos } from 'react-icons/md';
+import { addNotification, SqlIntegerToTime } from '../utils';
 import GlobalAppContext from '../GlobalAppContext';
 
 const clickOutClassnames = ['wp-view', 'wp-view-container'];
@@ -85,7 +85,6 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
       if (element) {
         const tagsEdit = element as HTMLTextAreaElement;
         tagsEdit.value = tagsEdit.value.toLowerCase();
-        console.log(tagsEdit.value);
       }
     } else {
       setEditingTags(true);

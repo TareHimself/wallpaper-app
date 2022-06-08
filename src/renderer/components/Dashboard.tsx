@@ -3,7 +3,7 @@ import { AiOutlineCloudUpload } from 'react-icons/ai';
 import { BiSearchAlt } from 'react-icons/bi';
 import { FiSettings, FiFilter } from 'react-icons/fi';
 import { ImExit } from 'react-icons/im';
-import { addNotification } from 'renderer/utils';
+import { addNotification } from '../utils';
 import GlobalAppContext from '../GlobalAppContext';
 
 const typingThrottle = 500;

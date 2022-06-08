@@ -1,5 +1,5 @@
 import { SyntheticEvent, useCallback, useContext, useState } from 'react';
-import { addNotification } from 'renderer/utils';
+import { addNotification } from '../utils';
 import GlobalAppContext from '../GlobalAppContext';
 import WallpaperUploadItem from './WallpaperUploadItem';
 

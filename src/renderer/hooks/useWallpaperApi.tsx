@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { addNotification } from 'renderer/utils';
+import { addNotification } from '../utils';
 
 export default function useWallpaperApi(
   page: number,
