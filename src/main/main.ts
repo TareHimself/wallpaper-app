@@ -425,4 +425,12 @@ if (!gotTheLock) {
       event.reply('load-thumbnails', {});
     }
   });
+
+  ipcMain.on('quit-app', async () => {
+    try {
+      app.quit();
+    } catch (error) {
+      console.log(error);
+    }
+  });
 }

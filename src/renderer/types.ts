@@ -112,6 +112,7 @@ declare global {
         thumbnailCache: Map<string, string>;
         loadThumnailCache(): Promise<[string, string][]>;
         updateThumnailCache(cache: Map<string, string>): Promise<boolean>;
+        quitApp(): void;
         on(
           channel: string,
           func: (...args: unknown[]) => void

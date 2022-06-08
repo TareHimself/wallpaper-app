@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { GrFormNext, GrFormPrevious } from 'react-icons/gr';
 import { AiOutlineCloudUpload } from 'react-icons/ai';
 import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 import Home from './routes/Home';
@@ -171,6 +170,8 @@ export default function App() {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     function onInitialDrag(_event: DragEvent) {
+      if (!loginData) return;
+
       const root = document.getElementById('root');
       const currentDragArea = document.getElementById('drag-area');
       if (root && !currentDragArea && !document.getElementById('wp-upload')) {
@@ -199,7 +200,12 @@ export default function App() {
         document.removeEventListener('dragenter', onDragEnter);
       }
     };
-  }, [settings?.defaultDownloadPath, uploadedFiles.length, setUploadedFiles]);
+  }, [
+    settings?.defaultDownloadPath,
+    uploadedFiles.length,
+    setUploadedFiles,
+    loginData,
+  ]);
 
   if (window.electron) {
     return (

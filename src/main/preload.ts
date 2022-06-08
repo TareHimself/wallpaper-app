@@ -137,6 +137,9 @@ contextBridge.exposeInMainWorld('electron', {
         });
       });
     },
+    quitApp() {
+      ipcRenderer.send('quit-app');
+    },
     on(channel: string, func: (...args: unknown[]) => void) {
       if (validChannels.includes(channel)) {
         const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>

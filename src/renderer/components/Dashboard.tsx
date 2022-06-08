@@ -1,7 +1,8 @@
 import { useCallback, useContext, useRef } from 'react';
 import { AiOutlineCloudUpload } from 'react-icons/ai';
 import { BiSearchAlt } from 'react-icons/bi';
-import { FiSettings } from 'react-icons/fi';
+import { FiSettings, FiFilter } from 'react-icons/fi';
+import { ImExit } from 'react-icons/im';
 import { addNotification } from 'renderer/utils';
 import GlobalAppContext from '../GlobalAppContext';
 
@@ -80,6 +81,12 @@ export default function Dashboard() {
 
   return (
     <div id="dashboard">
+      <FiFilter
+        className="dashboard-icon"
+        onClick={() => {
+          addNotification('Filters coming soon!');
+        }}
+      />
       <AiOutlineCloudUpload className="dashboard-icon" onClick={uploadFiles} />
       <div id="search">
         <BiSearchAlt />
@@ -96,6 +103,12 @@ export default function Dashboard() {
           if (setSettingsState) {
             setSettingsState('open');
           }
+        }}
+      />
+      <ImExit
+        className="dashboard-icon"
+        onClick={() => {
+          window.electron.ipcRenderer.quitApp();
         }}
       />
     </div>

@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import '../css/Main.css';
 import { BiSearchAlt } from 'react-icons/bi';
-import { IoMdDownload } from 'react-icons/io';
 import { IoResizeOutline } from 'react-icons/io5';
 import { generateThumbnail } from 'renderer/utils';
 
