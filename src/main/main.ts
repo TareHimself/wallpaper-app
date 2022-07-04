@@ -62,7 +62,7 @@ if (!gotTheLock) {
 
   const settingsPath = path.join(app.getPath('userData'), 'settings.json');
   let devicePhysicalAddress = '';
-  let currentToken = '';
+  // let currentToken = '';
   let socket: Socket;
 
   if (process.env.NODE_ENV === 'production') {
@@ -109,9 +109,10 @@ if (!gotTheLock) {
     socket.on('connect', () => {
       socket.emit('client-identify', devicePhysicalAddress);
 
-      socket.once('auth', (token: string) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      socket.once('auth', (_token: string) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        currentToken = token;
+        // currentToken = token;
       });
 
       socket.emit('auth', devicePhysicalAddress);
