@@ -12,7 +12,7 @@ import WallpaperUploadModal from './components/WallpaperUploadModal';
 import useSettings from './hooks/useSettings';
 import Settings from './components/Settings';
 import useLogin from './hooks/useLogin';
-import { addNotification } from './utils';
+import { addNotification, getDatabaseUrl } from './utils';
 
 export default function App() {
   const [startPointForView, setStartPointForView] = useState<
@@ -80,11 +80,24 @@ export default function App() {
             Authorization: `${loginData.discordAuthData.token_type} ${loginData.discordAuthData.access_token}`,
           },
         })
-        .then((response) => {
+        .then(async (response) => {
           // eslint-disable-next-line promise/always-return
           if (response?.data?.user) {
             loginData.discordUserData = response.data.user;
+            loginData.userAccountData.nickname =
+              loginData.discordUserData.username;
             loginData.userAccountData.avatar = `https://cdn.discordapp.com/avatars/${loginData.discordUserData.id}/${loginData.discordUserData.avatar}.webp?size=1024`;
+
+            axios.post(
+              `${await getDatabaseUrl()}/users`,
+              [loginData.userAccountData],
+              {
+                headers: {
+                  Authorization: `Bearer ${await window.electron.ipcRenderer.getToken()}`,
+                },
+              }
+            );
+
             setLoginData(loginData);
             // update backend here
           }

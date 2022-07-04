@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
+import { getDatabaseUrl } from '../utils';
 
 export default function useLogin(): [
   ILoginData | undefined,
@@ -18,15 +19,9 @@ export default function useLogin(): [
   async function verifyLogin(
     UserAccountData: IUserAccountData
   ): Promise<boolean> {
-    const getUserResponse = await axios.get(
-      `https://wallpaperz-database.oyintare.dev/users/${UserAccountData.id}`,
-      {
-        headers: {
-          'x-api-key':
-            '2865228d39b816a799316c6224070ef0ebc155b6127bba2e87bde0cb347149b1',
-        },
-      }
-    );
+    const getUserResponse = await axios
+      .get(`${await getDatabaseUrl()}/users/?u=${UserAccountData.id}`)
+      .catch(alert);
 
     if (getUserResponse?.data?.error) {
       return false;

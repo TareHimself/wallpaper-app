@@ -159,3 +159,17 @@ export async function generateThumbnail(id: string): Promise<string> {
     ThumbnailGuru.getThumbnail(id);
   });
 }
+
+export async function getServerUrl() {
+  if (window.electron && (await window.electron.ipcRenderer.isDev())) {
+    return 'http://localhost:3001';
+  }
+  return 'https://wallpaperz-server.oyintare.dev';
+}
+
+export async function getDatabaseUrl() {
+  if (window.electron && (await window.electron.ipcRenderer.isDev())) {
+    return 'http://localhost:3002';
+  }
+  return 'https://wallpaperz-database.oyintare.dev';
+}

@@ -6,10 +6,6 @@ declare global {
 
     nickname: string;
 
-    security_level: string;
-
-    downloads: string;
-
     options: string;
   }
 
@@ -33,8 +29,6 @@ declare global {
 
   interface IWallpaperData {
     id: string;
-
-    uri: string;
 
     width: number;
 
@@ -113,6 +107,8 @@ declare global {
         loadThumnailCache(): Promise<[string, string][]>;
         updateThumnailCache(cache: Map<string, string>): Promise<boolean>;
         quitApp(): void;
+        isDev(): Promise<boolean>;
+        getToken(): Promise<string>;
         on(
           channel: string,
           func: (...args: unknown[]) => void

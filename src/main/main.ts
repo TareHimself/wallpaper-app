@@ -62,6 +62,7 @@ if (!gotTheLock) {
 
   const settingsPath = path.join(app.getPath('userData'), 'settings.json');
   let devicePhysicalAddress = '';
+  let currentToken = '';
   let socket: Socket;
 
   if (process.env.NODE_ENV === 'production') {
@@ -104,8 +105,15 @@ if (!gotTheLock) {
       }
     );
 
+    // handle when we connect to the server
     socket.on('connect', () => {
       socket.emit('client-identify', devicePhysicalAddress);
+
+      socket.once('auth', (token: string) => {
+        currentToken = token;
+      });
+
+      socket.emit('auth', devicePhysicalAddress);
     });
 
     const RESOURCES_PATH = app.isPackaged
@@ -303,7 +311,21 @@ if (!gotTheLock) {
   });
 
   ipcMain.on('open-login', async (event) => {
-    const url = `https://discord.com/api/oauth2/authorize?client_id=967602114350174348&redirect_uri=https%3A%2F%2Fwallpaperz-server.oyintare.dev%2Fauth&response_type=code&scope=identify&state=${devicePhysicalAddress}`;
+    const params = new URLSearchParams({
+      client_id: '967602114350174348',
+      redirect_uri: `${
+        isDevelopment
+          ? 'http://localhost:3001'
+          : 'https://wallpaperz-server.oyintare.dev'
+      }/auth`,
+      response_type: 'code',
+      scope: 'identify',
+      state: `${devicePhysicalAddress}`,
+    }).toString();
+
+    const url = `https://discord.com/api/oauth2/authorize?${params}`;
+
+    console.log(url);
 
     socket.on('open-login', async (response: ILoginData) => {
       const encryptedData = safeStorage.encryptString(JSON.stringify(response));
@@ -432,5 +454,13 @@ if (!gotTheLock) {
     } catch (error) {
       console.log(error);
     }
+  });
+
+  ipcMain.on('is-dev', (event) => {
+    event.reply('is-dev', isDevelopment);
+  });
+
+  ipcMain.on('get-token', (event) => {
+    event.reply('get-token', 'test');
   });
 }

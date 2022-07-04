@@ -2,15 +2,20 @@ import { useCallback, useContext, useRef } from 'react';
 import { AiOutlineCloudUpload } from 'react-icons/ai';
 import { BiSearchAlt } from 'react-icons/bi';
 import { FiSettings, FiFilter } from 'react-icons/fi';
-import { ImExit } from 'react-icons/im';
+import { IoMdRefresh } from 'react-icons/io';
 import { addNotification } from '../utils';
 import GlobalAppContext from '../GlobalAppContext';
 
 const typingThrottle = 500;
 
 export default function Dashboard() {
-  const { setSearchQuery, setUploadedFiles, loginData, setSettingsState } =
-    useContext(GlobalAppContext);
+  const {
+    setSearchQuery,
+    setUploadedFiles,
+    loginData,
+    setSettingsState,
+    refreshWallpapers,
+  } = useContext(GlobalAppContext);
 
   const updateTyping = useRef<number | undefined>(undefined);
 
@@ -105,10 +110,11 @@ export default function Dashboard() {
           }
         }}
       />
-      <ImExit
+      <IoMdRefresh
         className="dashboard-icon"
         onClick={() => {
-          window.electron.ipcRenderer.quitApp();
+          if (refreshWallpapers) refreshWallpapers();
+          addNotification('Refreshing');
         }}
       />
     </div>

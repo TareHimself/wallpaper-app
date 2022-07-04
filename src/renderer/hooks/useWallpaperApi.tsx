@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { addNotification } from '../utils';
+import { addNotification, getDatabaseUrl } from '../utils';
 
 export default function useWallpaperApi(
   page: number,
@@ -16,7 +16,7 @@ export default function useWallpaperApi(
 
   const hasNextPage = useRef(false);
 
-  const refreshWallpapers = useCallback(() => {
+  const refreshWallpapers = useCallback(async () => {
     async function onRequestCompleted(
       response: AxiosResponse<IWallpaperData[], AxiosError>
     ) {
@@ -39,9 +39,9 @@ export default function useWallpaperApi(
     if (maxItems > 0) {
       axios
         .get(
-          `https://wallpaper-app-database.oyintareebelo.repl.co/wallpapers?o=${
-            page * maxItems
-          }&l=${maxItems + 1}&q=${query}`
+          `${await getDatabaseUrl()}/wallpapers?o=${page * maxItems}&l=${
+            maxItems + 1
+          }&q=${query}`
         )
         // eslint-disable-next-line promise/always-return
         .then(onRequestCompleted)

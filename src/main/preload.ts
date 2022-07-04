@@ -140,6 +140,22 @@ contextBridge.exposeInMainWorld('electron', {
     quitApp() {
       ipcRenderer.send('quit-app');
     },
+    isDev() {
+      ipcRenderer.send('is-dev');
+      return new Promise<boolean>((resolve) => {
+        ipcRenderer.once('is-dev', (_event, result) => {
+          resolve(result);
+        });
+      });
+    },
+    getToken() {
+      ipcRenderer.send('get-token');
+      return new Promise<string>((resolve) => {
+        ipcRenderer.once('get-token', (_event, result) => {
+          resolve(result);
+        });
+      });
+    },
     on(channel: string, func: (...args: unknown[]) => void) {
       if (validChannels.includes(channel)) {
         const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>

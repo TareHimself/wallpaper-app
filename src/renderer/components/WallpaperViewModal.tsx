@@ -10,7 +10,8 @@ import { VscInfo } from 'react-icons/vsc';
 import { IoResizeOutline } from 'react-icons/io5';
 import { SyntheticEvent, useCallback, useContext, useState } from 'react';
 import { MdOutlineArrowBackIos } from 'react-icons/md';
-import { addNotification, SqlIntegerToTime } from '../utils';
+import axios from 'axios';
+import { addNotification, getDatabaseUrl, SqlIntegerToTime } from '../utils';
 import GlobalAppContext from '../GlobalAppContext';
 
 const clickOutClassnames = ['wp-view', 'wp-view-container'];
@@ -76,7 +77,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
     addNotification('This does not work yet, Tare is lazy');
   }, []);
 
-  const toggleEditWallpaper = useCallback(() => {
+  const toggleEditWallpaper = useCallback(async () => {
     if (isEditingTags) {
       setEditingTags(false);
 
@@ -84,12 +85,24 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
 
       if (element) {
         const tagsEdit = element as HTMLTextAreaElement;
-        tagsEdit.value = tagsEdit.value.toLowerCase();
+        const newTags = tagsEdit.value.toLowerCase();
+        tagsEdit.value = newTags;
+        axios
+          .post(
+            `${await getDatabaseUrl()}/wallpapers`,
+            [{ ...currentWallpaper, tags: newTags }],
+            {
+              headers: {
+                Authorization: `Bearer ${await window.electron.ipcRenderer.getToken()}`,
+              },
+            }
+          )
+          .catch(alert);
       }
     } else {
       setEditingTags(true);
     }
-  }, [isEditingTags]);
+  }, [currentWallpaper, isEditingTags]);
 
   const downloadWallpaper = useCallback(() => {
     if (wallpapers && currentIndex !== undefined && wallpapers[currentIndex]) {
@@ -145,7 +158,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
           </span>
         </div>
         <img
-          src={currentWallpaper.uri}
+          src={`https://wallpaperz.nyc3.cdn.digitaloceanspaces.com/wallpapers/${currentWallpaper.id}.png`}
           alt="wallpaper"
           id="wp-in-view"
           draggable="false"
@@ -181,7 +194,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
       {isFullscreen && (
         <div className="wp-view-fullscreen">
           <img
-            src={currentWallpaper.uri}
+            src={`https://wallpaperz.nyc3.cdn.digitaloceanspaces.com/wallpapers/${currentWallpaper.id}.png`}
             alt="wallpaper"
             id="wp-in-view-fullscreen"
             draggable="false"

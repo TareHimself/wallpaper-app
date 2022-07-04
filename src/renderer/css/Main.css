@@ -661,6 +661,10 @@ p {
   border-bottom: 2px solid var(--icon-color);
 }
 
+.wp-settings-login img {
+  pointer-events: none;
+}
+
 .wp-settings-back {
   position: absolute;
   display: flex;
