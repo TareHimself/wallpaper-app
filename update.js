@@ -21,7 +21,6 @@ writeFileSync(
   JSON.stringify(PACKAGE_LOCK_JSON_PATH, null, 2)
 );
 
-console.log(version);
 exec(
   `git add --all && git commit -m "Before Release v${version}" && git tag v${version} && git push --tags`,
   (error, stdout, stderr) => {
