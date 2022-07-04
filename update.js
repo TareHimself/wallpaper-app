@@ -8,7 +8,8 @@ const PACKAGE_LOCK_JSON_PATH = path.join(
   __dirname,
   'release/app/package-lock.json'
 );
-const version = process.argv[2] || '1.0.0';
+const argument = process.argv[2] || '1.0.0-c';
+const version = argument.split('-')[0];
 const packageJson = JSON.parse(readFileSync(PACKAGE_JSON_PATH));
 const packageLockJson = JSON.parse(readFileSync(PACKAGE_LOCK_JSON_PATH));
 
@@ -21,8 +22,13 @@ writeFileSync(
   JSON.stringify(PACKAGE_LOCK_JSON_PATH, null, 2)
 );
 
+const bShouldCommitFirst = argument.split('-')[1] === 'c';
 exec(
-  `git add --all && git commit -m "Before Release v${version}" && git tag v${version} && git push --tags`,
+  `git fetch ${
+    bShouldCommitFirst
+      ? `&& git add --all && git commit -m "Before Release v${version}"`
+      : ''
+  } && git tag v${version} && git push --tags`,
   (error, stdout, stderr) => {
     if (error) {
       console.log(`error: ${error.message}`);
