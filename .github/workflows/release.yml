@@ -35,8 +35,10 @@ jobs:
           npm exec tsc
           npm run package
 
-      - uses: ncipollo/release-action@v1
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
-          artifacts: 'release.tar.gz,foo/*.txt'
-          body: 'Wallpapers - Developed by Oyintare Ebelo'
-          token: ${{ secrets.GITHUB_TOKEN }}
+          body: 'Wallpaperz - Developed by Oyintare Ebelo'
+          files: |
+            release/build/*.exe
+            release/build/latest.yml

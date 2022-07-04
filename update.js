@@ -15,12 +15,10 @@ const packageLockJson = JSON.parse(readFileSync(PACKAGE_LOCK_JSON_PATH));
 
 packageJson.version = version;
 packageLockJson.version = version;
+packageLockJson.packages[''].version = version;
 
 writeFileSync(PACKAGE_JSON_PATH, JSON.stringify(packageJson, null, 2));
-writeFileSync(
-  PACKAGE_LOCK_JSON_PATH,
-  JSON.stringify(PACKAGE_LOCK_JSON_PATH, null, 2)
-);
+writeFileSync(PACKAGE_LOCK_JSON_PATH, JSON.stringify(packageLockJson, null, 2));
 
 const bShouldCommitFirst = argument.split('-')[1] === 'c';
 exec(
