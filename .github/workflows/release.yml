@@ -12,6 +12,9 @@ jobs:
 
     steps:
       # ...
+      - name: Check out Git repository
+        uses: actions/checkout@v1
+
       - name: Install Node.js and NPM
         uses: actions/setup-node@v2
         with:
