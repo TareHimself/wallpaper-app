@@ -110,6 +110,7 @@ if (!gotTheLock) {
       socket.emit('client-identify', devicePhysicalAddress);
 
       socket.once('auth', (token: string) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         currentToken = token;
       });
 
