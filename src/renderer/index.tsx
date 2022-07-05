@@ -6,10 +6,10 @@ import NotificationContainer from './components/NotificationContainer';
 const container = document.getElementById('root');
 // eslint-disable-next-line promise/catch-or-return
 window.electron.ipcRenderer
-  .loadThumnailCache()
+  ?.loadThumnailCache()
   .then((result: [string, string][]) => {
     result.forEach(([key, value]) => {
-      window.electron.ipcRenderer.thumbnailCache.set(key, value);
+      window.electron.ipcRenderer?.thumbnailCache.set(key, value);
     });
 
     // eslint-disable-next-line promise/always-return

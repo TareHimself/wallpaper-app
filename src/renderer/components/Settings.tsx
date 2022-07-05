@@ -1,5 +1,6 @@
 import { useCallback, useContext } from 'react';
 import { AiOutlineCaretLeft } from 'react-icons/ai';
+import { addNotification } from 'renderer/utils';
 import GlobalAppContext from '../GlobalAppContext';
 import BooleanSetting from './SettingsHelpers/BooleanSetting';
 import RangeSetting from './SettingsHelpers/RangeSetting';
@@ -21,26 +22,26 @@ export default function Settings({
 
   const startLogin = useCallback(() => {
     window.electron.ipcRenderer
-      .openLogin()
+      ?.openLogin()
       .then((loginResponse: ILoginData) => {
         // eslint-disable-next-line promise/always-return
         if (setLoginData) {
           setLoginData(loginResponse);
         }
       })
-      .catch(alert);
+      .catch((e) => addNotification(e.message));
   }, [setLoginData]);
 
   const logout = useCallback(() => {
     window.electron.ipcRenderer
-      .logout()
+      ?.logout()
       .then(() => {
         // eslint-disable-next-line promise/always-return
         if (setLoginData) {
           setLoginData(undefined);
         }
       })
-      .catch(alert);
+      .catch((e) => addNotification(e.message));
   }, [setLoginData]);
 
   const onUpdateFullscreen = useCallback(
@@ -116,7 +117,7 @@ export default function Settings({
                 type="button"
                 className="setting-button"
                 onClick={() => {
-                  window.electron.ipcRenderer.thumbnailCache.clear();
+                  window.electron.ipcRenderer?.thumbnailCache.clear();
                   if (refreshWallpapers) {
                     refreshWallpapers();
                   }

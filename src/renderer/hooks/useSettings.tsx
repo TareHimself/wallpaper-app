@@ -8,7 +8,7 @@ export default function useSettings(): [
 
   const updateSettings = useCallback((settings: IApplicationSettings) => {
     if (window.electron) {
-      window.electron.ipcRenderer.saveSettings(settings);
+      window.electron.ipcRenderer?.saveSettings(settings);
     }
 
     setData(settings);
@@ -18,7 +18,7 @@ export default function useSettings(): [
     if (window.electron) {
       // eslint-disable-next-line promise/valid-params
       window.electron.ipcRenderer
-        .loadSettings()
+        ?.loadSettings()
         // eslint-disable-next-line promise/always-return
         .then((settings) => {
           setData(settings);

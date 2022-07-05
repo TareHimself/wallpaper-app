@@ -98,8 +98,8 @@ class ThumbnailGenerator extends EventEmitter {
       );
 
       const result = this.canvas.toDataURL();
-      if (this.currentItem && window.electron.ipcRenderer.thumbnailCache) {
-        window.electron.ipcRenderer.thumbnailCache.set(
+      if (this.currentItem && window.electron.ipcRenderer?.thumbnailCache) {
+        window.electron.ipcRenderer?.thumbnailCache.set(
           this.currentItem,
           result
         );
@@ -115,9 +115,9 @@ class ThumbnailGenerator extends EventEmitter {
     this.currentItem = this.thumbnailQueue.pop();
     if (!this.currentItem) {
       addNotification('Done Generating Thumbnails');
-      if (window.electron.ipcRenderer.thumbnailCache) {
-        window.electron.ipcRenderer.updateThumnailCache(
-          window.electron.ipcRenderer.thumbnailCache
+      if (window.electron.ipcRenderer?.thumbnailCache) {
+        window.electron.ipcRenderer?.updateThumnailCache(
+          window.electron.ipcRenderer?.thumbnailCache
         );
       }
 
@@ -161,14 +161,14 @@ export async function generateThumbnail(id: string): Promise<string> {
 }
 
 export async function getServerUrl() {
-  if (window.electron && (await window.electron.ipcRenderer.isDev())) {
+  if (window.electron && (await window.electron.ipcRenderer?.isDev())) {
     return 'http://localhost:3001';
   }
   return 'https://wallpaperz-server.oyintare.dev';
 }
 
 export async function getDatabaseUrl() {
-  if (window.electron && (await window.electron.ipcRenderer.isDev())) {
+  if (window.electron && (await window.electron.ipcRenderer?.isDev())) {
     return 'http://localhost:3002';
   }
   return 'https://wallpaperz-database.oyintare.dev';

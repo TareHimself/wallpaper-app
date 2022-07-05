@@ -60,7 +60,7 @@ export default function WallpaperUploadModal({
     setUploadingStatus(true);
     if (loginData?.userAccountData?.id && wallpapers && refreshWallpapers) {
       addNotification('Uploading Wallpapers');
-      await window.electron.ipcRenderer.uploadImages(
+      await window.electron.ipcRenderer?.uploadImages(
         files,
         loginData?.userAccountData?.id
       );

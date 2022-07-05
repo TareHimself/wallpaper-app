@@ -109,6 +109,9 @@ declare global {
         quitApp(): void;
         isDev(): Promise<boolean>;
         getToken(): Promise<string>;
+        windowMinimize(): void;
+        windowMaximize(): void;
+        windowClose(): void;
         on(
           channel: string,
           func: (...args: unknown[]) => void

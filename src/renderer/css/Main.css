@@ -49,10 +49,10 @@ body {
 }
 
 #sub-root {
-  height: calc(100% - 140px);
+  height: calc(100% - 170px);
   width: inherit;
   overflow-y: overlay;
-  padding-top: 140px;
+  padding-top: 170px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -73,6 +73,47 @@ body {
 ::-webkit-scrollbar-thumb {
   background-color: var(--scroll0);
   border-radius: 10px;
+}
+
+#top-frame {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 5px;
+  height: 30px;
+}
+
+#top-frame span[data-type='drag'] {
+  display: flex;
+  flex: 1;
+  -webkit-app-region: drag;
+}
+
+#top-frame span[data-type='icons'] {
+  display: flex;
+  align-items: center;
+}
+
+#top-frame span span {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  visibility: visible;
+}
+
+#top-frame svg {
+  display: flex;
+  margin: 0 10px;
+  color: var(--icon-color);
+  transition: all 0.3s ease-in-out;
+}
+
+#top-frame span span:hover svg {
+  color: var(--icon-color-hover);
 }
 
 h1 {
@@ -109,7 +150,7 @@ p {
 
 #dashboard {
   position: absolute;
-  top: 0;
+  top: 30px;
   left: 50%;
   height: 120px;
   width: 85%;

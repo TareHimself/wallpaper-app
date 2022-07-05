@@ -33,7 +33,7 @@
   },
   "build": {
     "productName": "Wallpaperz",
-    "appId": "oyintare.dev.wallpaperz",
+    "appId": "com.wallpaperz.app",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [

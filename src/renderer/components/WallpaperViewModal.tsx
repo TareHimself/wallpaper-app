@@ -93,11 +93,11 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
             [{ ...currentWallpaper, tags: newTags }],
             {
               headers: {
-                Authorization: `Bearer ${await window.electron.ipcRenderer.getToken()}`,
+                Authorization: `Bearer ${await window.electron.ipcRenderer?.getToken()}`,
               },
             }
           )
-          .catch(alert);
+          .catch((e) => addNotification(e.message));
       }
     } else {
       setEditingTags(true);
@@ -116,7 +116,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
       xhr.responseType = 'blob';
 
       xhr.onload = async () => {
-        await window.electron.ipcRenderer.downloadImage({
+        await window.electron.ipcRenderer?.downloadImage({
           id: `${wallpapers[currentIndex].tags} ${wallpapers[currentIndex].id}`,
           data: await (xhr.response as Blob).arrayBuffer(),
         });
@@ -124,7 +124,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
         addNotification('Wallpaper Downloaded!');
       };
 
-      xhr.onerror = alert;
+      xhr.onerror = () => addNotification('Error downloading wallpaper');
 
       xhr.send();
     }

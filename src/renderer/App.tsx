@@ -13,6 +13,7 @@ import useSettings from './hooks/useSettings';
 import Settings from './components/Settings';
 import useLogin from './hooks/useLogin';
 import { addNotification, getDatabaseUrl } from './utils';
+import TopFrame from './components/TopFrame';
 
 export default function App() {
   const [startPointForView, setStartPointForView] = useState<
@@ -93,7 +94,7 @@ export default function App() {
               [loginData.userAccountData],
               {
                 headers: {
-                  Authorization: `Bearer ${await window.electron.ipcRenderer.getToken()}`,
+                  Authorization: `Bearer ${await window.electron.ipcRenderer?.getToken()}`,
                 },
               }
             );
@@ -133,7 +134,7 @@ export default function App() {
         if (paths.length) {
           // eslint-disable-next-line promise/catch-or-return
           window.electron.ipcRenderer
-            .uploadFiles(settings?.defaultDownloadPath || '', paths)
+            ?.uploadFiles(settings?.defaultDownloadPath || '', paths)
             // eslint-disable-next-line promise/always-return
             .then((result: ISystemFilesResult) => {
               setUploadedFiles(
@@ -238,6 +239,7 @@ export default function App() {
           setCurrentPage,
         }}
       >
+        <TopFrame />
         <div id="sub-root">
           <Home />
           {(hasNextPage || hasPreviousPage) && (

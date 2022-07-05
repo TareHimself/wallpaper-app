@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { getDatabaseUrl } from '../utils';
+import { addNotification, getDatabaseUrl } from '../utils';
 
 export default function useLogin(): [
   ILoginData | undefined,
@@ -11,7 +11,7 @@ export default function useLogin(): [
   const [data, setData] = useState<ILoginData | undefined>(undefined);
 
   const setLoginData = useCallback((newLogin: ILoginData | undefined) => {
-    window.electron.ipcRenderer.updateLogin(newLogin);
+    window.electron.ipcRenderer?.updateLogin(newLogin);
     hasVerifiedWithApi.current = false;
     setData(newLogin);
   }, []);
@@ -21,7 +21,7 @@ export default function useLogin(): [
   ): Promise<boolean> {
     const getUserResponse = await axios
       .get(`${await getDatabaseUrl()}/users/?u=${UserAccountData.id}`)
-      .catch(alert);
+      .catch((e) => addNotification(e.message));
 
     if (getUserResponse?.data?.error) {
       return false;
@@ -31,7 +31,7 @@ export default function useLogin(): [
   }
   useEffect(() => {
     async function startLogin() {
-      const LoginData = await window.electron.ipcRenderer.getLogin();
+      const LoginData = await window.electron.ipcRenderer?.getLogin();
 
       if (LoginData && (await verifyLogin(LoginData.userAccountData))) {
         hasVerifiedWithApi.current = true;

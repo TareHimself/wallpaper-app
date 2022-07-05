@@ -12,6 +12,9 @@ const validChannels = [
   'upload-images',
   'clear-cache',
   'download-image',
+  'window-min',
+  'window-max',
+  'window-close',
 ];
 
 contextBridge.exposeInMainWorld('electron', {
@@ -155,6 +158,15 @@ contextBridge.exposeInMainWorld('electron', {
           resolve(result);
         });
       });
+    },
+    windowMinimize() {
+      ipcRenderer.send('window-min');
+    },
+    windowMaximize() {
+      ipcRenderer.send('window-max');
+    },
+    windowClose() {
+      ipcRenderer.send('window-close');
     },
     on(channel: string, func: (...args: unknown[]) => void) {
       if (validChannels.includes(channel)) {

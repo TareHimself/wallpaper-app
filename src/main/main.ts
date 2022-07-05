@@ -137,6 +137,8 @@ if (!gotTheLock) {
           : path.join(__dirname, '../../.erb/dll/preload.js'),
       },
       autoHideMenuBar: true,
+      frame: false,
+      titleBarStyle: 'hidden',
     });
 
     mainWindow.loadURL(resolveHtmlPath('index.html'));
@@ -148,6 +150,7 @@ if (!gotTheLock) {
       if (process.env.START_MINIMIZED) {
         mainWindow.minimize();
       } else {
+        mainWindow.maximize();
         mainWindow.show();
       }
     });
@@ -464,5 +467,21 @@ if (!gotTheLock) {
 
   ipcMain.on('get-token', (event) => {
     event.reply('get-token', 'test');
+  });
+
+  ipcMain.on('window-max', () => {
+    if (mainWindow?.isMaximized()) {
+      mainWindow.unmaximize();
+    } else {
+      mainWindow?.maximize();
+    }
+  });
+
+  ipcMain.on('window-min', () => {
+    mainWindow?.minimize();
+  });
+
+  ipcMain.on('window-close', () => {
+    mainWindow?.close();
   });
 }

@@ -41,4 +41,5 @@ jobs:
           body: 'Wallpaperz - Developed by Oyintare Ebelo'
           files: |
             release/build/*.exe
+            release/build/*.blockmap
             release/build/latest.yml
