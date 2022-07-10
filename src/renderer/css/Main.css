@@ -52,11 +52,12 @@ body {
   height: calc(100% - 170px);
   width: inherit;
   overflow-y: overlay;
-  padding-top: 170px;
+  margin-top: 170px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  position: absolute;
 }
 
 /* width */
@@ -681,7 +682,8 @@ p {
 .wp-settings-container-inner {
   position: relative;
   display: flex;
-  height: 100%;
+  height: calc(100% - 30px);
+  margin-top: 30px;
   width: 600px;
   min-width: 600px;
   flex-direction: column;
@@ -709,7 +711,7 @@ p {
 .wp-settings-back {
   position: absolute;
   display: flex;
-  top: -5px;
+  top: 25px;
   left: 0;
   width: calc(100% - 20px);
   height: 55px;
