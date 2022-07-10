@@ -14,8 +14,10 @@
     "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
     "prepare": "husky install",
-    "update" : "node ./update.js",
-    "update-tags" : "git tag -d $(git tag -l) &&  git fetch"
+    "minor": "node ./update.js type=minor",
+    "major": "node ./update.js type=major",
+    "patch": "node ./update.js type=patch",
+    "update-tags": "git tag -d $(git tag -l) &&  git fetch"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -74,7 +76,9 @@
       "target": [
         "nsis"
       ],
-      "publish": ["github"]
+      "publish": [
+        "github"
+      ]
     },
     "linux": {
       "target": [

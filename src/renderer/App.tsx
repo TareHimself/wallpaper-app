@@ -223,55 +223,57 @@ export default function App() {
 
   if (window.electron) {
     return (
-      <GlobalAppContext.Provider
-        value={{
-          setStartPointForView,
-          wallpapers,
-          setSearchQuery,
-          setUploadedFiles,
-          setWallpapers,
-          settings,
-          setSettings,
-          loginData,
-          setLoginData,
-          setSettingsState,
-          refreshWallpapers,
-          setCurrentPage,
-        }}
-      >
+      <>
         <TopFrame />
-        <div id="sub-root">
-          <Home />
-          {(hasNextPage || hasPreviousPage) && (
-            <div className="wp-page-select">
-              {hasPreviousPage && (
-                <button type="button" onClick={gotoPreviousPage}>
-                  <BiLeftArrowAlt />
-                </button>
-              )}
-              {hasNextPage && (
-                <button type="button" onClick={gotoNextPage}>
-                  <BiRightArrowAlt />
-                </button>
-              )}
+        <GlobalAppContext.Provider
+          value={{
+            setStartPointForView,
+            wallpapers,
+            setSearchQuery,
+            setUploadedFiles,
+            setWallpapers,
+            settings,
+            setSettings,
+            loginData,
+            setLoginData,
+            setSettingsState,
+            refreshWallpapers,
+            setCurrentPage,
+          }}
+        >
+          <div id="sub-root">
+            <Home />
+            {(hasNextPage || hasPreviousPage) && (
+              <div className="wp-page-select">
+                {hasPreviousPage && (
+                  <button type="button" onClick={gotoPreviousPage}>
+                    <BiLeftArrowAlt />
+                  </button>
+                )}
+                {hasNextPage && (
+                  <button type="button" onClick={gotoNextPage}>
+                    <BiRightArrowAlt />
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+          <Dashboard />
+          <Settings activeClass={`wp-settings-${settingsState}`} />
+          {startPointForView !== undefined && (
+            <WallpaperViewModal data={startPointForView} />
+          )}
+          {uploadedFiles.length > 0 && (
+            <WallpaperUploadModal uploads={uploadedFiles} />
+          )}
+
+          {wantsToDragUpload && (
+            <div id="wp-drag-upload">
+              <AiOutlineCloudUpload />
             </div>
           )}
-        </div>
-        <Dashboard />
-        <Settings activeClass={`wp-settings-${settingsState}`} />
-        {startPointForView !== undefined && (
-          <WallpaperViewModal data={startPointForView} />
-        )}
-        {uploadedFiles.length > 0 && (
-          <WallpaperUploadModal uploads={uploadedFiles} />
-        )}
-
-        {wantsToDragUpload && (
-          <div id="wp-drag-upload">
-            <AiOutlineCloudUpload />
-          </div>
-        )}
-      </GlobalAppContext.Provider>
+        </GlobalAppContext.Provider>
+      </>
     );
   }
 
