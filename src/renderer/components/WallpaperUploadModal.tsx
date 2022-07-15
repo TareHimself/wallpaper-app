@@ -100,10 +100,10 @@ export default function WallpaperUploadModal({
       {!uploadingStatus && (
         <div className="wp-upload-buttons">
           <button type="button" onClick={cancelUpload}>
-            <h2>Cancel</h2>
+            <h2 style={{ fontSize: '160%' }}>Cancel</h2>
           </button>
           <button type="button" onClick={uploadWallpapers}>
-            <h2>Upload</h2>
+            <h2 style={{ fontSize: '160%' }}>Upload</h2>
           </button>
         </div>
       )}

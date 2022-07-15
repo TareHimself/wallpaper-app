@@ -147,9 +147,10 @@ if (!gotTheLock) {
       if (!mainWindow) {
         throw new Error('"mainWindow" is not defined');
       }
-      if (process.env.START_MINIMIZED) {
+      /* if (process.env.START_MINIMIZED) {
         mainWindow.minimize();
-      }
+      } */
+      mainWindow.show();
     });
 
     mainWindow.on('closed', () => {
@@ -326,8 +327,6 @@ if (!gotTheLock) {
     }).toString();
 
     const url = `https://discord.com/api/oauth2/authorize?${params}`;
-
-    console.log(url);
 
     socket.on('open-login', async (response: ILoginData) => {
       const encryptedData = safeStorage.encryptString(JSON.stringify(response));

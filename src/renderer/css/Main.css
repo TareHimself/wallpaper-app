@@ -528,7 +528,8 @@ p {
   top: 85%;
   left: 50%;
   transform: translate(-50%, -50%);
-  height: 90px;
+  height: 9%;
+  max-height: 90px;
   width: 70%;
   background-color: var(--level1);
   overflow: hidden;
