@@ -53,7 +53,6 @@ export default function useWallpaperApi(
         .catch(onRequestFailed);
     }
   }, [maxItems, page, query]);
-
   useEffect(() => {
     refreshWallpapers();
   }, [maxItems, page, query, refreshWallpapers]);

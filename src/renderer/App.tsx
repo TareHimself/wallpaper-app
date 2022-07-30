@@ -37,7 +37,7 @@ export default function App() {
   const [wallpapers, setWallpapers, refreshWallpapers, hasNextPage] =
     useWallpaperApi(
       currentPage,
-      settings?.maxItemsPerPage || 12,
+      settings?.maxItemsPerPage || 0,
       query.toLowerCase()
     );
 
