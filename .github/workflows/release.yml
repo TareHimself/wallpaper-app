@@ -39,6 +39,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           body: 'Wallpaperz - Developed by Oyintare Ebelo'
+          draft: true
           files: |
             release/build/*.exe
             release/build/*.blockmap

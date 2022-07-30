@@ -90,7 +90,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
         axios
           .post(
             `${await getDatabaseUrl()}/wallpapers`,
-            [{ ...currentWallpaper, tags: newTags }],
+            [{ ...currentWallpaper, tags: newTags.replaceAll(`'`, `''`) }],
             {
               headers: {
                 Authorization: `Bearer ${await window.electron.ipcRenderer?.getToken()}`,

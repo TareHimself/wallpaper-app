@@ -29,7 +29,12 @@ export default function useWallpaperApi(
         hasNextPage.current = false;
       }
 
-      setData(wallpapersFromApi);
+      setData(
+        wallpapersFromApi.map((wallpaper) => {
+          wallpaper.tags = wallpaper.tags.replaceAll(`''`, `'`);
+          return wallpaper;
+        })
+      );
     }
 
     async function onRequestFailed() {
