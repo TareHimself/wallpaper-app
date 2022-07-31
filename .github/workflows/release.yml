@@ -6,9 +6,12 @@ on:
       - 'v*'
 
 jobs:
-  tagged-release:
-    name: 'Tagged Release'
-    runs-on: 'windows-latest'
+  release:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
     permissions:
       contents: write
 
@@ -35,12 +38,11 @@ jobs:
           npm exec tsc
           npm run package
 
-      - name: Create Release
+      - name: Create Release Draft
         uses: softprops/action-gh-release@v1
         with:
-          body: 'Wallpaperz - Developed by Oyintare Ebelo'
+          body: 'Insert Changes Here'
           draft: true
           files: |
-            release/build/*.exe
-            release/build/*.blockmap
-            release/build/latest.yml
+            release/build/*
+            release/build/*
