@@ -36,7 +36,7 @@ jobs:
         run: |
           npm run lint
           npm exec tsc
-          npm run package
+          npm run ghpackage
 
       - name: Create Release Draft
         uses: softprops/action-gh-release@v1
