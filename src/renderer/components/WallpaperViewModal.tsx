@@ -17,7 +17,7 @@ import GlobalAppContext from '../GlobalAppContext';
 const clickOutClassnames = ['wp-view', 'wp-view-container'];
 
 export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
-  const { wallpapers, setStartPointForView, loginData } =
+  const { wallpapers, setStartPointForView, loginData, refreshWallpapers } =
     useContext(GlobalAppContext);
 
   const [currentIndex, setCurrentIndex] = useState<number>(
@@ -73,9 +73,31 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
     }
   }
 
-  const deleteOrReportWallpaper = useCallback(() => {
-    addNotification('This does not work yet, Tare is lazy');
-  }, []);
+  const deleteOrReportWallpaper = useCallback(async () => {
+    if (bisOwnerOfWallpaper) {
+      await axios
+        .delete(
+          `${await getDatabaseUrl()}/wallpapers?ids=${currentWallpaper.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${await window.electron.ipcRenderer?.getToken()}`,
+            },
+          }
+        )
+        .catch((e) => addNotification(e.message));
+
+      if (setStartPointForView) setStartPointForView(undefined);
+
+      if (refreshWallpapers) refreshWallpapers();
+    } else {
+      addNotification('This does not work yet, Tare is lazy');
+    }
+  }, [
+    bisOwnerOfWallpaper,
+    currentWallpaper.id,
+    refreshWallpapers,
+    setStartPointForView,
+  ]);
 
   const toggleEditWallpaper = useCallback(async () => {
     if (isEditingTags) {
