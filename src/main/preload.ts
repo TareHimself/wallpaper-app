@@ -40,7 +40,7 @@ contextBridge.exposeInMainWorld('electron', {
             response.files = response.files.map(([file, index, fileName]) => [
               file,
               index,
-              fileName.split(',').length > 2 ? fileName : '',
+              fileName,
             ]);
             resolve(response);
           }

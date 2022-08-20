@@ -389,8 +389,6 @@ if (!gotTheLock) {
         ? 'http://localhost:3001'
         : 'https://wallpaperz-server.oyintare.dev';
 
-      console.log(`${serverUrl}/wallpapers?${params.toString()}`);
-
       const response = await axios
         .put(`${serverUrl}/wallpapers?${params.toString()}`, images, {
           maxContentLength: Infinity,

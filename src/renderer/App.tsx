@@ -240,9 +240,7 @@ export default function App() {
         {wallpapersData.currentWallpaper && (
           <WallpaperViewModal data={wallpapersData.currentWallpaper} />
         )}
-        {wallpapersData.dataPendingUpload && (
-          <WallpaperUploadModal uploads={wallpapersData.dataPendingUpload} />
-        )}
+        {wallpapersData.dataPendingUpload && <WallpaperUploadModal />}
 
         {wantsToDragUpload && (
           <div id="wp-drag-upload">

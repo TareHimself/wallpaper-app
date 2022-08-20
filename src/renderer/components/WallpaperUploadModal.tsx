@@ -1,4 +1,4 @@
-import { SyntheticEvent, useCallback, useState } from 'react';
+import { SyntheticEvent, useCallback, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'renderer/redux/hooks';
 import {
   refreshWallpapers,
@@ -10,11 +10,7 @@ import WallpaperUploadItem from './WallpaperUploadItem';
 
 const clickOutClassnames = ['wp-view', 'wp-view-container'];
 
-export default function WallpaperUploadModal({
-  uploads,
-}: {
-  uploads: IConvertedSystemFiles[];
-}) {
+export default function WallpaperUploadModal() {
   const dispatch = useAppDispatch();
 
   const userData = useAppSelector((s) => s.currentUser);
@@ -22,27 +18,28 @@ export default function WallpaperUploadModal({
 
   const [uploadingStatus, setUploadingStatus] = useState(false);
 
-  const [files, setFiles] = useState(uploads);
+  const files = useRef(wallpaperData.dataPendingUpload || []);
+  const [renders, setRenders] = useState(0);
 
-  function updateIndex(index: number, update: IConvertedSystemFiles) {
-    if (uploadingStatus) return;
-    files[index] = update;
-    setFiles([...files]);
-  }
+  const updateIndex = useCallback(
+    (index: number, update: IConvertedSystemFiles) => {
+      if (uploadingStatus || !files) return;
+      const arr = [...files.current];
+      arr[index] = update;
+      files.current = arr;
+      setRenders(renders + 1);
+    },
+    [renders, uploadingStatus, files]
+  );
 
-  const updateIndexCallback = useCallback(updateIndex, [
-    files,
-    uploadingStatus,
-  ]);
-
-  const elements = files.map(
+  const elements = files.current.map(
     (upload: IConvertedSystemFiles, uploadIndex: number) => {
       const element = (
         <WallpaperUploadItem
           key={upload.id}
           data={upload}
           index={uploadIndex}
-          updateFunc={updateIndexCallback}
+          updateFunc={updateIndex}
         />
       );
       return element;
@@ -58,9 +55,12 @@ export default function WallpaperUploadModal({
   }
 
   const uploadWallpapers = useCallback(async () => {
-    if (uploadingStatus) return;
+    if (uploadingStatus || !files) return;
 
-    if (files.filter((file) => file.tags.split(',').length < 3).length !== 0) {
+    if (
+      files.current.filter((file) => file.tags.split(',').length < 3).length !==
+      0
+    ) {
       addNotification('All wallpapers must have atleast 3 tags');
       return;
     }
@@ -69,7 +69,7 @@ export default function WallpaperUploadModal({
     if (userData.loginData?.userAccountData.id && wallpaperData.data) {
       addNotification('Uploading Wallpapers');
       await window.electron.ipcRenderer?.uploadImages(
-        files,
+        files.current,
         userData.loginData?.userAccountData.id
       );
 
@@ -79,8 +79,6 @@ export default function WallpaperUploadModal({
     }
 
     setUploadingStatus(false);
-
-    setFiles(Array<IConvertedSystemFiles>());
 
     dispatch(setWallpapersPendingUpload(null));
   }, [
@@ -93,7 +91,6 @@ export default function WallpaperUploadModal({
 
   const cancelUpload = useCallback(async () => {
     if (uploadingStatus) return;
-    setFiles(Array<IConvertedSystemFiles>());
     dispatch(setWallpapersPendingUpload(null));
   }, [dispatch, uploadingStatus]);
 

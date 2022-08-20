@@ -1,4 +1,4 @@
-import { SyntheticEvent } from 'react';
+import { SyntheticEvent, useCallback } from 'react';
 import { IoResizeOutline } from 'react-icons/io5';
 import { IConvertedSystemFiles } from 'renderer/types';
 
@@ -11,21 +11,27 @@ export default function WallpaperUploadItem({
   index: number;
   updateFunc: (index: number, update: IConvertedSystemFiles) => void;
 }) {
-  function onTagsChanged(event: SyntheticEvent<HTMLInputElement, Event>) {
-    updateFunc(index, { ...data, tags: event.currentTarget.value });
-  }
+  const onTagsChanged = useCallback(
+    (event: SyntheticEvent<HTMLInputElement, Event>) => {
+      updateFunc(index, { ...data, tags: event.currentTarget.value });
+    },
+    [data, index, updateFunc]
+  );
 
-  function onImageLoaded(event: SyntheticEvent<HTMLImageElement, Event>) {
-    if (data.height === 0 || data.width === 0) {
-      const imageWidth = (event.target as HTMLImageElement).naturalWidth;
-      const imageHeight = (event.target as HTMLImageElement).naturalHeight;
-      updateFunc(index, {
-        ...data,
-        width: imageWidth,
-        height: imageHeight,
-      });
-    }
-  }
+  const onImageLoaded = useCallback(
+    (event: SyntheticEvent<HTMLImageElement, Event>) => {
+      if (data.height === 0 || data.width === 0) {
+        const imageWidth = (event.target as HTMLImageElement).naturalWidth;
+        const imageHeight = (event.target as HTMLImageElement).naturalHeight;
+        updateFunc(index, {
+          ...data,
+          width: imageWidth,
+          height: imageHeight,
+        });
+      }
+    },
+    [data, index, updateFunc]
+  );
 
   return (
     <div className="upload-item">
