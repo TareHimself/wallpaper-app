@@ -7,7 +7,7 @@ import {
   setMaxItemsperPage,
 } from 'renderer/redux/currentUserSlice';
 import { useAppDispatch, useAppSelector } from 'renderer/redux/hooks';
-import { setMaxItems } from 'renderer/redux/wallpapersSlice';
+import { setMaxItems, setPage } from 'renderer/redux/wallpapersSlice';
 import BooleanSetting from './SettingsHelpers/BooleanSetting';
 import RangeSetting from './SettingsHelpers/RangeSetting';
 
@@ -71,6 +71,7 @@ export default function Settings({
               <RangeSetting
                 value={userData.settings?.maxItemsPerPage || 12}
                 onValueUpdated={(value) => {
+                  dispatch(setPage(0));
                   dispatch(setMaxItemsperPage(value));
                   dispatch(setMaxItems(value));
                 }}
