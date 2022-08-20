@@ -34,7 +34,7 @@ export default function Settings({
                 <h2>{userData.loginData.userAccountData.nickname}</h2>
               </>
             )}
-            {userData.loginData ? (
+            {!userData.loginData ? (
               <button
                 type="button"
                 onClick={() => {
