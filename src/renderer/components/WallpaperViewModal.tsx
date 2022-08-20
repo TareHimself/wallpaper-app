@@ -158,6 +158,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
   return (
     <div role="none" className="wp-view" onClick={onAttemptClickOut}>
       <BsChevronCompactLeft
+        data-interact="true"
         className={
           currentIndex !== undefined && currentIndex > 0
             ? 'next-item-left'
@@ -168,13 +169,14 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
       <div className="wp-view-container">
         <div className="wp-view-panel-top">
           <VscInfo
+            data-interact="true"
             onClick={() => {
               setShouldShowInformation(true);
             }}
           />
           <span>
             <h2>{`${currentWallpaper.width}x${currentWallpaper.height}`}</h2>
-            <IoResizeOutline />
+            <IoResizeOutline data-interact="false" />
           </span>
         </div>
         <img
@@ -185,13 +187,15 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
         />
         <div className="wp-view-panel-bottom">
           <CgClose
+            data-interact="true"
             onClick={() => {
               document.removeEventListener('keypress', handleKeyPress);
               dispatch(setCurrentWallpaper(null));
             }}
           />
-          <BsDownload onClick={downloadWallpaper} />
+          <BsDownload data-interact="true" onClick={downloadWallpaper} />
           <BsArrowsFullscreen
+            data-interact="true"
             onClick={() => {
               setIsFullscreen(true);
               addNotification('Double Click To Exit');

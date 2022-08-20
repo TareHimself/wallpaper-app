@@ -82,7 +82,7 @@ export default function Settings({
           </div>
           {false && (
             <div className="wp-settings-item">
-              <h3>Default Download Path</h3>
+              <h3>Download Path</h3>
               <div className="wp-settings-item-content" />
             </div>
           )}

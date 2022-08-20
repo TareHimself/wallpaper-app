@@ -79,7 +79,7 @@ const fetchWallpapers = createAsyncThunk(
   }) => {
     const fetchResult = await getWallpapers(page, maxItems, query);
 
-    return { ...fetchResult, page, query };
+    return { ...fetchResult, page, query, maxItems };
   }
 );
 

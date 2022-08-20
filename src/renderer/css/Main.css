@@ -407,8 +407,8 @@ p {
   transition: all 0.2s ease-in-out;
 }
 
-.wp-view-panel-bottom svg:hover,
-.wp-view-panel-top svg:hover {
+.wp-view-panel-bottom svg:hover[data-interact='true'],
+.wp-view-panel-top svg:hover[data-interact='true'] {
   margin: 0px;
   font-size: 50px;
   color: var(--icon-color-hover);
