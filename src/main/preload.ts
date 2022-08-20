@@ -1,4 +1,12 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import {
+  ISystemFilesResult,
+  IApplicationSettings,
+  ILoginData,
+  IConvertedSystemFiles,
+  IWallpaperData,
+  IImageDownload,
+} from 'renderer/types';
 
 const validChannels = [
   'ipc-example',
@@ -111,32 +119,6 @@ contextBridge.exposeInMainWorld('electron', {
       return new Promise<void>((resolve) => {
         ipcRenderer.once('clear-cache', () => {
           resolve();
-        });
-      });
-    },
-    thumbnailCache: new Map<string, string>(),
-    clearThumbnailCache() {},
-    clearWallpaperCache() {
-      ipcRenderer.send('clear-cache');
-      return new Promise<void>((resolve) => {
-        ipcRenderer.once('clear-cache', () => {
-          resolve();
-        });
-      });
-    },
-    loadThumnailCache() {
-      ipcRenderer.send('load-thumbnails');
-      return new Promise<[string, string][]>((resolve) => {
-        ipcRenderer.once('load-thumbnails', (_event, cache) => {
-          resolve(Object.entries<string>(cache)); // ));
-        });
-      });
-    },
-    updateThumnailCache(cache: Map<string, string>) {
-      ipcRenderer.send('save-thumbnails', Object.fromEntries(cache.entries()));
-      return new Promise<boolean>((resolve) => {
-        ipcRenderer.once('save-thumbnails', (_event, result) => {
-          resolve(result);
         });
       });
     },

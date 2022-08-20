@@ -216,6 +216,7 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^1.8.5",
     "axios": "^0.26.1",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.6",
@@ -225,7 +226,9 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-icons": "^4.3.1",
+    "react-redux": "^8.0.2",
     "react-router-dom": "^6.3.0",
+    "sharp": "^0.30.7",
     "socket.io-client": "^4.5.0"
   },
   "devEngines": {

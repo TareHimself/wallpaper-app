@@ -1,51 +1,46 @@
-import { useCallback, useContext, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { AiOutlineCloudUpload } from 'react-icons/ai';
 import { BiSearchAlt } from 'react-icons/bi';
 import { FiSettings, FiFilter } from 'react-icons/fi';
 import { IoMdRefresh } from 'react-icons/io';
+import useThrottle from 'renderer/hooks/useThrottle';
+import { setSettingsState } from 'renderer/redux/appStateSlice';
+import { useAppDispatch, useAppSelector } from 'renderer/redux/hooks';
+import {
+  fetchWallpapers,
+  refreshWallpapers,
+  setWallpapersPendingUpload,
+} from 'renderer/redux/wallpapersSlice';
+import { IConvertedSystemFiles } from 'renderer/types';
 import { addNotification } from '../utils';
-import GlobalAppContext from '../GlobalAppContext';
 
 const typingThrottle = 500;
 
 export default function Dashboard() {
-  const {
-    setSearchQuery,
-    setUploadedFiles,
-    loginData,
-    setSettingsState,
-    refreshWallpapers,
-  } = useContext(GlobalAppContext);
+  const dispatch = useAppDispatch();
 
-  const updateTyping = useRef<number | undefined>(undefined);
+  const wallpaperData = useAppSelector((s) => s.wallpapers);
 
-  function updateSearchText() {
-    updateTyping.current = undefined;
-    if (setSearchQuery) {
-      setSearchQuery(
-        (document.getElementById('search-input') as HTMLInputElement).value
+  const userData = useAppSelector((s) => s.currentUser);
+  const updateSearchText = useThrottle<string>(
+    typingThrottle,
+    (value) => {
+      dispatch(
+        fetchWallpapers({
+          page: 0,
+          maxItems:
+            userData.settings?.maxItemsPerPage || wallpaperData.maxItems,
+          query: value,
+        })
       );
-    }
-  }
-  function onSearchChange() {
-    if (updateTyping.current !== undefined) {
-      clearTimeout(updateTyping.current);
-      updateTyping.current = window.setTimeout(
-        updateSearchText,
-        typingThrottle
-      );
-    } else {
-      updateTyping.current = window.setTimeout(
-        updateSearchText,
-        typingThrottle
-      );
-    }
-  }
+    },
+    ''
+  );
 
   const isUploading = useRef(false);
 
   const uploadFiles = useCallback(async () => {
-    if (!loginData) {
+    if (!userData.loginData) {
       /* if (setSettingsState) {
         setSettingsState('open');
       } */
@@ -79,10 +74,8 @@ export default function Dashboard() {
     }
 
     isUploading.current = false;
-    if (setUploadedFiles) {
-      setUploadedFiles(images);
-    }
-  }, [loginData, setUploadedFiles]);
+    dispatch(setWallpapersPendingUpload(images));
+  }, [dispatch, userData.loginData]);
 
   return (
     <div id="dashboard">
@@ -97,7 +90,9 @@ export default function Dashboard() {
         <BiSearchAlt />
         <input
           type="text"
-          onChange={onSearchChange}
+          onChange={(e) => {
+            updateSearchText(e.target.value);
+          }}
           id="search-input"
           draggable="false"
         />
@@ -105,15 +100,13 @@ export default function Dashboard() {
       <FiSettings
         className="dashboard-icon"
         onClick={() => {
-          if (setSettingsState) {
-            setSettingsState('open');
-          }
+          dispatch(setSettingsState('open'));
         }}
       />
       <IoMdRefresh
         className="dashboard-icon"
         onClick={() => {
-          if (refreshWallpapers) refreshWallpapers();
+          dispatch(refreshWallpapers({ bShouldReset: false }));
           addNotification('Refreshing');
         }}
       />

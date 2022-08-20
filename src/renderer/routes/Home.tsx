@@ -1,20 +1,16 @@
 import '../css/Main.css';
-import { ReactElement, useContext } from 'react';
+import { ReactElement } from 'react';
+import { useAppSelector } from 'renderer/redux/hooks';
 import WallpaperPreview from '../components/WallpaperPreview';
-import GlobalAppContext from '../GlobalAppContext';
 
 export default function Home() {
   let wallpaperElements: Array<ReactElement> = [];
 
-  const { wallpapers, setStartPointForView } = useContext(GlobalAppContext);
+  const wallpapers = useAppSelector((s) => s.wallpapers.data);
 
   if (wallpapers?.length) {
     wallpaperElements = wallpapers.map((apiData) => (
-      <WallpaperPreview
-        key={apiData.id}
-        data={apiData}
-        setStartPointForView={setStartPointForView}
-      />
+      <WallpaperPreview key={apiData.id} data={apiData} />
     ));
   }
 

@@ -1,5 +1,6 @@
 import { SyntheticEvent } from 'react';
 import { IoResizeOutline } from 'react-icons/io5';
+import { IConvertedSystemFiles } from 'renderer/types';
 
 export default function WallpaperUploadItem({
   data,

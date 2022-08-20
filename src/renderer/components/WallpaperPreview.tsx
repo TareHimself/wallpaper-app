@@ -1,47 +1,19 @@
-import { useEffect } from 'react';
 import '../css/Main.css';
 import { BiSearchAlt } from 'react-icons/bi';
 import { IoResizeOutline } from 'react-icons/io5';
-import { addNotification, generateThumbnail } from '../utils';
+import { IWallpaperData } from 'renderer/types';
+import { useAppDispatch } from 'renderer/redux/hooks';
+import { setCurrentWallpaper } from 'renderer/redux/wallpapersSlice';
 
-export default function WallpaperPreview({
-  data,
-  setStartPointForView,
-}: {
-  data: IWallpaperData;
-  setStartPointForView:
-    | React.Dispatch<React.SetStateAction<IWallpaperData | undefined>>
-    | undefined;
-}) {
-  const uri =
-    window.electron.ipcRenderer?.thumbnailCache?.get(data.id) ||
-    `https://wallpaperz.nyc3.cdn.digitaloceanspaces.com/wallpapers/${data.id}.png`;
-
-  useEffect(() => {
-    if (
-      uri ===
-      `https://wallpaperz.nyc3.cdn.digitaloceanspaces.com/wallpapers/${data.id}.png`
-    ) {
-      generateThumbnail(data.id)
-        .then((thumbnail: string) => {
-          const element = document.getElementById(`thumb-${data.id}`);
-          // eslint-disable-next-line promise/always-return
-          if (element) {
-            const imageElement = element as HTMLImageElement;
-            imageElement.src = thumbnail;
-          }
-        })
-        .catch((e) => addNotification(e.message));
-    }
-  }, [data.id, uri]);
+export default function WallpaperPreview({ data }: { data: IWallpaperData }) {
+  const uri = `https://resize.oyintare.dev/600x338/https://wallpaperz.nyc3.cdn.digitaloceanspaces.com/wallpapers/${data.id}.png`;
+  const dispatch = useAppDispatch();
   return (
     <div
       role="none"
       className="grid-item"
       onClick={() => {
-        if (setStartPointForView) {
-          setStartPointForView(data);
-        }
+        dispatch(setCurrentWallpaper(data.id));
       }}
     >
       <img
@@ -51,7 +23,6 @@ export default function WallpaperPreview({
         draggable="false"
         loading="lazy"
         decoding="async"
-        crossOrigin="anonymous"
       />
       <BiSearchAlt className="wp-preview-icon" />
       <div className="wp-preview-size">

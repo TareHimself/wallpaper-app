@@ -1,72 +1,47 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import axios from 'axios';
 import { AiOutlineCloudUpload } from 'react-icons/ai';
 import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 import Home from './routes/Home';
 import './css/Main.css';
 import Dashboard from './components/Dashboard';
-import GlobalAppContext from './GlobalAppContext';
 import WallpaperViewModal from './components/WallpaperViewModal';
-import useWallpaperApi from './hooks/useWallpaperApi';
 import WallpaperUploadModal from './components/WallpaperUploadModal';
-import useSettings from './hooks/useSettings';
 import Settings from './components/Settings';
-import useLogin from './hooks/useLogin';
-import { addNotification, getDatabaseUrl } from './utils';
 import TopFrame from './components/TopFrame';
+import { useAppDispatch, useAppSelector } from './redux/hooks';
+import {
+  fetchWallpapers,
+  refreshWallpapers,
+  setPage,
+  setWallpapersPendingUpload,
+} from './redux/wallpapersSlice';
+import { ISystemFilesResult } from './types';
+import { loadCurrentUserData } from './redux/currentUserSlice';
 
 export default function App() {
-  const [startPointForView, setStartPointForView] = useState<
-    IWallpaperData | undefined
-  >(undefined);
+  const dispatch = useAppDispatch();
 
-  const bHasVerifiedUserLogin = useRef(false);
+  const wallpapersData = useAppSelector((state) => state.wallpapers);
+  const userData = useAppSelector((state) => state.currentUser);
+  const settingsState = useAppSelector((state) => state.app.settingsState);
 
   const [wantsToDragUpload, setWantsToDragUpload] = useState(false);
-
-  const [currentPage, setCurrentPage] = useState(0);
-
-  const [query, setQuery] = useState('');
-
-  const [uploadedFiles, setUploadedFiles] = useState(
-    Array<IConvertedSystemFiles>()
-  );
-
-  const [settings, setSettings] = useSettings();
-
-  const [wallpapers, setWallpapers, refreshWallpapers, hasNextPage] =
-    useWallpaperApi(
-      currentPage,
-      settings?.maxItemsPerPage || 0,
-      query.toLowerCase()
-    );
-
-  const [settingsState, setSettingsState] = useState('neutral');
-
-  const [loginData, setLoginData] = useLogin();
 
   const gotoNextPage = useCallback(() => {
     const subRoot = document.getElementById('sub-root');
     if (subRoot) subRoot.scrollTo({ top: 0, behavior: 'smooth' });
 
-    setCurrentPage(currentPage + 1);
-  }, [currentPage]);
+    dispatch(setPage(wallpapersData.currentPage + 1));
+  }, [dispatch, wallpapersData]);
 
   const gotoPreviousPage = useCallback(() => {
     const subRoot = document.getElementById('sub-root');
     if (subRoot) subRoot.scrollTo({ top: 0, behavior: 'smooth' });
 
-    setCurrentPage(Math.max(0, currentPage - 1));
-  }, [currentPage]);
+    dispatch(setPage(Math.max(0, wallpapersData.currentPage - 1)));
+  }, [dispatch, wallpapersData]);
 
-  const setSearchQuery = useCallback((search: string) => {
-    setQuery(search);
-    setCurrentPage(0);
-  }, []);
-
-  const hasPreviousPage = currentPage > 0;
-
-  useEffect(() => {
+  /*  useEffect(() => {
     if (loginData?.discordAuthData && !bHasVerifiedUserLogin.current) {
       bHasVerifiedUserLogin.current = true;
 
@@ -106,8 +81,8 @@ export default function App() {
         .catch((error) => addNotification(error.message));
     }
 
-    document.body.classList.add('theme-dark');
-  }, [loginData, loginData?.discordAuthData, setLoginData]);
+
+  }, [loginData, loginData?.discordAuthData, setLoginData]); */
 
   useEffect(() => {
     function onDragEnter(event: DragEvent) {
@@ -134,20 +109,22 @@ export default function App() {
         if (paths.length) {
           // eslint-disable-next-line promise/catch-or-return
           window.electron.ipcRenderer
-            ?.uploadFiles(settings?.defaultDownloadPath || '', paths)
+            ?.uploadFiles('', paths)
             // eslint-disable-next-line promise/always-return
             .then((result: ISystemFilesResult) => {
-              setUploadedFiles(
-                result.files.map(
-                  ([image, index, tags]: [string, number, string]) => {
-                    return {
-                      id: index,
-                      file: image,
-                      width: 0,
-                      height: 0,
-                      tags,
-                    };
-                  }
+              dispatch(
+                setWallpapersPendingUpload(
+                  result.files.map(
+                    ([image, index, tags]: [string, number, string]) => {
+                      return {
+                        id: index,
+                        file: image,
+                        width: 0,
+                        height: 0,
+                        tags,
+                      };
+                    }
+                  )
                 )
               );
 
@@ -184,7 +161,7 @@ export default function App() {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     function onInitialDrag(_event: DragEvent) {
-      if (!loginData) return;
+      if (!userData.loginData) return;
 
       const root = document.getElementById('root');
       const currentDragArea = document.getElementById('drag-area');
@@ -214,65 +191,65 @@ export default function App() {
         document.removeEventListener('dragenter', onDragEnter);
       }
     };
+  }, [userData, dispatch]);
+
+  useEffect(() => {
+    document.body.classList.add('theme-dark');
+    dispatch(loadCurrentUserData());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (userData.settings) {
+      dispatch(
+        fetchWallpapers({
+          page: wallpapersData.currentPage,
+          maxItems: userData.settings.maxItemsPerPage,
+          query: '',
+        })
+      );
+    }
   }, [
-    settings?.defaultDownloadPath,
-    uploadedFiles.length,
-    setUploadedFiles,
-    loginData,
+    dispatch,
+    userData.settings,
+    userData.settings?.maxItemsPerPage,
+    wallpapersData.currentPage,
   ]);
 
   if (window.electron) {
     return (
       <>
         <TopFrame />
-        <GlobalAppContext.Provider
-          value={{
-            setStartPointForView,
-            wallpapers,
-            setSearchQuery,
-            setUploadedFiles,
-            setWallpapers,
-            settings,
-            setSettings,
-            loginData,
-            setLoginData,
-            setSettingsState,
-            refreshWallpapers,
-            setCurrentPage,
-          }}
-        >
-          <div id="sub-root">
-            <Home />
-            {(hasNextPage || hasPreviousPage) && (
-              <div className="wp-page-select">
-                {hasPreviousPage && (
-                  <button type="button" onClick={gotoPreviousPage}>
-                    <BiLeftArrowAlt />
-                  </button>
-                )}
-                {hasNextPage && (
-                  <button type="button" onClick={gotoNextPage}>
-                    <BiRightArrowAlt />
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-          <Dashboard />
-          <Settings activeClass={`wp-settings-${settingsState}`} />
-          {startPointForView !== undefined && (
-            <WallpaperViewModal data={startPointForView} />
-          )}
-          {uploadedFiles.length > 0 && (
-            <WallpaperUploadModal uploads={uploadedFiles} />
-          )}
-
-          {wantsToDragUpload && (
-            <div id="wp-drag-upload">
-              <AiOutlineCloudUpload />
+        <div id="sub-root">
+          <Home />
+          {(wallpapersData.hasNextPage || wallpapersData.hasPreviousPage) && (
+            <div className="wp-page-select">
+              {wallpapersData.hasPreviousPage && (
+                <button type="button" onClick={gotoPreviousPage}>
+                  <BiLeftArrowAlt />
+                </button>
+              )}
+              {wallpapersData.hasNextPage && (
+                <button type="button" onClick={gotoNextPage}>
+                  <BiRightArrowAlt />
+                </button>
+              )}
             </div>
           )}
-        </GlobalAppContext.Provider>
+        </div>
+        <Dashboard />
+        <Settings activeClass={`wp-settings-${settingsState}`} />
+        {wallpapersData.currentWallpaper && (
+          <WallpaperViewModal data={wallpapersData.currentWallpaper} />
+        )}
+        {wallpapersData.dataPendingUpload && (
+          <WallpaperUploadModal uploads={wallpapersData.dataPendingUpload} />
+        )}
+
+        {wantsToDragUpload && (
+          <div id="wp-drag-upload">
+            <AiOutlineCloudUpload />
+          </div>
+        )}
       </>
     );
   }

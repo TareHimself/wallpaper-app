@@ -21,6 +21,12 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { io, Socket } from 'socket.io-client';
 import axios from 'axios';
+import {
+  IApplicationSettings,
+  ILoginData,
+  IConvertedSystemFiles,
+  IImageDownload,
+} from 'renderer/types';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -297,7 +303,7 @@ if (!gotTheLock) {
         .catch(console.log);
     } else {
       const defaultSettings: IApplicationSettings = {
-        defaultDownloadPath: '',
+        downloadPath: '',
         maxItemsPerPage: 12,
         bShouldUseFullscreen: true,
         bIsLoggedIn: false,
@@ -416,37 +422,6 @@ if (!gotTheLock) {
         event.reply('download-image', false);
         console.log(error);
       });
-  });
-
-  ipcMain.on('clear-cache', async (event) => {
-    if (fsSync.existsSync(thumnailCachePath)) {
-      await fs.unlink(thumnailCachePath);
-    }
-    event.reply('clear-cache');
-  });
-
-  ipcMain.on('save-thumbnails', async (event, newCache) => {
-    fs.writeFile(thumnailCachePath, JSON.stringify(newCache))
-      .then(() => {
-        event.reply('save-thumbnails', true);
-      })
-      .catch((error: Error) => {
-        event.reply('save-thumbnails', false);
-        console.log(error);
-      });
-  });
-
-  ipcMain.on('load-thumbnails', async (event) => {
-    try {
-      if (fsSync.existsSync(thumnailCachePath)) {
-        const stringResult = await fs.readFile(thumnailCachePath);
-        event.reply('load-thumbnails', JSON.parse(stringResult));
-      } else {
-        event.reply('load-thumbnails', {});
-      }
-    } catch (error) {
-      event.reply('load-thumbnails', {});
-    }
   });
 
   ipcMain.on('quit-app', async () => {

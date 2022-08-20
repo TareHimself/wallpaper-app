@@ -11,32 +11,38 @@ import { IoResizeOutline } from 'react-icons/io5';
 import { SyntheticEvent, useCallback, useContext, useState } from 'react';
 import { MdOutlineArrowBackIos } from 'react-icons/md';
 import axios from 'axios';
+import {
+  refreshWallpapers,
+  setCurrentWallpaper,
+} from 'renderer/redux/wallpapersSlice';
+import { IWallpaperData } from 'renderer/types';
+import { useAppDispatch, useAppSelector } from 'renderer/redux/hooks';
 import { addNotification, getDatabaseUrl, SqlIntegerToTime } from '../utils';
-import GlobalAppContext from '../GlobalAppContext';
 
 const clickOutClassnames = ['wp-view', 'wp-view-container'];
 
 export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
-  const { wallpapers, setStartPointForView, loginData, refreshWallpapers } =
-    useContext(GlobalAppContext);
+  const dispatch = useAppDispatch();
+
+  const wallpapers = useAppSelector((s) => s.wallpapers.data);
+
+  const userData = useAppSelector((s) => s.currentUser);
 
   const [currentIndex, setCurrentIndex] = useState<number>(
-    wallpapers?.indexOf(data) || 0
+    wallpapers.findIndex((w) => w.id === data.id) || 0
   );
 
   const [isEditingTags, setEditingTags] = useState<boolean>(false);
 
-  const currentWallpaper = wallpapers ? wallpapers[currentIndex] : data;
+  const currentWallpaper = wallpapers[currentIndex] || data;
 
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   const [isShowingInformation, setShouldShowInformation] =
     useState<boolean>(false);
 
-  const bisLoggedIn = loginData !== undefined;
-
   const bisOwnerOfWallpaper: boolean =
-    bisLoggedIn && loginData.userAccountData.id === currentWallpaper.uploader;
+    userData.loginData?.userAccountData.id === currentWallpaper.uploader;
 
   function gotoNextWallpaper() {
     if (!wallpapers) return;
@@ -64,12 +70,9 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
 
   function onAttemptClickOut(event: SyntheticEvent<HTMLElement, Event>) {
     const element = event.target as HTMLElement;
-    if (
-      clickOutClassnames.includes(element.className) &&
-      setStartPointForView
-    ) {
+    if (clickOutClassnames.includes(element.className)) {
       document.removeEventListener('keypress', handleKeyPress);
-      setStartPointForView(undefined);
+      dispatch(setCurrentWallpaper(null));
     }
   }
 
@@ -86,18 +89,13 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
         )
         .catch((e) => addNotification(e.message));
 
-      if (setStartPointForView) setStartPointForView(undefined);
+      dispatch(setCurrentWallpaper(null));
 
-      if (refreshWallpapers) refreshWallpapers();
+      dispatch(refreshWallpapers({ bShouldReset: false }));
     } else {
       addNotification('This does not work yet, Tare is lazy');
     }
-  }, [
-    bisOwnerOfWallpaper,
-    currentWallpaper.id,
-    refreshWallpapers,
-    setStartPointForView,
-  ]);
+  }, [bisOwnerOfWallpaper, currentWallpaper.id, dispatch]);
 
   const toggleEditWallpaper = useCallback(async () => {
     if (isEditingTags) {
@@ -127,7 +125,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
   }, [currentWallpaper, isEditingTags]);
 
   const downloadWallpaper = useCallback(() => {
-    if (wallpapers && currentIndex !== undefined && wallpapers[currentIndex]) {
+    if (wallpapers[currentIndex]) {
       const wallpaperToDownload = document.getElementById(
         'wp-in-view'
       ) as HTMLImageElement;
@@ -188,10 +186,8 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
         <div className="wp-view-panel-bottom">
           <CgClose
             onClick={() => {
-              if (setStartPointForView) {
-                document.removeEventListener('keypress', handleKeyPress);
-                setStartPointForView(undefined);
-              }
+              document.removeEventListener('keypress', handleKeyPress);
+              dispatch(setCurrentWallpaper(null));
             }}
           />
           <BsDownload onClick={downloadWallpaper} />
@@ -259,7 +255,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
             </span>
 
             <span className="wp-view-info-content-btns">
-              {bisLoggedIn && (
+              {userData.loginData && (
                 <button onClick={deleteOrReportWallpaper} type="button">
                   {bisOwnerOfWallpaper ? 'Delete' : 'Report'}
                 </button>

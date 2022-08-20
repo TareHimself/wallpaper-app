@@ -1,6 +1,11 @@
-import { SyntheticEvent, useCallback, useContext, useState } from 'react';
+import { SyntheticEvent, useCallback, useState } from 'react';
+import { useAppDispatch, useAppSelector } from 'renderer/redux/hooks';
+import {
+  refreshWallpapers,
+  setWallpapersPendingUpload,
+} from 'renderer/redux/wallpapersSlice';
+import { IConvertedSystemFiles } from 'renderer/types';
 import { addNotification } from '../utils';
-import GlobalAppContext from '../GlobalAppContext';
 import WallpaperUploadItem from './WallpaperUploadItem';
 
 const clickOutClassnames = ['wp-view', 'wp-view-container'];
@@ -10,9 +15,12 @@ export default function WallpaperUploadModal({
 }: {
   uploads: IConvertedSystemFiles[];
 }) {
+  const dispatch = useAppDispatch();
+
+  const userData = useAppSelector((s) => s.currentUser);
+  const wallpaperData = useAppSelector((s) => s.wallpapers);
+
   const [uploadingStatus, setUploadingStatus] = useState(false);
-  const { wallpapers, refreshWallpapers, setUploadedFiles, loginData } =
-    useContext(GlobalAppContext);
 
   const [files, setFiles] = useState(uploads);
 
@@ -58,41 +66,36 @@ export default function WallpaperUploadModal({
     }
 
     setUploadingStatus(true);
-    if (loginData?.userAccountData?.id && wallpapers && refreshWallpapers) {
+    if (userData.loginData?.userAccountData.id && wallpaperData.data) {
       addNotification('Uploading Wallpapers');
       await window.electron.ipcRenderer?.uploadImages(
         files,
-        loginData?.userAccountData?.id
+        userData.loginData?.userAccountData.id
       );
 
       addNotification('Upload Complete');
 
-      refreshWallpapers();
+      dispatch(refreshWallpapers({ bShouldReset: false }));
     }
 
     setUploadingStatus(false);
 
     setFiles(Array<IConvertedSystemFiles>());
 
-    if (setUploadedFiles) {
-      setUploadedFiles(Array<IConvertedSystemFiles>());
-    }
+    dispatch(setWallpapersPendingUpload(null));
   }, [
     uploadingStatus,
-    loginData?.userAccountData?.id,
-    wallpapers,
-    refreshWallpapers,
     files,
-    setUploadedFiles,
+    userData.loginData?.userAccountData.id,
+    wallpaperData.data,
+    dispatch,
   ]);
 
   const cancelUpload = useCallback(async () => {
     if (uploadingStatus) return;
     setFiles(Array<IConvertedSystemFiles>());
-    if (setUploadedFiles) {
-      setUploadedFiles(Array<IConvertedSystemFiles>());
-    }
-  }, [setUploadedFiles, uploadingStatus]);
+    dispatch(setWallpapersPendingUpload(null));
+  }, [dispatch, uploadingStatus]);
 
   return (
     <div role="none" id="wp-upload" onClick={onAttemptClickOut}>
