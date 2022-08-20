@@ -18,7 +18,6 @@ declare global {
           uploader_id: string
         ): Promise<IWallpaperData[]>;
         downloadImage(image: IImageDownload): Promise<boolean>;
-        clearCache(): Promise<void>;
         quitApp(): void;
         isDev(): Promise<boolean>;
         getToken(): Promise<string>;

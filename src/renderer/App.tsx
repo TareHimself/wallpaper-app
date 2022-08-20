@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AiOutlineCloudUpload } from 'react-icons/ai';
 import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 import Home from './routes/Home';
@@ -11,7 +11,6 @@ import TopFrame from './components/TopFrame';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
 import {
   fetchWallpapers,
-  refreshWallpapers,
   setPage,
   setWallpapersPendingUpload,
 } from './redux/wallpapersSlice';

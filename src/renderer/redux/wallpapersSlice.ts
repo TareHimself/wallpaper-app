@@ -87,8 +87,9 @@ const refreshWallpapers = createAsyncThunk(
   'wallpapers/refreshWallpapers',
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async ({ bShouldReset }: { bShouldReset: boolean }, { getState }) => {
-    const { wallpapers }: { wallpapers: IWallpapersState } =
-      (await getState()) as any;
+    const { wallpapers } = (await getState()) as {
+      wallpapers: IWallpapersState;
+    };
 
     if (bShouldReset) {
       const fetchResult = await getWallpapers(0, wallpapers.maxItems, '');

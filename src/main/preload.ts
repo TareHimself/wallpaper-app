@@ -113,15 +113,6 @@ contextBridge.exposeInMainWorld('electron', {
         });
       });
     },
-    clearCache() {
-      ipcRenderer.send('clear-cache');
-      localStorage.clear();
-      return new Promise<void>((resolve) => {
-        ipcRenderer.once('clear-cache', () => {
-          resolve();
-        });
-      });
-    },
     quitApp() {
       ipcRenderer.send('quit-app');
     },

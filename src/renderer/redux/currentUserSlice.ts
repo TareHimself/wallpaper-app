@@ -28,8 +28,10 @@ const loadCurrentUserData = createAsyncThunk('currentUser/load', async () => {
       result.settings = await window.electron.ipcRenderer.loadSettings();
     }
     return result;
-  } catch (e: any) {
-    addNotification(e.message);
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      addNotification(e.message);
+    }
     return result;
   }
 });
@@ -41,8 +43,10 @@ const loginUser = createAsyncThunk('currentUser/login', async () => {
       return loginData;
     }
     return null;
-  } catch (e: any) {
-    addNotification(e.message);
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      addNotification(e.message);
+    }
     return null;
   }
 });
@@ -51,8 +55,10 @@ const logoutUser = createAsyncThunk('currentUser/logout', async () => {
   try {
     await window.electron.ipcRenderer?.logout();
     return null;
-  } catch (e: any) {
-    addNotification(e.message);
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      addNotification(e.message);
+    }
     return null;
   }
 });

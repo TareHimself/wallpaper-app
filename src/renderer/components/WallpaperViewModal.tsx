@@ -8,7 +8,7 @@ import {
 import { CgClose } from 'react-icons/cg';
 import { VscInfo } from 'react-icons/vsc';
 import { IoResizeOutline } from 'react-icons/io5';
-import { SyntheticEvent, useCallback, useContext, useState } from 'react';
+import { SyntheticEvent, useCallback, useState } from 'react';
 import { MdOutlineArrowBackIos } from 'react-icons/md';
 import axios from 'axios';
 import {

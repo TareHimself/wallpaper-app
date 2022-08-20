@@ -7,7 +7,7 @@ import {
   setMaxItemsperPage,
 } from 'renderer/redux/currentUserSlice';
 import { useAppDispatch, useAppSelector } from 'renderer/redux/hooks';
-import { refreshWallpapers, setMaxItems } from 'renderer/redux/wallpapersSlice';
+import { setMaxItems } from 'renderer/redux/wallpapersSlice';
 import BooleanSetting from './SettingsHelpers/BooleanSetting';
 import RangeSetting from './SettingsHelpers/RangeSetting';
 

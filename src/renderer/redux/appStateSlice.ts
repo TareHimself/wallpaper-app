@@ -21,7 +21,7 @@ export const appStateSlice = createSlice({
       state.settingsState = action.payload;
     },
   },
-  extraReducers: (builder) => {},
+  extraReducers: () => {},
 });
 
 export const { setSettingsState } = appStateSlice.actions;

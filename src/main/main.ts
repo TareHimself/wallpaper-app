@@ -61,11 +61,6 @@ if (!gotTheLock) {
     'loginData.wallpaperz'
   );
 
-  const thumnailCachePath = path.join(
-    app.getPath('userData'),
-    'thumbnails.wallpaperz'
-  );
-
   const settingsPath = path.join(app.getPath('userData'), 'settings.json');
   let devicePhysicalAddress = '';
   // let currentToken = '';
