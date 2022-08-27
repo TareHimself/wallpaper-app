@@ -66,11 +66,11 @@ export default function WallpaperUploadModal() {
     }
 
     setUploadingStatus(true);
-    if (userData.loginData?.userAccountData.id && wallpaperData.data) {
+    if (userData.loginData?.account.id && wallpaperData.data) {
       addNotification('Uploading Wallpapers');
       await window.electron.ipcRenderer?.uploadImages(
         files.current,
-        userData.loginData?.userAccountData.id
+        userData.loginData?.account.id
       );
 
       addNotification('Upload Complete');
@@ -84,7 +84,7 @@ export default function WallpaperUploadModal() {
   }, [
     uploadingStatus,
     files,
-    userData.loginData?.userAccountData.id,
+    userData.loginData?.account.id,
     wallpaperData.data,
     dispatch,
   ]);

@@ -26,6 +26,8 @@ import {
   ILoginData,
   IConvertedSystemFiles,
   IImageDownload,
+  IAccountData,
+  IDiscordData,
 } from 'renderer/types';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
@@ -347,9 +349,24 @@ if (!gotTheLock) {
       const encryptedLoginData = await fs.readFile(loginDataPath);
       const decryptedLoginData = safeStorage.decryptString(encryptedLoginData);
 
-      const loginData = JSON.parse(decryptedLoginData);
+      const loginData = JSON.parse(decryptedLoginData) as ILoginData;
+      socket.once(
+        'verify-discord',
+        async (
+          payload: { account: IAccountData; discord: IDiscordData } | null
+        ) => {
+          if (!payload) {
+            if (fsSync.existsSync(loginDataPath)) {
+              await fs.unlink(loginDataPath);
+            }
+            event.reply('get-login', undefined);
+          }
 
-      event.reply('get-login', loginData);
+          event.reply('get-login', payload);
+        }
+      );
+
+      socket.emit('verify-discord', loginData.discord);
     } else {
       event.reply('get-login', undefined);
     }

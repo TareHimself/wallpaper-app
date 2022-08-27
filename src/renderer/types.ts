@@ -34,7 +34,7 @@ declare global {
   }
 }
 
-export interface IUserAccountData {
+export interface IAccountData {
   id: string;
 
   avatar: string;
@@ -44,22 +44,11 @@ export interface IUserAccountData {
   options: string;
 }
 
-export interface IDiscordAuthData {
+export interface IDiscordData {
   access_token: string;
-  expires_in: number;
   refresh_token: string;
-  scope: string;
   token_type: string;
   refresh_at: string;
-}
-
-export interface IDiscordUserData {
-  id: string;
-  username: string;
-  avatar: string;
-  avatar_decoration: unknown;
-  discriminator: string;
-  public_flags: number;
 }
 
 export interface IWallpaperData {
@@ -92,9 +81,8 @@ export interface IApplicationSettings {
 
 export interface ILoginData {
   token: string;
-  discordAuthData: IDiscordAuthData;
-  discordUserData: IDiscordUserData;
-  userAccountData: IUserAccountData;
+  discord: IDiscordData;
+  account: IAccountData;
 }
 
 export interface ISystemFilesResult {

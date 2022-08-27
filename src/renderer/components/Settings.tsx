@@ -27,11 +27,8 @@ export default function Settings({
           <div className="wp-settings-login">
             {userData.loginData && (
               <>
-                <img
-                  src={userData.loginData.userAccountData.avatar}
-                  alt="profile"
-                />
-                <h2>{userData.loginData.userAccountData.nickname}</h2>
+                <img src={userData.loginData.account.avatar} alt="profile" />
+                <h2>{userData.loginData.account.nickname}</h2>
               </>
             )}
             {!userData.loginData ? (

@@ -42,7 +42,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
     useState<boolean>(false);
 
   const bisOwnerOfWallpaper: boolean =
-    userData.loginData?.userAccountData.id === currentWallpaper.uploader;
+    userData.loginData?.account.id === currentWallpaper.uploader;
 
   function gotoNextWallpaper() {
     if (!wallpapers) return;
