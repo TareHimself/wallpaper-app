@@ -350,23 +350,32 @@ if (!gotTheLock) {
       const decryptedLoginData = safeStorage.decryptString(encryptedLoginData);
 
       const loginData = JSON.parse(decryptedLoginData) as ILoginData;
-      socket.once(
-        'verify-discord',
-        async (
-          payload: { account: IAccountData; discord: IDiscordData } | null
-        ) => {
-          if (!payload) {
-            if (fsSync.existsSync(loginDataPath)) {
-              await fs.unlink(loginDataPath);
+
+      const loginFromServer = await Promise.race([
+        new Promise((resolve) => {
+          socket.once(
+            'verify-discord',
+            async (
+              payload: { account: IAccountData; discord: IDiscordData } | null
+            ) => {
+              if (!payload) {
+                if (fsSync.existsSync(loginDataPath)) {
+                  await fs.unlink(loginDataPath);
+                }
+                resolve(undefined);
+              }
+
+              resolve(payload);
             }
-            event.reply('get-login', undefined);
-          }
+          );
+          socket.emit('verify-discord', loginData.discord);
+        }),
+        new Promise((resolve) => {
+          setTimeout(resolve, 8000, undefined);
+        }),
+      ]);
 
-          event.reply('get-login', payload);
-        }
-      );
-
-      socket.emit('verify-discord', loginData.discord);
+      event.reply('get-login', loginFromServer);
     } else {
       event.reply('get-login', undefined);
     }

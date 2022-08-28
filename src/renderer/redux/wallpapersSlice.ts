@@ -34,6 +34,11 @@ async function getWallpapers(page: number, maxItems: number, query: string) {
   };
 
   if (maxItems > 0) {
+    console.log(
+      `${await getDatabaseUrl()}/wallpapers?o=${page * maxItems}&l=${
+        maxItems + 1
+      }&q=${query}`
+    );
     const response = (await axios
       .get(
         `${await getDatabaseUrl()}/wallpapers?o=${page * maxItems}&l=${
@@ -77,6 +82,7 @@ const fetchWallpapers = createAsyncThunk(
     maxItems: number;
     query: string;
   }) => {
+    console.log('Fetching');
     const fetchResult = await getWallpapers(page, maxItems, query);
 
     return { ...fetchResult, page, query, maxItems };

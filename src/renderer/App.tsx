@@ -203,7 +203,7 @@ export default function App() {
         fetchWallpapers({
           page: wallpapersData.currentPage,
           maxItems: userData.settings.maxItemsPerPage,
-          query: '',
+          query: wallpapersData.query,
         })
       );
     }
@@ -212,6 +212,7 @@ export default function App() {
     userData.settings,
     userData.settings?.maxItemsPerPage,
     wallpapersData.currentPage,
+    wallpapersData.query,
   ]);
 
   if (window.electron) {
