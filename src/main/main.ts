@@ -45,9 +45,9 @@ export default class AppUpdater {
 if (!gotTheLock) {
   app.quit();
 } else {
-  const fs = require('fs').promises;
-  const fsSync = require('fs');
-  const macaddress = require('macaddress');
+  const fs = require('fs').promises as typeof import('fs/promises');
+  const fsSync = require('fs') as typeof import('fs');
+  const macaddress = require('macaddress') as typeof import('macaddress');
 
   let mainWindow: BrowserWindow | null = null;
 
@@ -290,9 +290,15 @@ if (!gotTheLock) {
 
   ipcMain.on('load-settings', async (event) => {
     if (fsSync.existsSync(settingsPath)) {
-      fs.readFile(settingsPath)
+      fs.readFile(settingsPath, 'utf8')
         .then((file: string) => {
-          const settingsAsJson = JSON.parse(file);
+          const settingsAsJson = JSON.parse(file) as IApplicationSettings;
+
+          if (
+            !settingsAsJson.downloadPath ||
+            !fsSync.existsSync(settingsAsJson.downloadPath)
+          )
+            settingsAsJson.downloadPath = app.getPath('downloads');
 
           applySettings(settingsAsJson);
           event.reply('load-settings', settingsAsJson);
@@ -430,8 +436,25 @@ if (!gotTheLock) {
     }
   );
 
+  ipcMain.on('set-download-path', async (event, currentPath) => {
+    const data = await dialog.showOpenDialog({
+      defaultPath: currentPath,
+      properties: ['openDirectory'],
+    });
+
+    if (data.canceled) {
+      event.reply('set-download-path', currentPath);
+      return;
+    }
+
+    event.reply('set-download-path', data.filePaths[0]);
+  });
+
   ipcMain.on('download-image', async (event, image: IImageDownload) => {
-    const downloadPath = path.join(app.getPath('pictures'), `${image.id}.jpg`);
+    const downloadPath = path.join(
+      image.dir || app.getPath('downloads'),
+      `${image.id}.jpg`
+    );
 
     fs.writeFile(downloadPath, Buffer.from(image.data))
       .then(() => {
@@ -460,10 +483,13 @@ if (!gotTheLock) {
   });
 
   ipcMain.on('window-max', () => {
-    if (mainWindow?.isMaximized()) {
-      mainWindow.unmaximize();
-    } else {
-      mainWindow?.maximize();
+    console.log(mainWindow?.isMaximizable(), mainWindow?.isMaximized());
+    if (mainWindow) {
+      if (mainWindow.isMaximized()) {
+        mainWindow.unmaximize();
+      } else {
+        mainWindow.maximize();
+      }
     }
   });
 

@@ -19,8 +19,6 @@ const loadCurrentUserData = createAsyncThunk('currentUser/load', async () => {
   const result: { loginData?: ILoginData; settings?: IApplicationSettings } =
     {};
   try {
-    await new Promise((resolve) => setTimeout(resolve, 20000));
-
     if (window.electron.ipcRenderer) {
       const loginData = await window.electron.ipcRenderer.getLogin();
       if (loginData) {

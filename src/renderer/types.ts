@@ -24,6 +24,7 @@ declare global {
         windowMinimize(): void;
         windowMaximize(): void;
         windowClose(): void;
+        setDownloadPath(currentPath: string): Promise<string>;
         on(
           channel: string,
           func: (...args: unknown[]) => void
@@ -70,6 +71,7 @@ export interface IWallpaperData {
 export interface IImageDownload {
   id: string;
   data: ArrayBuffer;
+  dir: string;
 }
 
 export interface IApplicationSettings {

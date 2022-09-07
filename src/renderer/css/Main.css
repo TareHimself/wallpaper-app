@@ -774,7 +774,7 @@ p {
   display: flex;
   background: transparent;
   border: 2px solid var(--icon-color);
-  margin-top: 50px;
+  margin-top: 10px;
   border-radius: 20px;
   height: 50px;
   align-items: center;
@@ -823,6 +823,7 @@ p {
 }
 
 .boolean-setting,
+.button-setting,
 .range-setting {
   display: flex;
   align-items: center;
@@ -831,6 +832,19 @@ p {
   flex-direction: row;
   height: 100%;
   width: 100%;
+}
+
+.button-setting {
+  width: fit-content;
+}
+
+.button-setting button {
+  width: fit-content;
+  min-width: 200px;
+}
+
+.button-setting h3 {
+  margin: 5px 20px;
 }
 
 .range-setting-button,

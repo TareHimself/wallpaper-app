@@ -139,6 +139,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
         await window.electron.ipcRenderer?.downloadImage({
           id: `${wallpapers[currentIndex].tags} ${wallpapers[currentIndex].id}`,
           data: await (xhr.response as Blob).arrayBuffer(),
+          dir: userData.settings?.downloadPath || '',
         });
 
         addNotification('Wallpaper Downloaded!');
@@ -148,7 +149,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
 
       xhr.send();
     }
-  }, [currentIndex, wallpapers]);
+  }, [currentIndex, userData.settings?.downloadPath, wallpapers]);
 
   /* useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);

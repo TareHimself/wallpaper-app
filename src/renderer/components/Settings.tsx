@@ -1,14 +1,17 @@
+import { useCallback } from 'react';
 import { AiOutlineCaretLeft } from 'react-icons/ai';
 import { setSettingsState } from 'renderer/redux/appStateSlice';
 import {
   loginUser,
   logoutUser,
+  setDownloadPath,
   setFullscreen,
   setMaxItemsperPage,
 } from 'renderer/redux/currentUserSlice';
 import { useAppDispatch, useAppSelector } from 'renderer/redux/hooks';
 import { setMaxItems, setPage } from 'renderer/redux/wallpapersSlice';
 import BooleanSetting from './SettingsHelpers/BooleanSetting';
+import ButtonSetting from './SettingsHelpers/ButtonSetting';
 import RangeSetting from './SettingsHelpers/RangeSetting';
 
 export default function Settings({
@@ -19,6 +22,17 @@ export default function Settings({
   const dispatch = useAppDispatch();
 
   const userData = useAppSelector((s) => s.currentUser);
+
+  const changeDownloadPath = useCallback(
+    async (currentPath: string) => {
+      const newPath = await window.electron.ipcRenderer.setDownloadPath(
+        currentPath
+      );
+
+      dispatch(setDownloadPath(newPath));
+    },
+    [dispatch]
+  );
 
   return (
     <div className={activeClass}>
@@ -77,12 +91,15 @@ export default function Settings({
               />
             </div>
           </div>
-          {false && (
-            <div className="wp-settings-item">
-              <h3>Download Path</h3>
-              <div className="wp-settings-item-content" />
+          <div className="wp-settings-item">
+            <h3>Download Path</h3>
+            <div className="wp-settings-item-content">
+              <ButtonSetting
+                value={userData.settings?.downloadPath || ''}
+                onClicked={changeDownloadPath}
+              />
             </div>
-          )}
+          </div>
         </div>
         <div className="wp-settings-back">
           <AiOutlineCaretLeft

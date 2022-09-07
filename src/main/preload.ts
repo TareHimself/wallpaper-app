@@ -141,6 +141,14 @@ contextBridge.exposeInMainWorld('electron', {
     windowClose() {
       ipcRenderer.send('window-close');
     },
+    setDownloadPath(currentPath: string) {
+      ipcRenderer.send('set-download-path', currentPath);
+      return new Promise<string>((resolve) => {
+        ipcRenderer.once('set-download-path', (_event, result) => {
+          resolve(result);
+        });
+      });
+    },
     on(channel: string, func: (...args: unknown[]) => void) {
       if (validChannels.includes(channel)) {
         const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>
