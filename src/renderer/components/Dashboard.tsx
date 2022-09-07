@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react';
-import { AiOutlineCloudUpload } from 'react-icons/ai';
+import { AiOutlineCloudUpload, AiOutlineLoading } from 'react-icons/ai';
 import { BiSearchAlt } from 'react-icons/bi';
 import { FiSettings, FiFilter } from 'react-icons/fi';
 import { IoMdRefresh } from 'react-icons/io';
@@ -22,6 +22,7 @@ export default function Dashboard() {
   const wallpaperData = useAppSelector((s) => s.wallpapers);
 
   const userData = useAppSelector((s) => s.currentUser);
+
   const updateSearchText = useThrottle<string>(
     typingThrottle,
     (value) => {
@@ -97,12 +98,16 @@ export default function Dashboard() {
           draggable="false"
         />
       </div>
-      <FiSettings
-        className="dashboard-icon"
-        onClick={() => {
-          dispatch(setSettingsState('open'));
-        }}
-      />
+      {userData.settings ? (
+        <FiSettings
+          className="dashboard-icon"
+          onClick={() => {
+            dispatch(setSettingsState('open'));
+          }}
+        />
+      ) : (
+        <AiOutlineLoading className="dashboard-icon rotate-svg" />
+      )}
       <IoMdRefresh
         className="dashboard-icon"
         onClick={() => {

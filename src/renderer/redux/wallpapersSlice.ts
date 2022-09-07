@@ -74,7 +74,7 @@ async function getWallpapers(page: number, maxItems: number, query: string) {
 const fetchWallpapers = createAsyncThunk(
   'wallpapers/fetch',
   async ({
-    page,
+    page: inPage,
     maxItems,
     query,
   }: {
@@ -82,10 +82,8 @@ const fetchWallpapers = createAsyncThunk(
     maxItems: number;
     query: string;
   }) => {
-    console.log('Fetching');
-    const fetchResult = await getWallpapers(page, maxItems, query);
-
-    return { ...fetchResult, page, query, maxItems };
+    const fetchResult = await getWallpapers(inPage, maxItems, query);
+    return { ...fetchResult, page: inPage, query, maxItems };
   }
 );
 
@@ -144,6 +142,7 @@ export const wallpapersSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchWallpapers.fulfilled, (state, action) => {
       Object.assign(state, { ...state, ...action.payload });
+      console.log(state.currentPage);
     });
     builder.addCase(refreshWallpapers.fulfilled, (state, action) => {
       Object.assign(state, { ...state, ...action.payload });

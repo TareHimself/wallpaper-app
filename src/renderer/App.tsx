@@ -16,6 +16,7 @@ import {
 } from './redux/wallpapersSlice';
 import { ISystemFilesResult } from './types';
 import { loadCurrentUserData } from './redux/currentUserSlice';
+import { store } from './redux/store';
 
 export default function App() {
   const dispatch = useAppDispatch();
@@ -194,26 +195,24 @@ export default function App() {
 
   useEffect(() => {
     document.body.classList.add('theme-dark');
-    dispatch(loadCurrentUserData());
-  }, [dispatch]);
 
-  useEffect(() => {
-    if (userData.settings) {
-      dispatch(
-        fetchWallpapers({
-          page: wallpapersData.currentPage,
-          maxItems: userData.settings.maxItemsPerPage,
-          query: wallpapersData.query,
-        })
-      );
+    async function loadDataAndApplySettings() {
+      await dispatch(loadCurrentUserData());
+      const { settings } = store.getState().currentUser;
+      const { query } = store.getState().wallpapers;
+      if (settings) {
+        dispatch(
+          fetchWallpapers({
+            page: 0,
+            maxItems: settings.maxItemsPerPage,
+            query,
+          })
+        );
+      }
     }
-  }, [
-    dispatch,
-    userData.settings,
-    userData.settings?.maxItemsPerPage,
-    wallpapersData.currentPage,
-    wallpapersData.query,
-  ]);
+
+    loadDataAndApplySettings();
+  }, [dispatch]);
 
   if (window.electron) {
     return (

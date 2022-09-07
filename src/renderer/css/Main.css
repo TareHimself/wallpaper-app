@@ -631,6 +631,29 @@ p {
   }
 }
 
+@keyframes rotate-svg-animation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  50% {
+    transform: rotate(180deg);
+  }
+
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rotate-svg {
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-duration: 1s;
+  animation-name: rotate-svg-animation;
+  animation-fill-mode: forwards;
+}
+
 .wp-settings-open,
 .wp-settings-closed,
 .wp-settings-neutral {
