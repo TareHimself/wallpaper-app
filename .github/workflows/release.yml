@@ -9,7 +9,7 @@ jobs:
   release:
     strategy:
       matrix:
-        platform: [ubuntu-latest, windows-latest, macos-latest]
+        platform: [ubuntu-latest, windows-latest]
 
     runs-on: ${{ matrix.platform }}
     permissions:
@@ -47,7 +47,5 @@ jobs:
             release/build/*.exe
             release/build/*.blockmap
             release/build/*.AppImage
-            release/build/*.dmg
             release/build/latest-linux.yml
             release/build/latest.yml
-            release/build/latest-mac.yml
