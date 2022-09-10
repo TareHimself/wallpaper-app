@@ -34,11 +34,6 @@ async function getWallpapers(page: number, maxItems: number, query: string) {
   };
 
   if (maxItems > 0) {
-    console.log(
-      `${await getDatabaseUrl()}/wallpapers?o=${page * maxItems}&l=${
-        maxItems + 1
-      }&q=${query}`
-    );
     const response = (await axios
       .get(
         `${await getDatabaseUrl()}/wallpapers?o=${page * maxItems}&l=${
@@ -142,7 +137,6 @@ export const wallpapersSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchWallpapers.fulfilled, (state, action) => {
       Object.assign(state, { ...state, ...action.payload });
-      console.log(state.currentPage);
     });
     builder.addCase(refreshWallpapers.fulfilled, (state, action) => {
       Object.assign(state, { ...state, ...action.payload });

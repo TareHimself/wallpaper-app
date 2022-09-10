@@ -1,5 +1,3 @@
-import { useCallback } from 'react';
-
 export default function ButtonSetting({
   value,
   onClicked,
