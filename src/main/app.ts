@@ -50,7 +50,7 @@ const isDevelopment =
 let bHasIdentified = false;
 
 const socket = io(
-  !isDevelopment
+  isDevelopment
     ? 'ws://localhost:3001'
     : 'wss://wallpaperz-server.oyintare.dev',
   {
