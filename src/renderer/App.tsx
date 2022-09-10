@@ -11,7 +11,6 @@ import TopFrame from './components/TopFrame';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
 import {
   fetchWallpapers,
-  setPage,
   setWallpapersPendingUpload,
 } from './redux/wallpapersSlice';
 import { ISystemFilesResult } from './types';
@@ -30,16 +29,38 @@ export default function App() {
   const gotoNextPage = useCallback(() => {
     const subRoot = document.getElementById('sub-root');
     if (subRoot) subRoot.scrollTo({ top: 0, behavior: 'smooth' });
-
-    dispatch(setPage(wallpapersData.currentPage + 1));
-  }, [dispatch, wallpapersData]);
+    if (!wallpapersData.hasNextPage) return;
+    dispatch(
+      fetchWallpapers({
+        page: wallpapersData.currentPage + 1,
+        maxItems: wallpapersData.maxItems,
+        query: wallpapersData.query,
+      })
+    );
+  }, [
+    dispatch,
+    wallpapersData.currentPage,
+    wallpapersData.maxItems,
+    wallpapersData.query,
+    wallpapersData.hasNextPage,
+  ]);
 
   const gotoPreviousPage = useCallback(() => {
     const subRoot = document.getElementById('sub-root');
     if (subRoot) subRoot.scrollTo({ top: 0, behavior: 'smooth' });
-
-    dispatch(setPage(Math.max(0, wallpapersData.currentPage - 1)));
-  }, [dispatch, wallpapersData]);
+    dispatch(
+      fetchWallpapers({
+        page: Math.max(0, wallpapersData.currentPage - 1),
+        maxItems: wallpapersData.maxItems,
+        query: wallpapersData.query,
+      })
+    );
+  }, [
+    dispatch,
+    wallpapersData.currentPage,
+    wallpapersData.maxItems,
+    wallpapersData.query,
+  ]);
 
   /*  useEffect(() => {
     if (loginData?.discordAuthData && !bHasVerifiedUserLogin.current) {
