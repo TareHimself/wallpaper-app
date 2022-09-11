@@ -9,7 +9,11 @@ import {
   setMaxItemsperPage,
 } from 'renderer/redux/currentUserSlice';
 import { useAppDispatch, useAppSelector } from 'renderer/redux/hooks';
-import { setMaxItems, setPage } from 'renderer/redux/wallpapersSlice';
+import {
+  fetchWallpapers,
+  setMaxItems,
+  setPage,
+} from 'renderer/redux/wallpapersSlice';
 import BooleanSetting from './SettingsHelpers/BooleanSetting';
 import ButtonSetting from './SettingsHelpers/ButtonSetting';
 import RangeSetting from './SettingsHelpers/RangeSetting';
@@ -22,6 +26,8 @@ export default function Settings({
   const dispatch = useAppDispatch();
 
   const userData = useAppSelector((s) => s.currentUser);
+
+  const wallpaperData = useAppSelector((s) => s.wallpapers);
 
   const changeDownloadPath = useCallback(
     async (currentPath: string) => {
@@ -82,9 +88,13 @@ export default function Settings({
               <RangeSetting
                 value={userData.settings?.maxItemsPerPage || 12}
                 onValueUpdated={(value) => {
-                  dispatch(setPage(0));
-                  dispatch(setMaxItemsperPage(value));
-                  dispatch(setMaxItems(value));
+                  dispatch(
+                    fetchWallpapers({
+                      query: wallpaperData.query,
+                      maxItems: value,
+                      page: 0,
+                    })
+                  );
                 }}
                 min={6}
                 max={24}
