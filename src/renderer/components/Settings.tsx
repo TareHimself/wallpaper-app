@@ -6,14 +6,9 @@ import {
   logoutUser,
   setDownloadPath,
   setFullscreen,
-  setMaxItemsperPage,
 } from 'renderer/redux/currentUserSlice';
 import { useAppDispatch, useAppSelector } from 'renderer/redux/hooks';
-import {
-  fetchWallpapers,
-  setMaxItems,
-  setPage,
-} from 'renderer/redux/wallpapersSlice';
+import { fetchWallpapers } from 'renderer/redux/wallpapersSlice';
 import BooleanSetting from './SettingsHelpers/BooleanSetting';
 import ButtonSetting from './SettingsHelpers/ButtonSetting';
 import RangeSetting from './SettingsHelpers/RangeSetting';
