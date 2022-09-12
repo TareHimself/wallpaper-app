@@ -91,7 +91,6 @@ export default function Settings({
                       page: 0,
                     })
                   );
-
                   dispatch(setMaxItemsperPage(value));
                 }}
                 min={6}
