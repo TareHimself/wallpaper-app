@@ -1,6 +1,6 @@
 {
   "name": "wallpaperz",
-  "version": "4.0.4",
+  "version": "4.0.3",
   "description": "A wallpaper app",
   "main": "./dist/main/main.js",
   "author": {
