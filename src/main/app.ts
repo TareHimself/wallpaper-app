@@ -336,7 +336,6 @@ ipcMain.on('get-login', async (event) => {
     const decryptedLoginData = safeStorage.decryptString(encryptedLoginData);
 
     const loginData = JSON.parse(decryptedLoginData) as ILoginData;
-
     onIdentify(async () => {
       const loginFromServer = await Promise.race([
         new Promise((resolve) => {

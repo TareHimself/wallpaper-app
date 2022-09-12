@@ -6,6 +6,7 @@ import {
   logoutUser,
   setDownloadPath,
   setFullscreen,
+  setMaxItemsperPage,
 } from 'renderer/redux/currentUserSlice';
 import { useAppDispatch, useAppSelector } from 'renderer/redux/hooks';
 import { fetchWallpapers } from 'renderer/redux/wallpapersSlice';
@@ -81,7 +82,7 @@ export default function Settings({
             <h3>Max Items Per Page</h3>
             <div className="wp-settings-item-content">
               <RangeSetting
-                value={userData.settings?.maxItemsPerPage || 12}
+                value={wallpaperData.maxItems || 12}
                 onValueUpdated={(value) => {
                   dispatch(
                     fetchWallpapers({
@@ -90,6 +91,8 @@ export default function Settings({
                       page: 0,
                     })
                   );
+
+                  dispatch(setMaxItemsperPage(value));
                 }}
                 min={6}
                 max={24}

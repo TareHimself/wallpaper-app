@@ -48,6 +48,7 @@ export async function getServerUrl() {
 }
 
 export async function getDatabaseUrl() {
+  return 'https://wallpaperz-database.oyintare.dev';
   if (window.electron && (await window.electron.ipcRenderer?.isDev())) {
     return 'http://localhost:3002';
   }
