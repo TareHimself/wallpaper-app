@@ -62,49 +62,6 @@ export default function App() {
     wallpapersData.query,
   ]);
 
-  /*  useEffect(() => {
-    if (loginData?.discordAuthData && !bHasVerifiedUserLogin.current) {
-      bHasVerifiedUserLogin.current = true;
-
-      if (new Date(loginData.discordAuthData.refresh_at) < new Date()) {
-        // refresh auth2 here
-        addNotification('Discord login expired.');
-        return;
-      }
-      axios
-        .get('https://discordapp.com/api/oauth2/@me', {
-          headers: {
-            Authorization: `${loginData.discordAuthData.token_type} ${loginData.discordAuthData.access_token}`,
-          },
-        })
-        .then(async (response) => {
-          // eslint-disable-next-line promise/always-return
-          if (response?.data?.user) {
-            loginData.discordUserData = response.data.user;
-            loginData.userAccountData.nickname =
-              loginData.discordUserData.username;
-            loginData.userAccountData.avatar = `https://cdn.discordapp.com/avatars/${loginData.discordUserData.id}/${loginData.discordUserData.avatar}.webp?size=1024`;
-
-            axios.post(
-              `${await getDatabaseUrl()}/users`,
-              [loginData.userAccountData],
-              {
-                headers: {
-                  Authorization: `Bearer ${await window.bridge?.getToken()}`,
-                },
-              }
-            );
-
-            setLoginData(loginData);
-            // update backend here
-          }
-        })
-        .catch((error) => addNotification(error.message));
-    }
-
-
-  }, [loginData, loginData?.discordAuthData, setLoginData]); */
-
   useEffect(() => {
     function onDragEnter(event: DragEvent) {
       event.preventDefault();
@@ -129,7 +86,7 @@ export default function App() {
 
         if (paths.length) {
           window.bridge
-            ?.uploadFiles("", paths)
+            ?.loadFilesFromDisk("", paths)
             .then((result: ISystemFilesResult) => {
               dispatch(
                 setWallpapersPendingUpload(
@@ -235,7 +192,7 @@ export default function App() {
   if (window.bridge) {
     return (
       <>
-        <TopFrame />
+        {window.bridge?.getPlatform() === "win32" && <TopFrame />}
         <div id="sub-root">
           <Home />
           {(wallpapersData.hasNextPage || wallpapersData.hasPreviousPage) && (

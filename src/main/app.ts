@@ -1,12 +1,11 @@
 /* eslint-disable no-console */
 /* eslint-disable global-require */
-import { io } from "socket.io-client";
-import axios from "axios";
 import {
+  IAccountData,
   IApplicationSettings,
-  ILoginData,
-  IConvertedSystemFiles,
   IImageDownload,
+  ILoginData,
+  ServerResponse,
 } from "../types";
 import path from "path";
 import { app, BrowserWindow, shell, dialog, safeStorage } from "electron";
@@ -15,11 +14,53 @@ import * as fsSync from "fs";
 import macaddress from "macaddress";
 import { platform } from "os";
 import { ipcMain } from "../ipc";
-import { getDatabaseUrl, getServerUrl, getWsUrl, isDev } from "./util";
+import { getDatabaseUrl, getServerUrl, isDev } from "./util";
+import { url } from "inspector";
+import axios from "axios";
+
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
 let mainWindow: BrowserWindow | null = null;
+
+function getCodeFromWindow(authUri: string) {
+  return new Promise<string>((res) => {
+    const newWindow = new BrowserWindow({
+      width: 1024,
+      height: 728,
+      icon: "./assets/icon",
+      webPreferences: {
+        preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+        nodeIntegration: true,
+      },
+      autoHideMenuBar: true,
+    });
+
+    newWindow.on("ready-to-show", () => {
+      if (!mainWindow) {
+        throw new Error('"mainWindow" is not defined');
+      }
+      mainWindow.show();
+    });
+
+    ipcMain.original.once("onCodeReceived", (ev, code) => {
+      newWindow.close();
+      res(code as string);
+    });
+
+    newWindow.loadURL(authUri);
+  });
+}
+
+if (process.defaultApp) {
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient("wallpaperz", process.execPath, [
+      path.resolve(process.argv[1] || ""),
+    ]);
+  }
+} else {
+  app.setAsDefaultProtocolClient("wallpaperz");
+}
 
 app.on("second-instance", () => {
   if (mainWindow) {
@@ -35,40 +76,6 @@ const loginDataPath = path.join(
 
 const settingsPath = path.join(app.getPath("userData"), "settings.json");
 let devicePhysicalAddress = "";
-
-let bHasIdentified = false;
-
-const socket = io(getWsUrl(), {
-  reconnectionDelayMax: 10000,
-});
-
-const pendingIdenfifyCallbacks: (() => void)[] = [];
-
-function onIdentify(callback: () => void) {
-  if (bHasIdentified) {
-    callback();
-  } else {
-    pendingIdenfifyCallbacks.push(callback);
-  }
-}
-
-function identify() {
-  return new Promise<void>((resolve) => {
-    socket.once("client-id", () => {
-      bHasIdentified = true;
-      pendingIdenfifyCallbacks.forEach((c) => c());
-      resolve();
-    });
-    socket.emit("client-id", devicePhysicalAddress);
-  });
-}
-
-socket.on("connect", () => {
-  identify();
-});
-socket.on("disconnect", () => {
-  bHasIdentified = false;
-});
 
 async function createWindow() {
   devicePhysicalAddress = await macaddress.one();
@@ -144,7 +151,7 @@ async function applySettings(settings: IApplicationSettings) {
 
 // read selected images from disk
 ipcMain.onFromRenderer(
-  "uploadFiles",
+  "loadFilesFromDisk",
   async (event, defaultUploadPath, pathsToUpload) => {
     if (pathsToUpload.length) {
       const readers: Promise<[string, number, string]>[] = [];
@@ -263,10 +270,10 @@ ipcMain.onFromRenderer("loadSettings", async (event) => {
   }
 });
 
-ipcMain.onFromRenderer("openLogin", async (event) => {
+ipcMain.onFromRenderer("startLogin", async (event) => {
   const params = new URLSearchParams({
     client_id: "967602114350174348",
-    redirect_uri: `${getServerUrl()}/auth`,
+    redirect_uri: `${getServerUrl()}/temp`,
     response_type: "code",
     scope: "identify",
     state: `${devicePhysicalAddress}`,
@@ -274,49 +281,30 @@ ipcMain.onFromRenderer("openLogin", async (event) => {
 
   const url = `https://discord.com/api/oauth2/authorize?${params}`;
 
-  socket.on("open-login", async (response: ILoginData) => {
-    const encryptedData = safeStorage.encryptString(JSON.stringify(response));
+  const codeReceived = await getCodeFromWindow(url);
 
-    fs.writeFile(loginDataPath, encryptedData)
-      .then(() => {
-        event.reply(response);
-      })
-      .catch(console.log);
-  });
+  console.log("Got code", codeReceived);
+  const serverResponse = (
+    await axios.get<ServerResponse<ILoginData>>(
+      `${getServerUrl()}/login?code=${codeReceived}`
+    )
+  ).data;
 
-  shell.openExternal(url);
+  if (serverResponse.error) {
+    event.reply(undefined);
+    return;
+  }
+
+  event.reply(serverResponse.data);
 });
 
 ipcMain.onFromRenderer("getLogin", async (event) => {
   if (fsSync.existsSync(loginDataPath)) {
-    const encryptedLoginData = await fs.readFile(loginDataPath);
-    const decryptedLoginData = safeStorage.decryptString(encryptedLoginData);
+    // const encryptedLoginData = await fs.readFile(loginDataPath);
+    // const decryptedLoginData = safeStorage.decryptString(encryptedLoginData);
 
-    const loginData = JSON.parse(decryptedLoginData) as ILoginData;
-    onIdentify(async () => {
-      const loginFromServer = await Promise.race<
-        [Promise<ILoginData | undefined>, Promise<undefined>]
-      >([
-        new Promise((resolve) => {
-          socket.once("verify-discord", async (payload: ILoginData | null) => {
-            if (payload === null) {
-              if (fsSync.existsSync(loginDataPath)) {
-                await fs.unlink(loginDataPath);
-              }
-              resolve(undefined);
-            } else {
-              resolve(payload);
-            }
-          });
-          socket.emit("verify-discord", loginData.discord);
-        }),
-        new Promise((resolve) => {
-          setTimeout(resolve, 8000, undefined);
-        }),
-      ]);
-
-      event.reply(loginFromServer);
-    });
+    // const loginData = JSON.parse(decryptedLoginData) as ILoginData;
+    event.reply(undefined);
   } else {
     event.reply(undefined);
   }
@@ -341,25 +329,6 @@ ipcMain.onFromRenderer("logout", async (event) => {
   }
   event.reply();
 });
-
-ipcMain.onFromRenderer(
-  "uploadImages",
-  async (event, images: IConvertedSystemFiles[], uploader_id) => {
-    const params = new URLSearchParams({
-      user: devicePhysicalAddress,
-      uploader: uploader_id,
-    });
-
-    const response = await axios
-      .put(`${getServerUrl()}/wallpapers?${params.toString()}`, images, {
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity,
-      })
-      .catch((error) => console.log(error.message));
-
-    event.reply(response?.data || []);
-  }
-);
 
 ipcMain.onFromRenderer("setDownloadPath", async (event, currentPath) => {
   const data = await dialog.showOpenDialog({
@@ -441,4 +410,8 @@ ipcMain.onFromRenderer("getServerUrl", (e) => {
 
 ipcMain.onFromRenderer("getPreloadPath", (e) => {
   e.replySync(MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY);
+});
+
+ipcMain.onFromRenderer("getPlatform", (e) => {
+  e.replySync(platform());
 });

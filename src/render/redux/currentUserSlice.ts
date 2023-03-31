@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { addNotification } from "../utils";
 import {
   IApplicationSettings,
   ICurrentUserState,
   ILoginData,
 } from "../../types";
+import toast from "react-hot-toast";
 
 // Define a type for the slice state
 
@@ -30,7 +30,7 @@ const loadCurrentUserData = createAsyncThunk("currentUser/load", async () => {
     return result;
   } catch (e: unknown) {
     if (e instanceof Error) {
-      addNotification(e.message);
+      toast.error(e.message);
     }
     return result;
   }
@@ -38,14 +38,14 @@ const loadCurrentUserData = createAsyncThunk("currentUser/load", async () => {
 
 const loginUser = createAsyncThunk("currentUser/login", async () => {
   try {
-    const loginData = await window.bridge?.openLogin();
+    const loginData = await window.bridge?.startLogin();
     if (loginData) {
       return loginData;
     }
     return null;
   } catch (e: unknown) {
     if (e instanceof Error) {
-      addNotification(e.message);
+      toast.error(e.message);
     }
     return null;
   }
@@ -57,7 +57,7 @@ const logoutUser = createAsyncThunk("currentUser/logout", async () => {
     return null;
   } catch (e: unknown) {
     if (e instanceof Error) {
-      addNotification(e.message);
+      toast.error(e.message);
     }
     return null;
   }

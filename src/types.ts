@@ -1,22 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type Awaitable<T> = T | Promise<T>;
 
+export type ServerResponse<T = any> =
+  | {
+      error: false;
+      data: T;
+    }
+  | {
+      error: true;
+      data: string;
+    };
 export type RendererToMainEvents = {
   getPreloadPath: () => string;
-  uploadFiles(
+  getPlatform: () => NodeJS.Platform;
+  loadFilesFromDisk(
     lastUploadPath: string,
     paths: string[]
   ): Promise<ISystemFilesResult>;
   loadSettings(): Promise<IApplicationSettings>;
   saveSettings(settings: IApplicationSettings): Promise<boolean>;
-  openLogin(): Promise<ILoginData>;
+  startLogin(): Promise<ILoginData | undefined>;
   getLogin(): Promise<ILoginData | undefined>;
   updateLogin(data: ILoginData | undefined): Promise<void>;
   logout(): Promise<void>;
-  uploadImages(
-    images: IConvertedSystemFiles[],
-    uploader_id: string
-  ): Promise<IWallpaperData[]>;
   downloadImage(image: IImageDownload): Promise<boolean>;
   quitApp(): void;
   isDev(): Promise<boolean>;
@@ -78,8 +84,7 @@ export interface IApplicationSettings {
 }
 
 export interface ILoginData {
-  token: string;
-  discord: IDiscordData;
+  session: string;
   account: IAccountData;
 }
 
@@ -94,11 +99,6 @@ export interface IConvertedSystemFiles {
   height: number;
   width: number;
   tags: string;
-}
-
-export interface INotificationInfo {
-  id: number;
-  content: string;
 }
 
 export interface ICurrentUserState {

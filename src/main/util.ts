@@ -1,15 +1,10 @@
 /* eslint import/prefer-default-export: off, import/no-mutable-exports: off */
-import { app } from "electron";
+// import { app } from "electron";
 
 export function isDev() {
-  return !app.isPackaged;
+  return true; //!app.isPackaged;
 }
 
-export function getWsUrl() {
-  return isDev()
-    ? "ws://localhost:3001"
-    : "wss://wallpaperz-server.oyintare.dev";
-}
 export function getServerUrl() {
   return isDev()
     ? "http://localhost:3001"

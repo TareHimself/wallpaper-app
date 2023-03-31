@@ -12,7 +12,7 @@ import {
   setWallpapersPendingUpload,
 } from "../redux/wallpapersSlice";
 import { IConvertedSystemFiles } from "../../types";
-import { addNotification } from "../utils";
+import toast from "react-hot-toast";
 
 const typingThrottle = 500;
 
@@ -45,13 +45,13 @@ export default function Dashboard() {
       /* if (setSettingsState) {
         setSettingsState('open');
       } */
-      addNotification("You Must Be Logged In To Upload");
+      toast.error("You Must Be Logged In To Upload");
       return;
     }
     if (isUploading.current) return;
 
     isUploading.current = true;
-    const response = await window.bridge?.uploadFiles("", []);
+    const response = await window.bridge?.loadFilesFromDisk("", []);
 
     const images: IConvertedSystemFiles[] = [];
 
@@ -83,7 +83,7 @@ export default function Dashboard() {
       <FiFilter
         className="dashboard-icon"
         onClick={() => {
-          addNotification("Filters coming soon!");
+          toast("Filters coming soon!");
         }}
       />
       <AiOutlineCloudUpload className="dashboard-icon" onClick={uploadFiles} />
@@ -112,7 +112,7 @@ export default function Dashboard() {
         className="dashboard-icon"
         onClick={() => {
           dispatch(refreshWallpapers({ bShouldReset: false }));
-          addNotification("Refreshing");
+          toast("Refreshing");
         }}
       />
     </div>

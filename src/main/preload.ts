@@ -4,8 +4,8 @@ import { ipcRenderer } from "../ipc";
 
 const events: RendererToMainEvents = {
   getPreloadPath: () => ipcRenderer.sendToMainSync("getPreloadPath"),
-  uploadFiles: (...args) => {
-    return ipcRenderer.sendToMainAsync("uploadFiles", ...args);
+  loadFilesFromDisk: (...args) => {
+    return ipcRenderer.sendToMainAsync("loadFilesFromDisk", ...args);
   },
   loadSettings: (...args) => {
     return ipcRenderer.sendToMainAsync("loadSettings", ...args);
@@ -13,8 +13,8 @@ const events: RendererToMainEvents = {
   saveSettings: (...args) => {
     return ipcRenderer.sendToMainAsync("saveSettings", ...args);
   },
-  openLogin: (...args) => {
-    return ipcRenderer.sendToMainAsync("openLogin", ...args);
+  startLogin: (...args) => {
+    return ipcRenderer.sendToMainAsync("startLogin", ...args);
   },
   getLogin: (...args) => {
     return ipcRenderer.sendToMainAsync("getLogin", ...args);
@@ -24,9 +24,6 @@ const events: RendererToMainEvents = {
   },
   logout: (...args) => {
     return ipcRenderer.sendToMainAsync("logout", ...args);
-  },
-  uploadImages: (...args) => {
-    return ipcRenderer.sendToMainAsync("uploadImages", ...args);
   },
   downloadImage: (...args) => {
     return ipcRenderer.sendToMainAsync("downloadImage", ...args);
@@ -58,6 +55,15 @@ const events: RendererToMainEvents = {
   getDatabaseUrl: (...args) => {
     return ipcRenderer.sendToMainAsync("getDatabaseUrl", ...args);
   },
+  getPlatform: (...args) => {
+    return ipcRenderer.sendToMainSync("getPlatform", ...args);
+  },
 };
+
+ipcRenderer.exposeApi("auth", {
+  onCodeReceived: (code: string) => {
+    ipcRenderer.original.send("onCodeReceived", code);
+  },
+});
 
 ipcRenderer.exposeApi("bridge", events);

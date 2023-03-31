@@ -16,7 +16,7 @@ import {
 } from "../redux/wallpapersSlice";
 import { IWallpaperData } from "../../types";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { addNotification, getDatabaseUrl, SqlIntegerToTime } from "../utils";
+import { getDatabaseUrl, SqlIntegerToTime } from "../utils";
 import { toast } from "react-hot-toast";
 
 const clickOutClassnames = ["wp-view", "wp-view-container"];
@@ -87,13 +87,13 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
             },
           }
         )
-        .catch((e) => addNotification(e.message));
+        .catch((e) => toast.error(e.message));
 
       dispatch(setCurrentWallpaper(null));
 
       dispatch(refreshWallpapers({ bShouldReset: false }));
     } else {
-      addNotification("This does not work yet, Tare is lazy");
+      toast("This feature is currently unavailable");
     }
   }, [bisOwnerOfWallpaper, currentWallpaper.id, dispatch]);
 
@@ -117,7 +117,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
               },
             }
           )
-          .catch((e) => addNotification(e.message));
+          .catch((e) => toast.error(e.message));
       }
     } else {
       setEditingTags(true);
@@ -216,7 +216,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
             data-interact="true"
             onClick={() => {
               setIsFullscreen(true);
-              addNotification("Double Click To Exit");
+              toast("Double Click To Exit");
             }}
           />
         </div>

@@ -10,7 +10,7 @@ if (container) {
   root.render(
     <Provider store={store}>
       <Toaster
-        position="top-center"
+        position="bottom-left"
         reverseOrder={true}
         // containerStyle={{
         //   top: 100,

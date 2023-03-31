@@ -1,5 +1,3 @@
-import { INotificationInfo } from "../types";
-
 function pad(number: number) {
   return number < 10 ? `0${number}` : `${number}`;
 }
@@ -40,17 +38,6 @@ export function SqlIntegerToTime(number: number) {
   newDate.setUTCFullYear(parseInt(string.slice(0, -10), 10));
 
   return newDate;
-}
-
-export function addNotification(noti: string) {
-  document.dispatchEvent(
-    new CustomEvent<INotificationInfo>("notification", {
-      detail: {
-        id: performance.now(),
-        content: noti,
-      },
-    })
-  );
 }
 
 export async function getServerUrl() {

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import axios, { AxiosResponse } from "axios";
-import { addNotification, getDatabaseUrl } from "../utils";
+import axios from "axios";
+import { getDatabaseUrl } from "../utils";
 import {
   IConvertedSystemFiles,
   IWallpaperData,
@@ -35,15 +35,11 @@ async function getWallpapers(page: number, maxItems: number, query: string) {
   };
 
   if (maxItems > 0) {
-    const response = (await axios
-      .get(
-        `${await getDatabaseUrl()}/wallpapers?o=${page * maxItems}&l=${
-          maxItems + 1
-        }&q=${query}`
-      )
-      .catch(() => {
-        addNotification("Failed to fetch wallpapers");
-      })) as AxiosResponse<IWallpaperData[]> | null | undefined;
+    const response = await axios.get<IWallpaperData[]>(
+      `${await getDatabaseUrl()}/wallpapers?o=${page * maxItems}&l=${
+        maxItems + 1
+      }&q=${query}`
+    );
 
     if (response && response.data) {
       const wallpapersFromApi = response.data;

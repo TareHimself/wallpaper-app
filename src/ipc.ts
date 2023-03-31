@@ -35,7 +35,7 @@ export type EventReturnWithId<E extends IEventBase, T extends keyof E> = {
 
 class IpcRendererWrapper<ToM extends IEventBase, FromM extends IEventBase> {
   _callbacks: Map<keyof ToM | keyof FromM, IpcCallbackItem> = new Map();
-
+  original = electronIpcRenderer;
   exposeApi<T>(name: string, api: T) {
     console.log("Exposing Api", name);
     contextBridge.exposeInMainWorld(name, api);
@@ -204,7 +204,7 @@ class IpcMainEventWrapper<FromR extends IEventBase, T extends keyof FromR> {
 
 class IpcMainWrapper<FromR extends IEventBase, ToR extends IEventBase> {
   _callbacks: Map<keyof FromR | keyof ToR, IpcCallbackItem> = new Map();
-
+  original = electronIpcMain;
   onFromRenderer<T extends keyof FromR>(
     event: T,
     callback: (

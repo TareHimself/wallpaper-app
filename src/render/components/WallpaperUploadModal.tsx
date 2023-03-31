@@ -5,8 +5,10 @@ import {
   setWallpapersPendingUpload,
 } from "../redux/wallpapersSlice";
 import { IConvertedSystemFiles } from "../../types";
-import { addNotification } from "../utils";
 import WallpaperUploadItem from "./WallpaperUploadItem";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { getServerUrl } from "../utils";
 
 const clickOutClassnames = ["wp-view", "wp-view-container"];
 
@@ -55,32 +57,38 @@ export default function WallpaperUploadModal() {
   }
 
   const uploadWallpapers = useCallback(async () => {
-    if (uploadingStatus || !files) return;
+    await toast.promise(
+      (async () => {
+        if (uploadingStatus || !files) return;
 
-    if (
-      files.current.filter((file) => file.tags.split(",").length < 3).length !==
-      0
-    ) {
-      addNotification("All wallpapers must have atleast 3 tags");
-      return;
-    }
+        if (
+          files.current.filter((file) => file.tags.split(",").length < 3)
+            .length !== 0
+        ) {
+          throw new Error("All wallpapers must have atleast 3 tags");
+        }
 
-    setUploadingStatus(true);
-    if (userData.loginData?.account.id && wallpaperData.data) {
-      addNotification("Uploading Wallpapers");
-      await window.bridge?.uploadImages(
-        files.current,
-        userData.loginData?.account.id
-      );
+        setUploadingStatus(true);
 
-      addNotification("Upload Complete");
+        if (userData.loginData?.account.id && wallpaperData.data) {
+          const sessionId = "";
+          await axios.post(
+            `${await getServerUrl()}/${sessionId}/upload`,
+            files.current
+          );
+          dispatch(refreshWallpapers({ bShouldReset: false }));
+        }
 
-      dispatch(refreshWallpapers({ bShouldReset: false }));
-    }
+        setUploadingStatus(false);
 
-    setUploadingStatus(false);
-
-    dispatch(setWallpapersPendingUpload(null));
+        dispatch(setWallpapersPendingUpload(null));
+      })(),
+      {
+        loading: "Uploading Wallpapers",
+        success: "Upload Complete",
+        error: (e) => e.message as string,
+      }
+    );
   }, [
     uploadingStatus,
     files,
