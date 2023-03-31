@@ -1,34 +1,27 @@
-/* eslint-disable promise/always-return */
 /* eslint-disable no-console */
 /* eslint-disable global-require */
-import { io } from 'socket.io-client';
-import axios from 'axios';
+import { io } from "socket.io-client";
+import axios from "axios";
 import {
   IApplicationSettings,
   ILoginData,
   IConvertedSystemFiles,
   IImageDownload,
-  IAccountData,
-  IDiscordData,
-} from 'renderer/types';
-import path from 'path';
-import {
-  app,
-  BrowserWindow,
-  shell,
-  ipcMain,
-  dialog,
-  safeStorage,
-} from 'electron';
-import * as fs from 'fs/promises';
-import * as fsSync from 'fs';
-import macaddress from 'macaddress';
-import MenuBuilder from './menu';
-import { resolveHtmlPath } from './util';
+} from "../types";
+import path from "path";
+import { app, BrowserWindow, shell, dialog, safeStorage } from "electron";
+import * as fs from "fs/promises";
+import * as fsSync from "fs";
+import macaddress from "macaddress";
+import { platform } from "os";
+import { ipcMain } from "../ipc";
+import { getDatabaseUrl, getServerUrl, getWsUrl, isDev } from "./util";
+declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
+declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
 let mainWindow: BrowserWindow | null = null;
 
-app.on('second-instance', () => {
+app.on("second-instance", () => {
   if (mainWindow) {
     if (mainWindow.isMinimized()) mainWindow.restore();
     mainWindow.focus();
@@ -36,27 +29,18 @@ app.on('second-instance', () => {
 });
 
 const loginDataPath = path.join(
-  app.getPath('userData'),
-  'loginData.wallpaperz'
+  app.getPath("userData"),
+  "loginData.wallpaperz"
 );
 
-const settingsPath = path.join(app.getPath('userData'), 'settings.json');
-let devicePhysicalAddress = '';
-
-const isDevelopment =
-  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
-// let currentToken = '';
+const settingsPath = path.join(app.getPath("userData"), "settings.json");
+let devicePhysicalAddress = "";
 
 let bHasIdentified = false;
 
-const socket = io(
-  isDevelopment
-    ? 'ws://localhost:3001'
-    : 'wss://wallpaperz-server.oyintare.dev',
-  {
-    reconnectionDelayMax: 10000,
-  }
-);
+const socket = io(getWsUrl(), {
+  reconnectionDelayMax: 10000,
+});
 
 const pendingIdenfifyCallbacks: (() => void)[] = [];
 
@@ -70,67 +54,42 @@ function onIdentify(callback: () => void) {
 
 function identify() {
   return new Promise<void>((resolve) => {
-    socket.once('client-id', () => {
+    socket.once("client-id", () => {
       bHasIdentified = true;
       pendingIdenfifyCallbacks.forEach((c) => c());
       resolve();
     });
-    socket.emit('client-id', devicePhysicalAddress);
+    socket.emit("client-id", devicePhysicalAddress);
   });
 }
 
-socket.on('connect', () => {
+socket.on("connect", () => {
   identify();
 });
-socket.on('disconnect', () => {
+socket.on("disconnect", () => {
   bHasIdentified = false;
 });
 
-async function installExtensions() {
-  const installer = require('electron-devtools-installer');
-  const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-  const extensions = ['REACT_DEVELOPER_TOOLS'];
-
-  return installer
-    .default(
-      extensions.map((name) => installer[name]),
-      forceDownload
-    )
-    .catch(console.log);
-}
-
 async function createWindow() {
   devicePhysicalAddress = await macaddress.one();
-  if (isDevelopment) {
-    await installExtensions();
-  }
-
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  const getAssetPath = (...paths: string[]): string => {
-    return path.join(RESOURCES_PATH, ...paths);
-  };
 
   mainWindow = new BrowserWindow({
     show: false,
     width: 1024,
     height: 728,
-    icon: getAssetPath('icon.png'),
+    icon: "./assets/icon",
     webPreferences: {
-      preload: app.isPackaged
-        ? path.join(__dirname, 'preload.js')
-        : path.join(__dirname, '../../.erb/dll/preload.js'),
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      nodeIntegration: true,
+      webSecurity: false,
     },
     autoHideMenuBar: true,
-    frame: false,
-    titleBarStyle: 'hidden',
+    frame: platform() !== "win32",
   });
 
-  mainWindow.loadURL(resolveHtmlPath('index.html'));
+  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-  mainWindow.on('ready-to-show', () => {
+  mainWindow.on("ready-to-show", () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
@@ -140,28 +99,27 @@ async function createWindow() {
     mainWindow.show();
   });
 
-  mainWindow.on('closed', () => {
+  mainWindow.on("closed", () => {
     mainWindow = null;
   });
-
-  if (process.env.NODE_ENV === 'development') {
-    const menuBuilder = new MenuBuilder(mainWindow);
-    menuBuilder.buildMenu();
-  } else {
-    mainWindow.removeMenu();
-  }
 
   // Open urls in the user's browser
   mainWindow.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);
-    return { action: 'deny' };
+    return { action: "deny" };
   });
+
+  if (isDev()) {
+    // Open the DevTools.
+    console.log("Opening dev tools");
+    mainWindow.webContents.openDevTools();
+  }
 }
 
-app.on('window-all-closed', () => {
+app.on("window-all-closed", () => {
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
-  if (process.platform !== 'darwin') {
+  if (process.platform !== "darwin") {
     app.quit();
   }
 });
@@ -170,7 +128,7 @@ app
   .whenReady()
   .then(() => {
     createWindow();
-    app.on('activate', () => {
+    app.on("activate", () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
       if (mainWindow === null) createWindow();
@@ -185,9 +143,9 @@ async function applySettings(settings: IApplicationSettings) {
 }
 
 // read selected images from disk
-ipcMain.on(
-  'upload-files',
-  async (event, defaultUploadPath: string, pathsToUpload: string[]) => {
+ipcMain.onFromRenderer(
+  "uploadFiles",
+  async (event, defaultUploadPath, pathsToUpload) => {
     if (pathsToUpload.length) {
       const readers: Promise<[string, number, string]>[] = [];
 
@@ -197,7 +155,7 @@ ipcMain.on(
         index: number
       ): Promise<[string, number, string]> {
         return [
-          (await fs.readFile(fileToLoad)).toString('base64'),
+          (await fs.readFile(fileToLoad)).toString("base64"),
           index,
           path.parse(fileToLoad).name,
         ];
@@ -209,26 +167,26 @@ ipcMain.on(
 
       const filesLoaded = await Promise.all(readers);
 
-      event.reply('upload-files', { result: true, files: filesLoaded });
+      event.reply({ result: true, files: filesLoaded });
     } else {
       dialog
         .showOpenDialog({
-          title: 'Select the wallpapers to upload',
-          properties: ['openFile', 'multiSelections'],
+          title: "Select the wallpapers to upload",
+          properties: ["openFile", "multiSelections"],
           defaultPath: defaultUploadPath,
-          buttonLabel: 'Upload',
+          buttonLabel: "Upload",
           filters: [
             {
-              name: 'wallpapers',
-              extensions: ['jpeg', 'png', 'jpg'],
+              name: "wallpapers",
+              extensions: ["jpeg", "png", "jpg"],
             },
           ],
         })
         .then(async (result) => {
           if (result.canceled) {
-            event.reply('upload-files', { result: false, files: [] });
+            event.reply({ result: false, files: [] });
           } else if (result.filePaths.length === 0) {
-            event.reply('upload-files', { result: false, files: [] });
+            event.reply({ result: false, files: [] });
           } else {
             const readers: Promise<[string, number, string]>[] = [];
 
@@ -238,7 +196,7 @@ ipcMain.on(
               index: number
             ): Promise<[string, number, string]> {
               return [
-                (await fs.readFile(fileToLoad)).toString('base64'),
+                (await fs.readFile(fileToLoad)).toString("base64"),
                 index,
                 path.parse(fileToLoad).name,
               ];
@@ -249,7 +207,7 @@ ipcMain.on(
 
             const filesLoaded = await Promise.all(readers);
 
-            event.reply('upload-files', { result: true, files: filesLoaded });
+            event.reply({ result: true, files: filesLoaded });
           }
         })
         .catch(console.log);
@@ -258,19 +216,22 @@ ipcMain.on(
 );
 
 // read selected images from disk
-ipcMain.on('save-settings', async (event, args: IApplicationSettings) => {
+ipcMain.onFromRenderer("saveSettings", async (event, args) => {
   applySettings(args);
 
   fs.writeFile(settingsPath, JSON.stringify(args, null, 3))
     .then(() => {
-      event.reply('save-settings', true);
+      event.reply(true);
     })
-    .catch(console.log);
+    .catch((e) => {
+      console.error(e);
+      event.reply(false);
+    });
 });
 
-ipcMain.on('load-settings', async (event) => {
+ipcMain.onFromRenderer("loadSettings", async (event) => {
   if (fsSync.existsSync(settingsPath)) {
-    fs.readFile(settingsPath, 'utf8')
+    fs.readFile(settingsPath, "utf8")
       .then((file: string) => {
         const settingsAsJson = JSON.parse(file) as IApplicationSettings;
 
@@ -278,15 +239,15 @@ ipcMain.on('load-settings', async (event) => {
           !settingsAsJson.downloadPath ||
           !fsSync.existsSync(settingsAsJson.downloadPath)
         )
-          settingsAsJson.downloadPath = app.getPath('downloads');
+          settingsAsJson.downloadPath = app.getPath("downloads");
 
         applySettings(settingsAsJson);
-        event.reply('load-settings', settingsAsJson);
+        event.reply(settingsAsJson);
       })
       .catch(console.log);
   } else {
     const defaultSettings: IApplicationSettings = {
-      downloadPath: '',
+      downloadPath: "",
       maxItemsPerPage: 12,
       bShouldUseFullscreen: true,
       bIsLoggedIn: false,
@@ -296,156 +257,144 @@ ipcMain.on('load-settings', async (event) => {
 
     fs.writeFile(settingsPath, JSON.stringify(defaultSettings, null, 3))
       .then(() => {
-        event.reply('load-settings', defaultSettings);
+        event.reply(defaultSettings);
       })
       .catch(console.log);
   }
 });
 
-ipcMain.on('open-login', async (event) => {
+ipcMain.onFromRenderer("openLogin", async (event) => {
   const params = new URLSearchParams({
-    client_id: '967602114350174348',
-    redirect_uri: `${
-      isDevelopment
-        ? 'http://localhost:3001'
-        : 'https://wallpaperz-server.oyintare.dev'
-    }/auth`,
-    response_type: 'code',
-    scope: 'identify',
+    client_id: "967602114350174348",
+    redirect_uri: `${getServerUrl()}/auth`,
+    response_type: "code",
+    scope: "identify",
     state: `${devicePhysicalAddress}`,
   }).toString();
 
   const url = `https://discord.com/api/oauth2/authorize?${params}`;
 
-  socket.on('open-login', async (response: ILoginData) => {
+  socket.on("open-login", async (response: ILoginData) => {
     const encryptedData = safeStorage.encryptString(JSON.stringify(response));
 
     fs.writeFile(loginDataPath, encryptedData)
       .then(() => {
-        event.reply('open-login', response);
+        event.reply(response);
       })
       .catch(console.log);
   });
 
-  require('electron').shell.openExternal(url);
+  shell.openExternal(url);
 });
 
-ipcMain.on('get-login', async (event) => {
+ipcMain.onFromRenderer("getLogin", async (event) => {
   if (fsSync.existsSync(loginDataPath)) {
     const encryptedLoginData = await fs.readFile(loginDataPath);
     const decryptedLoginData = safeStorage.decryptString(encryptedLoginData);
 
     const loginData = JSON.parse(decryptedLoginData) as ILoginData;
     onIdentify(async () => {
-      const loginFromServer = await Promise.race([
+      const loginFromServer = await Promise.race<
+        [Promise<ILoginData | undefined>, Promise<undefined>]
+      >([
         new Promise((resolve) => {
-          socket.once(
-            'verify-discord',
-            async (
-              payload: { account: IAccountData; discord: IDiscordData } | null
-            ) => {
-              if (!payload) {
-                if (fsSync.existsSync(loginDataPath)) {
-                  await fs.unlink(loginDataPath);
-                }
-                resolve(undefined);
+          socket.once("verify-discord", async (payload: ILoginData | null) => {
+            if (payload === null) {
+              if (fsSync.existsSync(loginDataPath)) {
+                await fs.unlink(loginDataPath);
               }
-
+              resolve(undefined);
+            } else {
               resolve(payload);
             }
-          );
-          socket.emit('verify-discord', loginData.discord);
+          });
+          socket.emit("verify-discord", loginData.discord);
         }),
         new Promise((resolve) => {
           setTimeout(resolve, 8000, undefined);
         }),
       ]);
 
-      event.reply('get-login', loginFromServer);
+      event.reply(loginFromServer);
     });
   } else {
-    event.reply('get-login', undefined);
+    event.reply(undefined);
   }
 });
 
-ipcMain.on('update-login', async (event, newLoginData) => {
+ipcMain.onFromRenderer("updateLogin", async (event, newLoginData) => {
   if (newLoginData === undefined) {
     if (fsSync.existsSync(loginDataPath)) {
       await fs.unlink(loginDataPath);
     }
-    event.reply('update-login');
+    event.reply();
     return;
   }
   const encryptedData = safeStorage.encryptString(JSON.stringify(newLoginData));
   await fs.writeFile(loginDataPath, encryptedData);
-  event.reply('update-login');
+  event.reply();
 });
 
-ipcMain.on('logout', async (event) => {
+ipcMain.onFromRenderer("logout", async (event) => {
   if (fsSync.existsSync(loginDataPath)) {
     await fs.unlink(loginDataPath);
   }
-  event.reply('logout');
+  event.reply();
 });
 
-ipcMain.on(
-  'upload-images',
+ipcMain.onFromRenderer(
+  "uploadImages",
   async (event, images: IConvertedSystemFiles[], uploader_id) => {
     const params = new URLSearchParams({
       user: devicePhysicalAddress,
       uploader: uploader_id,
     });
 
-    const serverUrl = isDevelopment
-      ? 'http://localhost:3001'
-      : 'https://wallpaperz-server.oyintare.dev';
-
     const response = await axios
-      .put(`${serverUrl}/wallpapers?${params.toString()}`, images, {
+      .put(`${getServerUrl()}/wallpapers?${params.toString()}`, images, {
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
       })
       .catch((error) => console.log(error.message));
 
-    if (response?.data) {
-      event.reply('upload-images', response?.data);
-    } else {
-      event.reply('upload-images', []);
-    }
+    event.reply(response?.data || []);
   }
 );
 
-ipcMain.on('set-download-path', async (event, currentPath) => {
+ipcMain.onFromRenderer("setDownloadPath", async (event, currentPath) => {
   const data = await dialog.showOpenDialog({
     defaultPath: currentPath,
-    properties: ['openDirectory'],
+    properties: ["openDirectory"],
   });
 
   if (data.canceled) {
-    event.reply('set-download-path', currentPath);
+    event.reply(currentPath);
     return;
   }
 
-  event.reply('set-download-path', data.filePaths[0]);
+  event.reply(data.filePaths[0] || "");
 });
 
-ipcMain.on('download-image', async (event, image: IImageDownload) => {
-  const downloadPath = path.join(
-    image.dir || app.getPath('downloads'),
-    `${image.id}.jpg`
-  );
+ipcMain.onFromRenderer(
+  "downloadImage",
+  async (event, image: IImageDownload) => {
+    const downloadPath = path.join(
+      image.dir || app.getPath("downloads"),
+      `${image.id}.jpg`
+    );
 
-  fs.writeFile(downloadPath, Buffer.from(image.data))
-    .then(() => {
-      event.reply('download-image', true);
-    })
-    .catch((error: Error) => {
-      event.reply('download-image', false);
-      console.log(error);
-    });
-});
+    fs.writeFile(downloadPath, Buffer.from(image.data))
+      .then(() => {
+        event.reply(true);
+      })
+      .catch((error: Error) => {
+        event.reply(false);
+        console.log(error);
+      });
+  }
+);
 
-ipcMain.on('quit-app', async () => {
+ipcMain.onFromRenderer("quitApp", async () => {
   try {
     app.quit();
   } catch (error) {
@@ -453,16 +402,15 @@ ipcMain.on('quit-app', async () => {
   }
 });
 
-ipcMain.on('is-dev', (event) => {
-  event.reply('is-dev', isDevelopment);
+ipcMain.onFromRenderer("isDev", (event) => {
+  event.reply(isDev());
 });
 
-ipcMain.on('get-token', (event) => {
-  event.reply('get-token', 'test');
+ipcMain.onFromRenderer("getToken", (event) => {
+  event.reply("test");
 });
 
-ipcMain.on('window-max', () => {
-  console.log(mainWindow?.isMaximizable(), mainWindow?.isMaximized());
+ipcMain.onFromRenderer("windowMaximize", (event) => {
   if (mainWindow) {
     if (mainWindow.isMaximized()) {
       mainWindow.unmaximize();
@@ -470,12 +418,27 @@ ipcMain.on('window-max', () => {
       mainWindow.maximize();
     }
   }
+  event.reply();
 });
 
-ipcMain.on('window-min', () => {
+ipcMain.onFromRenderer("windowMinimize", (e) => {
   mainWindow?.minimize();
+  e.reply();
 });
 
-ipcMain.on('window-close', () => {
+ipcMain.onFromRenderer("windowClose", (e) => {
   mainWindow?.close();
+  e.reply();
+});
+
+ipcMain.onFromRenderer("getDatabaseUrl", (e) => {
+  e.reply(getDatabaseUrl());
+});
+
+ipcMain.onFromRenderer("getServerUrl", (e) => {
+  e.reply(getServerUrl());
+});
+
+ipcMain.onFromRenderer("getPreloadPath", (e) => {
+  e.replySync(MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY);
 });

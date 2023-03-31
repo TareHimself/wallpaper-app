@@ -1,25 +1,31 @@
 {
   "compilerOptions": {
-    "target": "es2021",
+    "target": "ES2021",
+    "allowJs": true,
     "module": "commonjs",
-    "lib": ["dom", "es2021"],
-    "declaration": true,
-    "declarationMap": true,
-    "jsx": "react-jsx",
-    "strict": true,
-    "pretty": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "noImplicitAny": true,
     "sourceMap": true,
-    "baseUrl": "./src",
+    "outDir": "dist",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "allowJs": true,
-    "outDir": "release/app/dist"
+    "pretty": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "*": [
+        "./node_modules/*"
+      ]
+    },
+    "noUncheckedIndexedAccess": true,
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
   },
-  "exclude": ["test", "release/build", "release/app/dist", ".erb/dll"]
+  "include": [
+    "src/**/*"
+  ]
 }

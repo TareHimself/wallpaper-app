@@ -1,171 +1,63 @@
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
-import {
-  ISystemFilesResult,
-  IApplicationSettings,
-  ILoginData,
-  IConvertedSystemFiles,
-  IWallpaperData,
-  IImageDownload,
-} from 'renderer/types';
+import { RendererToMainEvents } from "../types";
 
-const validChannels = [
-  'ipc-example',
-  'upload-files',
-  'load-settings',
-  'save-settings',
-  'open-login',
-  'get-login',
-  'update-login',
-  'logout',
-  'upload-images',
-  'clear-cache',
-  'download-image',
-  'window-min',
-  'window-max',
-  'window-close',
-];
+import { ipcRenderer } from "../ipc";
 
-contextBridge.exposeInMainWorld('electron', {
-  ipcRenderer: {
-    myPing() {
-      ipcRenderer.send('ipc-example', 'ping');
-    },
-    uploadFiles(lastUploadPath: string, paths: string[] = []) {
-      ipcRenderer.send('upload-files', lastUploadPath, paths);
-
-      return new Promise<ISystemFilesResult>((resolve) => {
-        ipcRenderer.once(
-          'upload-files',
-          (_event, response: ISystemFilesResult) => {
-            response.files = response.files.map(([file, index, fileName]) => [
-              file,
-              index,
-              fileName,
-            ]);
-            resolve(response);
-          }
-        );
-      });
-    },
-    loadSettings() {
-      ipcRenderer.send('load-settings', '');
-
-      return new Promise<IApplicationSettings>((resolve) => {
-        ipcRenderer.once('load-settings', (_event, response) => {
-          resolve(response);
-        });
-      });
-    },
-    saveSettings(settings: IApplicationSettings) {
-      ipcRenderer.send('save-settings', settings);
-
-      return new Promise<boolean>((resolve) => {
-        ipcRenderer.once('save-settings', (_event, response) => {
-          resolve(response);
-        });
-      });
-    },
-    openLogin() {
-      ipcRenderer.send('open-login', '');
-      return new Promise<ILoginData>((resolve) => {
-        ipcRenderer.once('open-login', (_event, response) => {
-          resolve(response);
-        });
-      });
-    },
-    getLogin() {
-      ipcRenderer.send('get-login', '');
-      return new Promise<ILoginData | undefined>((resolve) => {
-        ipcRenderer.once('get-login', (_event, response) => {
-          resolve(response);
-        });
-      });
-    },
-    updateLogin(data: ILoginData | undefined) {
-      ipcRenderer.send('update-login', data);
-      return new Promise<void>((resolve) => {
-        ipcRenderer.once('update-login', (_event, response) => {
-          resolve(response);
-        });
-      });
-    },
-    logout() {
-      ipcRenderer.send('logout', '');
-      return new Promise<void>((resolve) => {
-        ipcRenderer.once('logout', (_event, response) => {
-          resolve(response);
-        });
-      });
-    },
-    uploadImages(images: IConvertedSystemFiles[], uploader_id: string) {
-      ipcRenderer.send('upload-images', images, uploader_id);
-      return new Promise<IWallpaperData[]>((resolve) => {
-        ipcRenderer.once('upload-images', (_event, response) => {
-          resolve(response);
-        });
-      });
-    },
-    downloadImage(image: IImageDownload) {
-      ipcRenderer.send('download-image', image);
-      return new Promise<boolean>((resolve) => {
-        ipcRenderer.once('download-image', (_event, response) => {
-          resolve(response);
-        });
-      });
-    },
-    quitApp() {
-      ipcRenderer.send('quit-app');
-    },
-    isDev() {
-      ipcRenderer.send('is-dev');
-      return new Promise<boolean>((resolve) => {
-        ipcRenderer.once('is-dev', (_event, result) => {
-          resolve(result);
-        });
-      });
-    },
-    getToken() {
-      ipcRenderer.send('get-token');
-      return new Promise<string>((resolve) => {
-        ipcRenderer.once('get-token', (_event, result) => {
-          resolve(result);
-        });
-      });
-    },
-    windowMinimize() {
-      ipcRenderer.send('window-min');
-    },
-    windowMaximize() {
-      ipcRenderer.send('window-max');
-    },
-    windowClose() {
-      ipcRenderer.send('window-close');
-    },
-    setDownloadPath(currentPath: string) {
-      ipcRenderer.send('set-download-path', currentPath);
-      return new Promise<string>((resolve) => {
-        ipcRenderer.once('set-download-path', (_event, result) => {
-          resolve(result);
-        });
-      });
-    },
-    on(channel: string, func: (...args: unknown[]) => void) {
-      if (validChannels.includes(channel)) {
-        const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>
-          func(...args);
-        // Deliberately strip event as it includes `sender`
-        ipcRenderer.on(channel, subscription);
-
-        return () => ipcRenderer.removeListener(channel, subscription);
-      }
-
-      return undefined;
-    },
-    once(channel: string, func: (...args: unknown[]) => void) {
-      if (validChannels.includes(channel)) {
-        // Deliberately strip event as it includes `sender`
-        ipcRenderer.once(channel, (_event, ...args) => func(...args));
-      }
-    },
+const events: RendererToMainEvents = {
+  getPreloadPath: () => ipcRenderer.sendToMainSync("getPreloadPath"),
+  uploadFiles: (...args) => {
+    return ipcRenderer.sendToMainAsync("uploadFiles", ...args);
   },
-});
+  loadSettings: (...args) => {
+    return ipcRenderer.sendToMainAsync("loadSettings", ...args);
+  },
+  saveSettings: (...args) => {
+    return ipcRenderer.sendToMainAsync("saveSettings", ...args);
+  },
+  openLogin: (...args) => {
+    return ipcRenderer.sendToMainAsync("openLogin", ...args);
+  },
+  getLogin: (...args) => {
+    return ipcRenderer.sendToMainAsync("getLogin", ...args);
+  },
+  updateLogin: (...args) => {
+    return ipcRenderer.sendToMainAsync("updateLogin", ...args);
+  },
+  logout: (...args) => {
+    return ipcRenderer.sendToMainAsync("logout", ...args);
+  },
+  uploadImages: (...args) => {
+    return ipcRenderer.sendToMainAsync("uploadImages", ...args);
+  },
+  downloadImage: (...args) => {
+    return ipcRenderer.sendToMainAsync("downloadImage", ...args);
+  },
+  quitApp: (...args) => {
+    return ipcRenderer.sendToMainAsync("quitApp", ...args);
+  },
+  isDev: (...args) => {
+    return ipcRenderer.sendToMainAsync("isDev", ...args);
+  },
+  getToken: (...args) => {
+    return ipcRenderer.sendToMainAsync("getToken", ...args);
+  },
+  windowMinimize: (...args) => {
+    return ipcRenderer.sendToMainAsync("windowMinimize", ...args);
+  },
+  windowMaximize: (...args) => {
+    return ipcRenderer.sendToMainAsync("windowMaximize", ...args);
+  },
+  windowClose: (...args) => {
+    return ipcRenderer.sendToMainAsync("windowClose", ...args);
+  },
+  setDownloadPath: (...args) => {
+    return ipcRenderer.sendToMainAsync("setDownloadPath", ...args);
+  },
+  getServerUrl: (...args) => {
+    return ipcRenderer.sendToMainAsync("getServerUrl", ...args);
+  },
+  getDatabaseUrl: (...args) => {
+    return ipcRenderer.sendToMainAsync("getDatabaseUrl", ...args);
+  },
+};
+
+ipcRenderer.exposeApi("bridge", events);
