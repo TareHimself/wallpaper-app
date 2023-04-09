@@ -4,8 +4,11 @@ import {
   IApplicationSettings,
   ICurrentUserState,
   ILoginData,
+  ServerResponse,
 } from "../../types";
 import toast from "react-hot-toast";
+import { ensureBridge, getServerUrl } from "../utils";
+import axios from "axios";
 
 // Define a type for the slice state
 
@@ -19,14 +22,27 @@ const loadCurrentUserData = createAsyncThunk("currentUser/load", async () => {
   const result: { loginData?: ILoginData; settings?: IApplicationSettings } =
     {};
   try {
-    if (window.bridge) {
-      const loginData = await window.bridge.getLogin();
-      if (loginData) {
-        result.loginData = loginData;
-      }
+    await ensureBridge();
 
-      result.settings = await window.bridge.loadSettings();
+    result.settings = await window.bridge.loadSettings();
+
+    const loginData = await window.bridge.getLogin();
+    console.log("Exiting login data", loginData);
+    if (loginData) {
+      const sessionStatusResponse = await axios.get<
+        ServerResponse<ILoginData["account"]>
+      >(`${await getServerUrl()}/${loginData?.session}/info`);
+
+      if (!sessionStatusResponse.data.error) {
+        loginData["account"] = sessionStatusResponse.data.data;
+        result.loginData = loginData;
+        console.log("Logging out, session has expired");
+      } else {
+        await window.bridge.updateLogin(undefined);
+        toast.error("Session has expired");
+      }
     }
+
     return result;
   } catch (e: unknown) {
     if (e instanceof Error) {
@@ -51,17 +67,21 @@ const loginUser = createAsyncThunk("currentUser/login", async () => {
   }
 });
 
-const logoutUser = createAsyncThunk("currentUser/logout", async () => {
-  try {
-    await window.bridge?.logout();
-    return null;
-  } catch (e: unknown) {
-    if (e instanceof Error) {
-      toast.error(e.message);
+const logoutUser = createAsyncThunk(
+  "currentUser/logout",
+  async ({ session }: { session: string }) => {
+    try {
+      await axios.post(`${await getServerUrl()}/${session}/logout`);
+      await window.bridge?.logout();
+      return null;
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        toast.error(e.message);
+      }
+      return null;
     }
-    return null;
   }
-});
+);
 
 export const currentUserSlice = createSlice({
   name: "currentUser",

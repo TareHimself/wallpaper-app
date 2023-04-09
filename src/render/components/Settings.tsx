@@ -58,7 +58,11 @@ export default function Settings({
               <button
                 type="button"
                 onClick={() => {
-                  dispatch(logoutUser());
+                  dispatch(
+                    logoutUser({
+                      session: userData.loginData?.session || "",
+                    })
+                  );
                 }}
               >
                 <h2>Logout</h2>

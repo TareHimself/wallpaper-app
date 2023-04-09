@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable global-require */
 import {
-  IAccountData,
   IApplicationSettings,
   IImageDownload,
   ILoginData,
@@ -15,7 +14,6 @@ import macaddress from "macaddress";
 import { platform } from "os";
 import { ipcMain } from "../ipc";
 import { getDatabaseUrl, getServerUrl, isDev } from "./util";
-import { url } from "inspector";
 import axios from "axios";
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -40,10 +38,11 @@ function getCodeFromWindow(authUri: string) {
       if (!mainWindow) {
         throw new Error('"mainWindow" is not defined');
       }
-      mainWindow.show();
+      newWindow.show();
+      newWindow.focus();
     });
 
-    ipcMain.original.once("onCodeReceived", (ev, code) => {
+    ipcMain.original.once("onCodeReceived", (_ev, code) => {
       newWindow.close();
       res(code as string);
     });
@@ -69,10 +68,7 @@ app.on("second-instance", () => {
   }
 });
 
-const loginDataPath = path.join(
-  app.getPath("userData"),
-  "loginData.wallpaperz"
-);
+const loginDataPath = path.join(app.getPath("userData"), "session.dat");
 
 const settingsPath = path.join(app.getPath("userData"), "settings.json");
 let devicePhysicalAddress = "";
@@ -285,7 +281,7 @@ ipcMain.onFromRenderer("startLogin", async (event) => {
 
   console.log("Got code", codeReceived);
   const serverResponse = (
-    await axios.get<ServerResponse<ILoginData>>(
+    await axios.post<ServerResponse<ILoginData>>(
       `${getServerUrl()}/login?code=${codeReceived}`
     )
   ).data;
@@ -295,16 +291,23 @@ ipcMain.onFromRenderer("startLogin", async (event) => {
     return;
   }
 
+  const encryptedData = safeStorage.encryptString(
+    JSON.stringify(serverResponse.data)
+  );
+
+  await fs.writeFile(loginDataPath, encryptedData);
+
   event.reply(serverResponse.data);
 });
 
 ipcMain.onFromRenderer("getLogin", async (event) => {
   if (fsSync.existsSync(loginDataPath)) {
-    // const encryptedLoginData = await fs.readFile(loginDataPath);
-    // const decryptedLoginData = safeStorage.decryptString(encryptedLoginData);
+    const encryptedLoginData = await fs.readFile(loginDataPath);
+    const decryptedLoginData = safeStorage.decryptString(encryptedLoginData);
 
-    // const loginData = JSON.parse(decryptedLoginData) as ILoginData;
-    event.reply(undefined);
+    const loginData = JSON.parse(decryptedLoginData) as ILoginData;
+
+    event.reply(loginData);
   } else {
     event.reply(undefined);
   }

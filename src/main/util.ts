@@ -12,7 +12,6 @@ export function getServerUrl() {
 }
 
 export function getDatabaseUrl() {
-  return "https://wallpaperz-database.oyintare.dev";
   return isDev()
     ? "http://localhost:3002"
     : "https://wallpaperz-database.oyintare.dev";

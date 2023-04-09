@@ -216,7 +216,9 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
             data-interact="true"
             onClick={() => {
               setIsFullscreen(true);
-              toast("Double Click To Exit");
+              toast("Double Click To Exit", {
+                duration: 1200,
+              });
             }}
           />
         </div>

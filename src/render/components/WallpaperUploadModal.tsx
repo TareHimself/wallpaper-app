@@ -4,7 +4,7 @@ import {
   refreshWallpapers,
   setWallpapersPendingUpload,
 } from "../redux/wallpapersSlice";
-import { IConvertedSystemFiles } from "../../types";
+import { IConvertedSystemFiles, ServerResponse } from "../../types";
 import WallpaperUploadItem from "./WallpaperUploadItem";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -70,12 +70,12 @@ export default function WallpaperUploadModal() {
 
         setUploadingStatus(true);
 
-        if (userData.loginData?.account.id && wallpaperData.data) {
-          const sessionId = "";
-          await axios.post(
-            `${await getServerUrl()}/${sessionId}/upload`,
+        if (userData.loginData?.session && wallpaperData.data) {
+          const uploadResponse = await axios.post<ServerResponse<string[]>>(
+            `${await getServerUrl()}/${userData.loginData.session}/upload`,
             files.current
           );
+          console.log("Upload result", uploadResponse.data);
           dispatch(refreshWallpapers({ bShouldReset: false }));
         }
 
@@ -91,8 +91,7 @@ export default function WallpaperUploadModal() {
     );
   }, [
     uploadingStatus,
-    files,
-    userData.loginData?.account.id,
+    userData.loginData?.session,
     wallpaperData.data,
     dispatch,
   ]);

@@ -6,6 +6,7 @@ import {
   IConvertedSystemFiles,
   IWallpaperData,
   IWallpapersState,
+  ServerResponse,
 } from "../../types";
 import { toast } from "react-hot-toast";
 
@@ -35,14 +36,14 @@ async function getWallpapers(page: number, maxItems: number, query: string) {
   };
 
   if (maxItems > 0) {
-    const response = await axios.get<IWallpaperData[]>(
+    const response = await axios.get<ServerResponse<IWallpaperData[]>>(
       `${await getDatabaseUrl()}/wallpapers?o=${page * maxItems}&l=${
         maxItems + 1
       }&q=${query}`
     );
 
-    if (response && response.data) {
-      const wallpapersFromApi = response.data;
+    if (response.data && !response.data.error) {
+      const wallpapersFromApi = response.data.data;
 
       if (wallpapersFromApi.length - maxItems > 0) {
         wallpapersFromApi.pop();
@@ -57,6 +58,8 @@ async function getWallpapers(page: number, maxItems: number, query: string) {
         wallpaper.tags = wallpaper.tags.replaceAll(`''`, `'`);
         return wallpaper;
       });
+    } else {
+      throw new Error(response.data.data);
     }
   }
   return result;
@@ -79,7 +82,10 @@ const fetchWallpapers = createAsyncThunk(
       {
         loading: "Fetching",
         success: "Fetched",
-        error: "Failed to fetch wallpapers",
+        error: (e) => {
+          console.error(e);
+          return "Failed to fetch wallpapers";
+        },
       }
     );
     return { ...fetchResult, currentPage: inPage, query, maxItems };
