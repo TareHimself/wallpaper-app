@@ -50,10 +50,13 @@ const events: RendererToMainEvents = {
     return ipcRenderer.sendToMainAsync("setDownloadPath", ...args);
   },
   getServerUrl: (...args) => {
-    return ipcRenderer.sendToMainAsync("getServerUrl", ...args);
+    return ipcRenderer.sendToMainSync("getServerUrl", ...args);
   },
   getDatabaseUrl: (...args) => {
-    return ipcRenderer.sendToMainAsync("getDatabaseUrl", ...args);
+    return ipcRenderer.sendToMainSync("getDatabaseUrl", ...args);
+  },
+  getCdnUrl: (...args) => {
+    return ipcRenderer.sendToMainSync("getCdnUrl", ...args);
   },
   getPlatform: (...args) => {
     return ipcRenderer.sendToMainSync("getPlatform", ...args);

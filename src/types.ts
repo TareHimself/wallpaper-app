@@ -31,8 +31,9 @@ export type RendererToMainEvents = {
   windowMaximize(): void;
   windowClose(): void;
   setDownloadPath(currentPath: string): Promise<string>;
-  getServerUrl(): Promise<string>;
-  getDatabaseUrl(): Promise<string>;
+  getServerUrl(): string;
+  getDatabaseUrl(): string;
+  getCdnUrl(): string;
 };
 
 export type MainToRendererEvents = Record<string, never>;

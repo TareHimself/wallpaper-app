@@ -13,7 +13,7 @@ import * as fsSync from "fs";
 import macaddress from "macaddress";
 import { platform } from "os";
 import { ipcMain } from "../ipc";
-import { getDatabaseUrl, getServerUrl, isDev } from "./util";
+import { getCdnUrl, getDatabaseUrl, getServerUrl, isDev } from "./util";
 import axios from "axios";
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -404,11 +404,15 @@ ipcMain.onFromRenderer("windowClose", (e) => {
 });
 
 ipcMain.onFromRenderer("getDatabaseUrl", (e) => {
-  e.reply(getDatabaseUrl());
+  e.replySync(getDatabaseUrl());
 });
 
 ipcMain.onFromRenderer("getServerUrl", (e) => {
-  e.reply(getServerUrl());
+  e.replySync(getServerUrl());
+});
+
+ipcMain.onFromRenderer("getCdnUrl", (e) => {
+  e.replySync(getCdnUrl());
 });
 
 ipcMain.onFromRenderer("getPreloadPath", (e) => {

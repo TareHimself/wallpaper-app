@@ -198,7 +198,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
           </span>
         </div>
         <img
-          src={`https://wallpaperz.nyc3.cdn.digitaloceanspaces.com/wallpapers/${currentWallpaper.id}.png`}
+          src={`${window.bridge.getCdnUrl()}/${currentWallpaper.id}.png`}
           alt="wallpaper"
           id="wp-in-view"
           draggable="false"
