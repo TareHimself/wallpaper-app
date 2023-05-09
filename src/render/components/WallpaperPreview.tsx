@@ -6,7 +6,9 @@ import { useAppDispatch } from "../redux/hooks";
 import { setCurrentWallpaper } from "../redux/wallpapersSlice";
 
 export default function WallpaperPreview({ data }: { data: IWallpaperData }) {
-  const uri = `https://resize.oyintare.dev/600x338/https://wallpaperz.nyc3.cdn.digitaloceanspaces.com/wallpapers/${data.id}.png`;
+  const uri = `https://resize.oyintare.dev/600x338/${window.bridge.getCdnUrl()}/${
+    data.id
+  }.png`;
   const dispatch = useAppDispatch();
   return (
     <div

@@ -33,19 +33,19 @@ export default function Settings({
     },
     [dispatch]
   );
-
+  console.log(userData.loginData);
   return (
     <div className={activeClass}>
       <div className="wp-settings-container">
         <div className="wp-settings-container-inner">
           <div className="wp-settings-login">
-            {userData.loginData && (
+            {userData.loginData?.account && (
               <>
                 <img src={userData.loginData.account.avatar} alt="profile" />
                 <h2>{userData.loginData.account.nickname}</h2>
               </>
             )}
-            {!userData.loginData ? (
+            {!userData.loginData?.account ? (
               <button
                 type="button"
                 onClick={() => {

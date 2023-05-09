@@ -19,9 +19,9 @@ export type RendererToMainEvents = {
   ): Promise<ISystemFilesResult>;
   loadSettings(): Promise<IApplicationSettings>;
   saveSettings(settings: IApplicationSettings): Promise<boolean>;
-  startLogin(): Promise<ILoginData | undefined>;
-  getLogin(): Promise<ILoginData | undefined>;
-  updateLogin(data: ILoginData | undefined): Promise<void>;
+  startLogin(): Promise<ILoginData | null>;
+  getLogin(): Promise<ILoginData | null>;
+  updateLogin(data: ILoginData | null): Promise<void>;
   logout(): Promise<void>;
   downloadImage(image: IImageDownload): Promise<boolean>;
   quitApp(): void;
@@ -86,7 +86,7 @@ export interface IApplicationSettings {
 
 export interface ILoginData {
   session: string;
-  account: IAccountData;
+  account?: IAccountData;
 }
 
 export interface ISystemFilesResult {

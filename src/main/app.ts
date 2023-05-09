@@ -287,12 +287,14 @@ ipcMain.onFromRenderer("startLogin", async (event) => {
   ).data;
 
   if (serverResponse.error) {
-    event.reply(undefined);
+    event.reply(null);
     return;
   }
 
   const encryptedData = safeStorage.encryptString(
-    JSON.stringify(serverResponse.data)
+    JSON.stringify({
+      session: serverResponse.data.session,
+    })
   );
 
   await fs.writeFile(loginDataPath, encryptedData);
@@ -309,7 +311,7 @@ ipcMain.onFromRenderer("getLogin", async (event) => {
 
     event.reply(loginData);
   } else {
-    event.reply(undefined);
+    event.reply(null);
   }
 });
 
