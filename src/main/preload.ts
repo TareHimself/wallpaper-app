@@ -34,9 +34,6 @@ const events: RendererToMainEvents = {
   isDev: (...args) => {
     return ipcRenderer.sendToMainAsync("isDev", ...args);
   },
-  getToken: (...args) => {
-    return ipcRenderer.sendToMainAsync("getToken", ...args);
-  },
   windowMinimize: (...args) => {
     return ipcRenderer.sendToMainAsync("windowMinimize", ...args);
   },

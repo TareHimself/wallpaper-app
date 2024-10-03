@@ -26,7 +26,6 @@ export type RendererToMainEvents = {
   downloadImage(image: IImageDownload): Promise<boolean>;
   quitApp(): void;
   isDev(): Promise<boolean>;
-  getToken(): Promise<string>;
   windowMinimize(): void;
   windowMaximize(): void;
   windowClose(): void;

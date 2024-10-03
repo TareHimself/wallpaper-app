@@ -1,3 +1,5 @@
+import { ILoginData } from "../types";
+
 function pad(number: number) {
   return number < 10 ? `0${number}` : `${number}`;
 }
@@ -40,12 +42,14 @@ export function SqlIntegerToTime(number: number) {
   return newDate;
 }
 
-export async function getServerUrl() {
-  await ensureBridge();
-  return await window.bridge.getServerUrl();
+export function getServerUrl() {
+  return window.bridge.getServerUrl();
 }
 
-export async function getDatabaseUrl() {
-  await ensureBridge();
-  return await window.bridge.getDatabaseUrl();
+export function getDatabaseUrl() {
+  return window.bridge.getDatabaseUrl();
+}
+
+export function getDatabaseToken(loginData: ILoginData) {
+  return `${loginData.account.id}::${loginData.session}`;
 }

@@ -16,7 +16,7 @@ import {
 } from "../redux/wallpapersSlice";
 import { IWallpaperData } from "../../types";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { getDatabaseUrl, SqlIntegerToTime } from "../utils";
+import { getDatabaseToken, getDatabaseUrl, SqlIntegerToTime } from "../utils";
 import { toast } from "react-hot-toast";
 
 const clickOutClassnames = ["wp-view", "wp-view-container"];
@@ -77,16 +77,13 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
   }
 
   const deleteOrReportWallpaper = useCallback(async () => {
-    if (bisOwnerOfWallpaper) {
+    if (bisOwnerOfWallpaper && userData.loginData) {
       await axios
-        .delete(
-          `${await getDatabaseUrl()}/wallpapers?ids=${currentWallpaper.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${await window.bridge?.getToken()}`,
-            },
-          }
-        )
+        .delete(`${getDatabaseUrl()}/wallpapers?ids=${currentWallpaper.id}`, {
+          headers: {
+            Authorization: `${getDatabaseToken(userData.loginData)}`,
+          },
+        })
         .catch((e) => toast.error(e.message));
 
       dispatch(setCurrentWallpaper(null));
@@ -95,7 +92,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
     } else {
       toast("This feature is currently unavailable");
     }
-  }, [bisOwnerOfWallpaper, currentWallpaper.id, dispatch]);
+  }, [bisOwnerOfWallpaper, currentWallpaper.id, dispatch, userData.loginData]);
 
   const toggleEditWallpaper = useCallback(async () => {
     if (isEditingTags) {
@@ -103,17 +100,17 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
 
       const element = document.getElementById("tags-edit");
 
-      if (element) {
+      if (element && userData.loginData) {
         const tagsEdit = element as HTMLTextAreaElement;
         const newTags = tagsEdit.value.toLowerCase();
         tagsEdit.value = newTags;
         axios
           .post(
-            `${await getDatabaseUrl()}/wallpapers`,
+            `${getDatabaseUrl()}/wallpapers`,
             [{ ...currentWallpaper, tags: newTags.replaceAll(`'`, `''`) }],
             {
               headers: {
-                Authorization: `Bearer ${await window.bridge?.getToken()}`,
+                Authorization: `${getDatabaseToken(userData.loginData)}`,
               },
             }
           )
@@ -122,7 +119,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
     } else {
       setEditingTags(true);
     }
-  }, [currentWallpaper, isEditingTags]);
+  }, [currentWallpaper, isEditingTags, userData.loginData]);
 
   const downloadWallpaper = useCallback(() => {
     toast.promise(
@@ -236,7 +233,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
       {isFullscreen && (
         <div className="wp-view-fullscreen">
           <img
-            src={`https://wallpaperz.nyc3.cdn.digitaloceanspaces.com/wallpapers/${currentWallpaper.id}.png`}
+            src={`${getDatabaseUrl()}/${currentWallpaper.id}.png`}
             alt="wallpaper"
             id="wp-in-view-fullscreen"
             draggable="false"

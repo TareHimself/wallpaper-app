@@ -28,23 +28,26 @@ function getCodeFromWindow(authUri: string) {
       height: 728,
       icon: "./assets/icon",
       webPreferences: {
-        preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
         nodeIntegration: true,
       },
       autoHideMenuBar: true,
     });
 
-    newWindow.on("ready-to-show", () => {
+    newWindow.on("ready-to-show", async () => {
       if (!mainWindow) {
         throw new Error('"mainWindow" is not defined');
       }
       newWindow.show();
       newWindow.focus();
-    });
-
-    ipcMain.original.once("onCodeReceived", (_ev, code) => {
-      newWindow.close();
-      res(code as string);
+      newWindow.webContents.once("did-navigate", (_, url) => {
+        const code = new URL(url).searchParams.get("code");
+        if (code) {
+          newWindow.close();
+          res(code);
+        } else {
+          res("");
+        }
+      });
     });
 
     newWindow.loadURL(authUri);
@@ -376,10 +379,6 @@ ipcMain.onFromRenderer("quitApp", async () => {
 
 ipcMain.onFromRenderer("isDev", (event) => {
   event.reply(isDev());
-});
-
-ipcMain.onFromRenderer("getToken", (event) => {
-  event.reply("test");
 });
 
 ipcMain.onFromRenderer("windowMaximize", (event) => {
