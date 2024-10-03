@@ -42,7 +42,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
     useState<boolean>(false);
 
   const bisOwnerOfWallpaper: boolean =
-    userData.loginData?.account.id === currentWallpaper.uploader;
+    userData.loginData?.account?.id === currentWallpaper.uploader;
 
   function gotoNextWallpaper() {
     if (!wallpapers) return;
@@ -233,7 +233,7 @@ export default function WallpaperViewModal({ data }: { data: IWallpaperData }) {
       {isFullscreen && (
         <div className="wp-view-fullscreen">
           <img
-            src={`${getDatabaseUrl()}/${currentWallpaper.id}.png`}
+            src={`${window.bridge.getCdnUrl()}/${currentWallpaper.id}.png`}
             alt="wallpaper"
             id="wp-in-view-fullscreen"
             draggable="false"

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import {
+  IAccountData,
   IApplicationSettings,
   ICurrentUserState,
   ILoginData,
@@ -19,8 +20,10 @@ const initialState: ICurrentUserState = {
 };
 
 const loadCurrentUserData = createAsyncThunk("currentUser/load", async () => {
-  const result: { loginData?: ILoginData; settings?: IApplicationSettings } =
-    {};
+  const result: {
+    loginData: ILoginData | null;
+    settings?: IApplicationSettings;
+  } = { loginData: null };
   try {
     await ensureBridge();
 
@@ -29,16 +32,19 @@ const loadCurrentUserData = createAsyncThunk("currentUser/load", async () => {
     const loginData = await window.bridge.getLogin();
     console.log("Exiting login data", loginData);
     if (loginData) {
+      result.loginData = loginData;
+
       const sessionStatusResponse = await axios.get<
-        ServerResponse<ILoginData["account"]>
+        ServerResponse<IAccountData>
       >(`${await getServerUrl()}/${loginData?.session}/info`);
 
       if (!sessionStatusResponse.data.error) {
-        loginData["account"] = sessionStatusResponse.data.data;
-        result.loginData = loginData;
+        console.log("Session status response", sessionStatusResponse.data);
+        result.loginData.account = sessionStatusResponse.data.data;
         console.log("Logging out, session has expired");
       } else {
-        await window.bridge.updateLogin(undefined);
+        await window.bridge.updateLogin(null);
+        result.loginData = null;
         toast.error("Session has expired");
       }
     }
